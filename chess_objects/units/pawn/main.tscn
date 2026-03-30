@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bmh7qr1b7ei8l"]
+
+[ext_resource type="ArrayMesh" uid="uid://qcucn1imc0xn" path="res://chess_objects/units/pawn/mesh.tres" id="1_3eqgx"]
+
+[node name="Pawn01" type="MeshInstance3D" unique_id=1250529258]
+mesh = ExtResource("1_3eqgx")

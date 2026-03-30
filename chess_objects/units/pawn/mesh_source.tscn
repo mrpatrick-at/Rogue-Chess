@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://boa2i5m7m328b"]
+
+[ext_resource type="ArrayMesh" uid="uid://qcucn1imc0xn" path="res://chess_objects/units/pawn/mesh.tres" id="1_trh7t"]
+
+[node name="MeshSource" type="Node3D" unique_id=1463737552]
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="." unique_id=406146260]
+
+[node name="Unit_Base" type="CSGCylinder3D" parent="CSGMesh3D" unique_id=343612028]
+transform = Transform3D(2, 0, 0, 0, 0.3, 0, 0, 0, 2, 0, 0.3, 0)
+
+[node name="Unit_Mid" type="CSGCylinder3D" parent="CSGMesh3D" unique_id=120636181]
+transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="Unit_Head" type="CSGSphere3D" parent="CSGMesh3D" unique_id=301936861]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 3.5, 0)
+
+[node name="CSGBakedMeshInstance3D" type="MeshInstance3D" parent="." unique_id=1369805181]
+mesh = ExtResource("1_trh7t")
