@@ -3,10 +3,6 @@ extends TileMapLayer
 ## consts
 ## exports
 ## public vars
-static var tile_black:int = 0
-static var tile_white:int = 0
-static var total_tiles:int = 0
-static var tile_dict:Dictionary = {}
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -22,15 +18,13 @@ func _process(_delta: float) -> void:
 ## public methods
 
 func build_board() -> void:
-	#for i in range(3):
 	var source_id:int = 0
 	for x in range(1,9):
 		for y in range(1,9):
 			calculate_tile_color(x,y)
-			var atlas_coords:Vector2i = Vector2i(tile_dict.get(Vector2i(x,y)),0) # White: 0,0 ; Black: 1,0 ; Selection_Sprite: 2,0 ;
+			var atlas_coords:Vector2i = Vector2i(Scripts.BOARD_DATABASE.TILE_DICTIONARY.get(Vector2i(x,y)),0) # White: 0,0 ; Black: 1,0 ; Selection_Sprite: 2,0 ;
 			var coords:Vector2i = Vector2i(x,y) # Black bottom left is 1,1
 			set_cell(coords,source_id,atlas_coords,source_id)
-			#print("gay",x,y)
 
 static func calculate_tile_color(x:int,y:int) -> void:
 	var int_x:int = 0 # Check if x is odd or even
@@ -46,29 +40,20 @@ static func calculate_tile_color(x:int,y:int) -> void:
 		int_y += 1
 		
 	if int_x == 2 and int_y == 2 or int_x == 1 and int_y == 1: # Values same = black tile
-		tile_black += 1
-		tile_dict.get_or_add(Vector2i(x,y),0) # TODO: Make a seperate Dictionary Script
-		print("Black Tile Found: ",x,",",y," Now there is ",tile_black,"/32 black tiles!")
+		Scripts.BOARD_DATABASE.TILE_BLACK += 1
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(Vector2i(x,y),0)
+		print("Black Tile Found: ",x,",",y," Now there is ",Scripts.BOARD_DATABASE.TILE_BLACK,"/32 black tiles!")
 	
 	if int_x == 2 and int_y == 1 or int_x == 1 and int_y == 2: # values diffrent = white tile
-		tile_white += 1
-		tile_dict.get_or_add(Vector2i(x,y),1) # TODO: Make a seperate Dictionary Script
-		print("White Tile Found: ",x,",",y," Now there is ",tile_white,"/32 white tiles!")
+		Scripts.BOARD_DATABASE.TILE_WHITE += 1
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(Vector2i(x,y),1)
+		print("White Tile Found: ",x,",",y," Now there is ",Scripts.BOARD_DATABASE.TILE_WHITE,"/32 white tiles!")
 		
-	total_tiles = tile_black + tile_white # Total Ints (Should be 64 for Chess board)
-	print("Total Tiles: ",total_tiles,"/64 !")
+	Scripts.BOARD_DATABASE.TOTAL_TILES = Scripts.BOARD_DATABASE.TILE_BLACK + Scripts.BOARD_DATABASE.TILE_WHITE # Total Ints (Should be 64 for Chess board)
+	print("Total Tiles: ",Scripts.BOARD_DATABASE.TOTAL_TILES,"/64 !")
 	return Vector2i(x,y)
 
-#static func check_array_for_data_and_appaned(value:Variant) -> bool:
-	
-	
-	
-	
-	
-	
-	
-	#if not integers.has(value):
-		#integers.append(value)
-		#return false
-	#return true
+func create_board_cells(coords:Vector2i,source_id:int,atlas_coords:Vector2i) -> void:
+	set_cell(coords,source_id,atlas_coords,source_id)
+
 ## private methods

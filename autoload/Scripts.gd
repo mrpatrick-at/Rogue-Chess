@@ -2,6 +2,8 @@ extends Node
 ## enums
 ## consts
 const BOARD:= preload("res://chess_objects/board/main.gd")
+const BOARD_DATABASE:= preload("res://chess_objects/board/database.gd")
+const BOARD_TILEMAP:= preload("res://chess_objects/board/tilemap_layer.gd")
 ## exports
 ## public vars
 ## private vars
@@ -9,8 +11,6 @@ const BOARD:= preload("res://chess_objects/board/main.gd")
 # obj_ for node refrences
 ## built-in override methods
 func _ready() -> void:
-	#var board_loading = Scripts.BOARD.new()
-	#board_loading.load_board()
 	pass
 ## public methods
 ## private methods
