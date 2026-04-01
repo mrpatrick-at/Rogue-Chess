@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://c5k24k716nlpc"]
 
 [ext_resource type="Script" uid="uid://ci7yr8f2qu242" path="res://chess_objects/board/main.gd" id="1_k1o7p"]
-[ext_resource type="Script" uid="uid://d6gqa3uon2ku" path="res://chess_objects/board/tilemap_layer.gd" id="1_tlfnf"]
 [ext_resource type="Texture2D" uid="uid://dgi5v85i8u6ho" path="res://chess_objects/board/tiles_merged.png" id="5_6gu3b"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aeyft"]
@@ -19,14 +18,6 @@ tile_proxies/coords_level = [[0, Vector2i(0, 0)], [3, Vector2i(0, 0)], [1, Vecto
 [node name="Main" type="Node2D" unique_id=591363710]
 script = ExtResource("1_k1o7p")
 
-[node name="TileMapLayers" type="Node2D" parent="." unique_id=264076177]
-
-[node name="TileMapLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=441685764]
-top_level = true
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=441685764]
 tile_set = SubResource("TileSet_tlfnf")
 rendering_quadrant_size = 128
-script = ExtResource("1_tlfnf")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=447176981]
-top_level = true
-zoom = Vector2(0.5, 0.5)

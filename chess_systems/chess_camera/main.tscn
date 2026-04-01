@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bhrs8mk8wpl2x"]
+
+[ext_resource type="Script" uid="uid://dfcemd6356nld" path="res://chess_systems/chess_camera/main.gd" id="1_w3ayw"]
+
+[node name="Main" type="Node2D" unique_id=929609471]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=494723203]
+script = ExtResource("1_w3ayw")

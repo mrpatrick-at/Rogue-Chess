@@ -16,7 +16,7 @@ func _process(_delta: float) -> void:
 
 ## public methods
 
-#Input.is_action_pressed(&""):
-
+static func get_mouse_position():
+	Camera2D
 
 ## private methods

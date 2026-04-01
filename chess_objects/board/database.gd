@@ -3,21 +3,13 @@ extends RefCounted
 ## consts
 ## exports
 ## public vars
-static var TILE_DICTIONARY:Dictionary = {}
-static var TILE_BLACK:int = 0
-static var TILE_WHITE:int = 0
-static var TOTAL_TILES:int = 0
+static var TILE_DICTIONARY:Dictionary = {} # Dictionary for holding coords data
+static var TILE_BLACK:int = 0 # Black Tile Amount
+static var TILE_WHITE:int = 0 # White Tile Amount
+static var TOTAL_TILES:int = 0 # Total Tile Amount
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
-
-func _ready() -> void:
-	pass 
-
-func _process(_delta: float) -> void:
-	pass
-
 ## public methods
-
 ## private methods
