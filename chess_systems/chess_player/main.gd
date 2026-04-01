@@ -19,16 +19,12 @@ func _input(event:InputEvent) -> void:
 	# Mouse Inputs
 	if InputEventMouse:
 		var mouse_coords:Vector2 = get_viewport().get_mouse_position()
-		if Input.is_action_just_released(&"_input_mouse_left"):
-			print("Left Mouse click detected at: ",mouse_coords)
+		#if Input.is_action_just_released(&"_input_mouse_left"):
+			#print("Left Mouse click detected at: ",mouse_coords)
 		if Input.is_action_just_released(&"_input_mouse_right"):
 			print("Right Mouse click detected at: ",mouse_coords)
 		if Input.is_action_just_released(&"_input_mouse_middle"):
 			print("Middle Mouse click detected at: ",mouse_coords)
-		#if Input.is_action_just_released(&"_input_mouse_scroll_up"): # TODO: Fix! Displays both diretions as down :(
-			#print("Mousewheel scroll down detected at: ",mouse_coords)
-		#if Input.is_action_just_released(&"_input_mouse_scroll_down"):
-			#print("Mousewheel scroll down detected at: ",mouse_coords)
 
 ## public methods
 

@@ -32,10 +32,10 @@ func move_camera() -> void:
 		#print("right")
 		position.x += 4000 * delta
 	if Input.is_action_just_released(&"_input_mouse_scroll_up"):
-		print("scroll up")
+		#print("scroll up")
 		zoom += Vector2(2,2) * delta
 	if Input.is_action_just_released(&"_input_mouse_scroll_down"):
-		print("scroll down")
+		#print("scroll down")
 		zoom -= Vector2(2,2) * delta
 
 ## private methods
