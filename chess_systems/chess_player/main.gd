@@ -12,7 +12,7 @@ var cam_zoom_velocity:float = 0.0
 ## built-in override methods
 
 func _ready() -> void:
-	#_setup_camera(obj_camera)
+	
 	pass 
 
 func _input(event:InputEvent) -> void:

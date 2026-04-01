@@ -1,40 +1,17 @@
 [gd_scene format=3 uid="uid://c5k24k716nlpc"]
 
 [ext_resource type="Script" uid="uid://ci7yr8f2qu242" path="res://chess_objects/board/main.gd" id="1_k1o7p"]
-[ext_resource type="Texture2D" uid="uid://b5b550jjfwnrj" path="res://chess_objects/board/tiles_selection.png" id="2_5f208"]
-[ext_resource type="Texture2D" uid="uid://b5edx8j05dwlx" path="res://chess_objects/board/tiles_board.png" id="3_ni4si"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5f208"]
-texture = ExtResource("2_5f208")
-texture_region_size = Vector2i(128, 128)
-1:0/0 = 0
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_k1o7p"]
-tile_size = Vector2i(128, 128)
-sources/0 = SubResource("TileSetAtlasSource_5f208")
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ni4si"]
-texture = ExtResource("3_ni4si")
-texture_region_size = Vector2i(128, 128)
-1:0/0 = 0
-2:0/0 = 0
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_tlfnf"]
-tile_size = Vector2i(128, 128)
-sources/0 = SubResource("TileSetAtlasSource_ni4si")
-tile_proxies/coords_level = [[0, Vector2i(0, 0)], [3, Vector2i(0, 0)], [1, Vector2i(0, 0)], [3, Vector2i(1, 0)], [2, Vector2i(0, 0)], [3, Vector2i(2, 0)]]
+[ext_resource type="TileSet" uid="uid://big83lg6450ys" path="res://chess_objects/board/tile_set.tres" id="2_5f208"]
 
 [node name="Main" type="Node2D" unique_id=591363710]
 script = ExtResource("1_k1o7p")
 
 [node name="TileMapLayer_Selection" type="TileMapLayer" parent="." unique_id=1682598802]
-tile_set = SubResource("TileSet_k1o7p")
+tile_set = ExtResource("2_5f208")
 rendering_quadrant_size = 128
 
 [node name="TileMapLayer_Board" type="TileMapLayer" parent="TileMapLayer_Selection" unique_id=441685764]
 show_behind_parent = true
-tile_set = SubResource("TileSet_tlfnf")
+tile_set = ExtResource("2_5f208")
 rendering_quadrant_size = 128
 physics_quadrant_size = 128
