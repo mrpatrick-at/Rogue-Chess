@@ -3,6 +3,7 @@ extends Camera2D
 ## consts
 ## exports
 ## public vars
+@onready var camera_2d: Camera2D = $"."
 ## private vars
 ## onready vars
 # obj_ for node refrences

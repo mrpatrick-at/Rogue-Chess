@@ -2,9 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://main.gd" id="1_h2yge"]
 [ext_resource type="PackedScene" uid="uid://c5k24k716nlpc" path="res://chess_objects/board/main.tscn" id="2_0xm2m"]
-[ext_resource type="PackedScene" uid="uid://wc31c7irrrxr" path="res://chess_objects/pieces/pawn/main.tscn" id="3_7mycd"]
 [ext_resource type="PackedScene" uid="uid://bhrs8mk8wpl2x" path="res://chess_systems/chess_camera/main.tscn" id="4_1bvp3"]
-[ext_resource type="Script" uid="uid://vt73rdb76emb" path="res://chess_objects/pieces/piece_manager/main.gd" id="5_7mycd"]
+[ext_resource type="Script" uid="uid://vt73rdb76emb" path="res://chess_scripts/piece_manager/main.gd" id="5_7mycd"]
 [ext_resource type="PackedScene" uid="uid://c4vg8g4rgo3fs" path="res://chess_systems/chess_player/main.tscn" id="5_lquwl"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
@@ -22,13 +21,14 @@ script = ExtResource("1_h2yge")
 mesh = SubResource("PlaneMesh_7dm0k")
 surface_material_override/0 = SubResource("StandardMaterial3D_ig7tw")
 
-[node name="ChessBoard" parent="ChessWorld3D" unique_id=700767895 instance=ExtResource("2_0xm2m")]
+[node name="ChessWorld2D" type="Node2D" parent="." unique_id=390371608]
+script = ExtResource("1_h2yge")
 
-[node name="Camera2D" parent="ChessWorld3D" unique_id=494723203 instance=ExtResource("4_1bvp3")]
+[node name="ChessBoard" parent="ChessWorld2D" unique_id=700767895 instance=ExtResource("2_0xm2m")]
 
-[node name="ChessPlayer" parent="ChessWorld3D" unique_id=564898980 instance=ExtResource("5_lquwl")]
+[node name="Camera2D" parent="ChessWorld2D" unique_id=494723203 instance=ExtResource("4_1bvp3")]
 
-[node name="PieceManager2D" type="Node2D" parent="ChessWorld3D" unique_id=1627719126]
+[node name="ChessPlayer" parent="ChessWorld2D" unique_id=564898980 instance=ExtResource("5_lquwl")]
+
+[node name="PieceManager2D" type="Node2D" parent="ChessWorld2D" unique_id=1627719126]
 script = ExtResource("5_7mycd")
-
-[node name="Pawn" parent="ChessWorld3D/PieceManager2D" unique_id=1918965999 instance=ExtResource("3_7mycd")]

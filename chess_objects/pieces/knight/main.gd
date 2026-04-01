@@ -1,4 +1,4 @@
-extends Node2D
+extends RefCounted
 ## enums
 ## consts
 ## exports
@@ -24,7 +24,7 @@ static func call_movement(current_coords:Vector2i,asked_coords:Vector2i) -> void
 	var possible_move:bool = false
 	
 	# Mathematical Behaviour for Pawn
-	if asked_x == current_x + 1 or asked_x == current_x +2:
+	if asked_x == current_x + 2 and (asked_y == current_y +1 or asked_y == current_y -1):
 		possible_move = true
 	
 	if possible_move:

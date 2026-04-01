@@ -12,15 +12,17 @@ func _ready() -> void:
 	pass 
 
 func _process(_delta: float) -> void:
+	build_pieces()
 	pass
 
 ## public methods
 
-func build_pieces(coords:Vector2i) -> void:
+func build_pieces() -> void:
 	var database = Scripts.BOARD_DATABASE.TILE_DICTIONARY
-	calculate_pieces(database,coords)
-	#create_piece(database,coords)
-	
+	for coords in database.keys():
+		if Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"] == Scripts.PIECE_LIST._0:
+			calculate_pieces(database,coords)
+			create_piece(database,coords)
 
 static func calculate_pieces(database:Dictionary,coords:Vector2i) -> void:
 	database[coords]["piece"] = Scripts.PIECE_LIST.NONE
@@ -48,19 +50,21 @@ static func calculate_pieces(database:Dictionary,coords:Vector2i) -> void:
 		database[coords]["piece"] = Scripts.PIECE_LIST.KING
 		print("King spawned at: ",coords,"!")
 
-#func create_piece(database:Dictionary,coords:Vector2i) -> void: # TODO: Fix this mess
-	#var database_tile = Scripts.BOARD_DATABASE.TILE_DICTIONARY
-	#var piece = database[coords]["piece"]
-	#if piece == Scripts.PIECE_LIST.NONE:
-		#return
-	#if piece == Scripts.PIECE_LIST.PAWN:
-		#var pawn = "pawn" + pawn_int
-		#pawn = Scripts.PIECE_DATABASE.Pawn.instantiate()
-		#add_child(pawn)
-		#print("Pawn Added as Node Child: ",pawn,)
-		#pawn_int +1
+func create_piece(database:Dictionary,coords:Vector2i) -> void: # TODO: Fix this mess
+	var translated_coords = Scripts.BOARD_MANAGER.new().translated_coords(database,coords)
+	var database_tile = Scripts.BOARD_DATABASE.TILE_DICTIONARY
+	var piece = database[coords]["piece"]
+	if piece == Scripts.PIECE_LIST.NONE:
+		return
+	if piece == Scripts.PIECE_LIST.PAWN:
+		var pawn = load("res://chess_objects/pieces/pawn/main.tscn")
+		var pawn_instance:Node2D = pawn.instantiate()
+		add_child(pawn_instance)
+		pawn_instance.global_position = translated_coords
+		#pawn_instance.global_transform.y = translated_coords
+		
 		
 	#print(piece)
-	#pass
+	pass
 
 ## private methods

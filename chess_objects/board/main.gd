@@ -36,7 +36,6 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 			if !Scripts.BOARD_DATABASE.TILE_DICTIONARY.has(coords):
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
-				Scripts.PIECE_MANAGER.new().build_pieces(coords)
 				
 	print("Created Board of size: ",tilemap_board.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
 	_center_tilemap(x_range,y_range)
@@ -103,6 +102,11 @@ func create_tilemap_layers(quadrant_size:int = 128,tile_set:TileSet = preload("r
 	
 	print("tileset id count: ",tile_set.get_source_count())
 
+func translated_coords(database:Dictionary,coords:Vector2i) -> Vector2: # SO COOL WOOOOOW
+	var translated_coords:Vector2 = tilemap_board.to_global(tilemap_board.map_to_local(coords))
+	print(translated_coords)
+	return translated_coords
+
 ## private methods
 
 static func _calculate_tile_color(coords:Vector2i) -> void:
@@ -128,12 +132,12 @@ static func _calculate_tile_color(coords:Vector2i) -> void:
 		
 	if same_or_diffrent == 1: # Values same = black tile
 		Scripts.BOARD_DATABASE.TILE_BLACK += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":2})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":2,"piece":Scripts.PIECE_LIST._0})
 		colour_of_tile = "White"
 	
 	if same_or_diffrent == 2: # values diffrent = white tile
 		Scripts.BOARD_DATABASE.TILE_WHITE += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":1})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":1,"piece":Scripts.PIECE_LIST._0})
 		colour_of_tile = "Black"
 		
 	Scripts.BOARD_DATABASE.TOTAL_TILES = Scripts.BOARD_DATABASE.TILE_BLACK + Scripts.BOARD_DATABASE.TILE_WHITE # Total Ints (Should be 64 for Chess board)
@@ -148,6 +152,6 @@ func _create_board_cells(coords:Vector2i) -> void:
 
 func _center_tilemap(x_range:int,y_range:int) -> void:
 	rotation_degrees = -90
-	position.x = ((x_range * 128.0) / 2.0 )
-	position.y = ((y_range * 128.0) / 2.0 )
+	global_position.x = ((x_range * 128.0) / 2.0 ) *-1
+	global_position.y = ((y_range * 128.0) / 2.0 ) *1
 	print("Tile Map Centered to: ",position.x," , ",position.y,"!")
