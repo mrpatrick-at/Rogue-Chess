@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://bxmeugje5h5ew"]
 
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://main.gd" id="1_h2yge"]
-[ext_resource type="PackedScene" uid="uid://bmh7qr1b7ei8l" path="res://chess_objects/pieces/pawn/main_3d.tscn" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://c5k24k716nlpc" path="res://chess_objects/board/main.tscn" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://wc31c7irrrxr" path="res://chess_objects/pieces/pawn/main.tscn" id="3_7mycd"]
 [ext_resource type="PackedScene" uid="uid://bhrs8mk8wpl2x" path="res://chess_systems/chess_camera/main.tscn" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://vt73rdb76emb" path="res://chess_objects/pieces/piece_manager/main.gd" id="5_7mycd"]
 [ext_resource type="PackedScene" uid="uid://c4vg8g4rgo3fs" path="res://chess_systems/chess_player/main.tscn" id="5_lquwl"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
@@ -22,27 +22,13 @@ script = ExtResource("1_h2yge")
 mesh = SubResource("PlaneMesh_7dm0k")
 surface_material_override/0 = SubResource("StandardMaterial3D_ig7tw")
 
-[node name="Units" type="Node" parent="ChessWorld3D" unique_id=1696876351]
-
-[node name="Pawn01" parent="ChessWorld3D/Units" unique_id=1250529258 instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2858543, 0, 15.443797)
-
-[node name="Pawn02" parent="ChessWorld3D/Units" unique_id=756546141 instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7821994, 1.9073486e-06, -18.436043)
-
-[node name="Pawn03" parent="ChessWorld3D/Units" unique_id=1608621406 instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.510822, 1.9073486e-06, -11.926243)
-
-[node name="Pawn04" parent="ChessWorld3D/Units" unique_id=408942784 instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.624115, 1.9073486e-06, -3.8649902)
-
-[node name="Pawn05" parent="ChessWorld3D/Units" unique_id=1271170458 instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.554592, 3.8146973e-06, 10.082727)
-
-[node name="Pawn" parent="ChessWorld3D/Units" unique_id=1918965999 instance=ExtResource("3_7mycd")]
-
 [node name="ChessBoard" parent="ChessWorld3D" unique_id=700767895 instance=ExtResource("2_0xm2m")]
 
 [node name="Camera2D" parent="ChessWorld3D" unique_id=494723203 instance=ExtResource("4_1bvp3")]
 
 [node name="ChessPlayer" parent="ChessWorld3D" unique_id=564898980 instance=ExtResource("5_lquwl")]
+
+[node name="PieceManager2D" type="Node2D" parent="ChessWorld3D" unique_id=1627719126]
+script = ExtResource("5_7mycd")
+
+[node name="Pawn" parent="ChessWorld3D/PieceManager2D" unique_id=1918965999 instance=ExtResource("3_7mycd")]

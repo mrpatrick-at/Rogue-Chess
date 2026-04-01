@@ -2,7 +2,6 @@
 
 [ext_resource type="Texture2D" uid="uid://el6babusmuu7" path="res://chess_objects/board/tiles_selection.png" id="1_i3fpf"]
 [ext_resource type="Texture2D" uid="uid://b5edx8j05dwlx" path="res://chess_objects/board/tiles_board.png" id="2_scnhg"]
-[ext_resource type="Texture2D" uid="uid://b5b550jjfwnrj" path="res://chess_objects/board/tiles_selection_old.png" id="3_scnhg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_a2c7e"]
 texture = ExtResource("2_scnhg")
@@ -18,14 +17,7 @@ texture_region_size = Vector2i(128, 128)
 2:0/0 = 0
 0:0/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5f208"]
-texture = ExtResource("3_scnhg")
-texture_region_size = Vector2i(128, 128)
-1:0/0 = 0
-0:0/0 = 0
-
 [resource]
 tile_size = Vector2i(128, 128)
 sources/0 = SubResource("TileSetAtlasSource_a2c7e")
-sources/2 = SubResource("TileSetAtlasSource_5f208")
 sources/1 = SubResource("TileSetAtlasSource_anx28")

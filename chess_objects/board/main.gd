@@ -36,6 +36,8 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 			if !Scripts.BOARD_DATABASE.TILE_DICTIONARY.has(coords):
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
+				Scripts.PIECE_MANAGER.new().build_pieces(coords)
+				
 	print("Created Board of size: ",tilemap_board.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
 	_center_tilemap(x_range,y_range)
 
@@ -78,6 +80,7 @@ func select_tile() -> void:
 				selected_tile = tilemap_selection_mouse_coords
 				tilemap_selection.set_cell(selected_tile,1,Vector2i(2,0),0)
 				print("Move Piece from: ",selected_tile_from,", Move Piece to: ",selected_tile)
+				Scripts.PIECE_PAWN.call_movement(selected_tile_from,selected_tile)
 				selected_tile = Vector2i(0,0)
 	else:
 		if Input.is_action_just_pressed(&"_input_mouse_left"):
@@ -125,12 +128,12 @@ static func _calculate_tile_color(coords:Vector2i) -> void:
 		
 	if same_or_diffrent == 1: # Values same = black tile
 		Scripts.BOARD_DATABASE.TILE_BLACK += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":2,"test":"gay"})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":2})
 		colour_of_tile = "White"
 	
 	if same_or_diffrent == 2: # values diffrent = white tile
 		Scripts.BOARD_DATABASE.TILE_WHITE += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":1,"test":"gay"})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":1})
 		colour_of_tile = "Black"
 		
 	Scripts.BOARD_DATABASE.TOTAL_TILES = Scripts.BOARD_DATABASE.TILE_BLACK + Scripts.BOARD_DATABASE.TILE_WHITE # Total Ints (Should be 64 for Chess board)
