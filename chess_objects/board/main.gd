@@ -17,30 +17,30 @@ static var selected_tile_from:Vector2i = Vector2i(0,0)
 # obj_ for node refrences
 ## built-in override methods
 
-func _ready() -> void:
+func _ready() -> void: # Runs on Startup
+	_create_tilemap_layers()
 	build_board()
+	_center_tilemap()
 	pass
 
-func _physics_process(delta:float) -> void:
+func _physics_process(_delta:float) -> void: # Runs Every Tick
 	if InputEventMouse:
 		select_tile()
 	pass
 
 ## public methods
 
-func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before
-	create_tilemap_layers()
+static func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before
 	for x in range(1,x_range):
 		for y in range(1,y_range):
 			var coords:Vector2i = Vector2i(x,y)
 			if !Scripts.BOARD_DATABASE.TILE_DICTIONARY.has(coords):
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
-				
+	
 	print("Created Board of size: ",tilemap_board.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
-	_center_tilemap(x_range,y_range)
 
-func request_tile_below_mouse() -> Vector2i: # Translates Mouse coords into Board coords
+static func request_tile_below_mouse() -> Vector2i: # Translates Mouse coords into Board coords
 	var tilemap_selection_local_mouse_coords:Vector2 = tilemap_selection.get_local_mouse_position()
 	var tilemap_selection_coords:Vector2i
 	
@@ -54,7 +54,7 @@ func request_tile_below_mouse() -> Vector2i: # Translates Mouse coords into Boar
 	#print("Updated highlighted Tile: ",tilemap_selection_local_mouse_coords," ; Tilemap Coords: ",tilemap_selection_coords,"!")
 	return tilemap_selection_coords
 
-func select_tile() -> void:
+static func select_tile() -> void: # Highlight the Tile below the Mouse
 	var tilemap_selection_mouse_coords:Vector2i = request_tile_below_mouse()
 	# Check if Tile inside Board
 	var valid_tile:bool = false
@@ -66,9 +66,11 @@ func select_tile() -> void:
 	tilemap_selection.clear()
 	if valid_tile == true:
 		if selected_tile == Vector2i(0,0):
+			Scripts.BOARD_DATABASE.highlighted_tile = tilemap_selection_mouse_coords
 			tilemap_selection.set_cell(tilemap_selection_mouse_coords,1,Vector2i(1,0),0)
 			if Input.is_action_just_pressed(&"_input_mouse_left"):
 				selected_tile = tilemap_selection_mouse_coords
+				Scripts.BOARD_DATABASE.selected_tile_from = selected_tile # Send Info to Database
 		# Chess Piece Movement
 		else:
 			# The Piece to Move: coord
@@ -77,6 +79,7 @@ func select_tile() -> void:
 			if Input.is_action_just_pressed(&"_input_mouse_left"):
 				# Where to Move to: coord
 				selected_tile = tilemap_selection_mouse_coords
+				Scripts.BOARD_DATABASE.selected_tile_to = selected_tile # Send Info to Database
 				tilemap_selection.set_cell(selected_tile,1,Vector2i(2,0),0)
 				print("Move Piece from: ",selected_tile_from,", Move Piece to: ",selected_tile)
 				Scripts.PIECE_PAWN.call_movement(selected_tile_from,selected_tile)
@@ -86,7 +89,13 @@ func select_tile() -> void:
 			# Error if tilemap_selection_mouse_coords Outside Board
 			print("Error: Tile Outside Board!")
 
-func create_tilemap_layers(quadrant_size:int = 128,tile_set:TileSet = preload("res://chess_objects/board/tile_set.tres")) -> void:
+static func translate_coords(coords:Vector2i) -> Vector2: # Translates Coords from map to global
+	var translated_coords:Vector2 = tilemap_board.to_global(tilemap_board.map_to_local(coords))
+	return translated_coords
+
+## private methods
+
+func _create_tilemap_layers(quadrant_size:int = 128,tile_set:TileSet = preload("res://chess_objects/board/tile_set.tres")) -> void:
 	# Config tilemap_selection
 	add_child(tilemap_selection)
 	tilemap_selection.rendering_quadrant_size = quadrant_size
@@ -102,14 +111,7 @@ func create_tilemap_layers(quadrant_size:int = 128,tile_set:TileSet = preload("r
 	
 	print("tileset id count: ",tile_set.get_source_count())
 
-func translated_coords(database:Dictionary,coords:Vector2i) -> Vector2: # SO COOL WOOOOOW
-	var translated_coords:Vector2 = tilemap_board.to_global(tilemap_board.map_to_local(coords))
-	print(translated_coords)
-	return translated_coords
-
-## private methods
-
-static func _calculate_tile_color(coords:Vector2i) -> void:
+static func _calculate_tile_color(coords:Vector2i) -> void: # Assing A Value to Each Tile used for Colouring
 	var int_x:int = 0 # Check if x is odd or even
 	if (coords.x & 1) == 0:
 		int_x += 2
@@ -144,13 +146,13 @@ static func _calculate_tile_color(coords:Vector2i) -> void:
 	print(colour_of_tile," Tile Found at: ",coords," ; Now there is ",Scripts.BOARD_DATABASE.TOTAL_TILES,"/64 Total Tiles!")
 	return
 
-func _create_board_cells(coords:Vector2i) -> void:
+static func _create_board_cells(coords:Vector2i) -> void: # Create Board Cells Based on the Colour Value
 	var atlas_coords:Vector2i = Vector2i(Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["colour"],0) # Blank: 0,0 ; White: 1,0 ; Black: 2,0 ; Selection_Sprite: 3,0 ;
 	var atlas_selection_coords:Vector2i = Vector2i(0,0) # Blank: 0,0 ; Selection: 1,0 ;
 	tilemap_board.set_cell(coords,0,atlas_coords,0)
 	tilemap_selection.set_cell(coords,1,atlas_selection_coords,0)
 
-func _center_tilemap(x_range:int,y_range:int) -> void:
+func _center_tilemap() -> void: # Rotates and Centers ALL Tilemaps
 	rotation_degrees = -90
 	global_position.x = ((x_range * 128.0) / 2.0 ) *-1
 	global_position.y = ((y_range * 128.0) / 2.0 ) *1

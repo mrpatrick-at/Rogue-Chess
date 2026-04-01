@@ -17,7 +17,7 @@ static var cam_zoom_velocity:float = 0.0
 func _ready() -> void:
 	pass 
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	_apply_camera_movement()
 	_apply_camera_zoom()
 	pass
@@ -28,7 +28,7 @@ static func move_camera(direction:Vector2,delta:float) -> void:
 	cam_movement_velocity.x = direction.x * delta * 2000
 	cam_movement_velocity.y = direction.y * delta * 2000
 
-static func zoom_camera(direction:int,delta:float) -> void:
+static func zoom_camera(direction:float,delta:float) -> void:
 	cam_zoom_velocity += ((CAMERA_ZOOM_SPEED)* delta) * direction
 
 ## private methods

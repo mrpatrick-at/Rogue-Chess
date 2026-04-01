@@ -20,7 +20,11 @@ func _physics_process(delta: float) -> void:
 	_camera_movement(delta)
 	_camera_zoom(delta)
 
-func _mouse_buttons(delta) -> void:
+## public methods
+
+## private methods
+
+func _mouse_buttons(_delta) -> void:
 	# Mouse Inputs
 	if InputEventMouse:
 		var mouse_coords:Vector2 = get_viewport().get_mouse_position()
@@ -50,7 +54,3 @@ func _camera_zoom(delta) -> void:
 		direction = -1
 	if !direction:return
 	Scripts.CHESS_CAMERA2D.zoom_camera(direction,delta)
-
-## public methods
-
-## private methods

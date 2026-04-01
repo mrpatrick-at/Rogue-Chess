@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://twekk0rsyy70"]
+
+[ext_resource type="Script" uid="uid://w4q02uwvcwqm" path="res://chess_objects/pieces/pawn/main.gd" id="1_mkx5l"]
+[ext_resource type="Texture2D" uid="uid://50fc4cajuo4q" path="res://assets/pixel chess_v1.2/16x32 pieces/W_King.png" id="2_mkx5l"]
+
+[node name="Main" type="Node2D" unique_id=1918965999]
+script = ExtResource("1_mkx5l")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=406005044]
+texture = ExtResource("2_mkx5l")
