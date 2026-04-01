@@ -3,9 +3,10 @@ extends Node2D
 ## consts
 ## exports
 ## public vars
+var built:bool = false
 ## private vars
 ## onready vars
-@onready var tilemap_layer: TileMapLayer = $TileMapLayer
+@onready var tilemap:TileMapLayer = $TileMapLayer
 # obj_ for node refrences
 ## built-in override methods
 
@@ -18,16 +19,38 @@ func _process(_delta: float) -> void:
 ## public methods
 
 func build_board(x_range:int,y_range:int) -> void: # Remember y_range needs to be +1 bc it stops 1 before
-	for x in range(1,x_range):
-		for y in range(1,y_range):
-			var coords:Vector2i = Vector2i(x,y)
-			if !Scripts.BOARD_DATABASE.TILE_DICTIONARY.has(coords):
-				calculate_tile_color(coords)
-				var source_id:int = 0 # Value Controls Layer of which board is rendered at. Can be used to overlay multiple Layers
-				create_board_cells(source_id,coords)
-	center_tilemap(x_range,y_range)
+	if Scripts.BOARD_DATABASE.BUILT == false:
+		for x in range(1,x_range):
+			for y in range(1,y_range):
+				var coords:Vector2i = Vector2i(x,y)
+				if !Scripts.BOARD_DATABASE.TILE_DICTIONARY.has(coords):
+					_calculate_tile_color(coords)
+					var source_id:int = 0 # Value Controls Layer of which board is rendered at. Can be used to overlay multiple Layers
+					_create_board_cells(source_id,coords)
+	print("Created Board of size: ",tilemap.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
+	_center_tilemap(x_range,y_range)
 
-static func calculate_tile_color(coords:Vector2i) -> void:
+## Mouse Inputs
+func _input(event: InputEvent) -> void:
+	if InputEventMouse:
+		var mouse_coords:Vector2 = get_viewport().get_mouse_position()
+		if Input.is_action_just_released(&"_input_mouse_left"):
+			request_tile_below_mouse()
+
+func request_tile_below_mouse() -> Vector2i:
+	var local_mouse_coords:Vector2 = tilemap.get_local_mouse_position()
+	var tilemap_coords:Vector2i
+	
+	if tilemap == null: # Error if tilemap cant be found
+		print("Tilemap is null")
+	
+	tilemap_coords = tilemap.local_to_map(local_mouse_coords) 
+	print("Local mouse coords: ",local_mouse_coords," ; "," Tilemap coords: ",tilemap_coords)
+	return tilemap_coords
+
+## private methods
+
+static func _calculate_tile_color(coords:Vector2i) -> void:
 	var int_x:int = 0 # Check if x is odd or even
 	if (coords.x & 1) == 0:
 		int_x += 2
@@ -50,27 +73,25 @@ static func calculate_tile_color(coords:Vector2i) -> void:
 		
 	if same_or_diffrent == 1: # Values same = black tile
 		Scripts.BOARD_DATABASE.TILE_BLACK += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":1,"test":"gay"})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":2,"test":"gay"})
 		colour_of_tile = "White"
 	
 	if same_or_diffrent == 2: # values diffrent = white tile
 		Scripts.BOARD_DATABASE.TILE_WHITE += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":2,"test":"gay"})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{"colour":1,"test":"gay"})
 		colour_of_tile = "Black"
 		
 	Scripts.BOARD_DATABASE.TOTAL_TILES = Scripts.BOARD_DATABASE.TILE_BLACK + Scripts.BOARD_DATABASE.TILE_WHITE # Total Ints (Should be 64 for Chess board)
 	print(colour_of_tile," Tile Found at: ",coords," ; Now there is ",Scripts.BOARD_DATABASE.TOTAL_TILES,"/64 Total Tiles!")
 	return
 
-func create_board_cells(source_id:int,coords:Vector2i) -> void:
+func _create_board_cells(source_id:int,coords:Vector2i) -> void:
 	var atlas_coords:Vector2i = Vector2i(Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["colour"],0) # Blank: 0,0 ; White: 1,0 ; Black: 2,0 ; Selection_Sprite: 3,0 ;
-	tilemap_layer.set_cell(coords,source_id,atlas_coords,source_id)
+	tilemap.set_cell(coords,source_id,atlas_coords,source_id)
 
-func center_tilemap(x_range:int,y_range:int) -> void:
-	position.x = ((x_range * 128.0) / 2.0 ) * -1.0
-	position.y = ((y_range * 128.0) / 2.0 ) * -1.0
+func _center_tilemap(x_range:int,y_range:int) -> void:
+	tilemap.rotation_degrees = -90
+	#position.x = ((x_range * 128.0) / 2.0 ) * 1.0
+	#position.y = ((y_range * 128.0) / 2.0 ) * 1.0
+	built = true
 	print("Tile Map Centered to: ",position.x," , ",position.y,"!")
-## private methods
-	
-
-## private methods

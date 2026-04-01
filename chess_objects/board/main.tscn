@@ -21,3 +21,4 @@ script = ExtResource("1_k1o7p")
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=441685764]
 tile_set = SubResource("TileSet_tlfnf")
 rendering_quadrant_size = 128
+physics_quadrant_size = 128

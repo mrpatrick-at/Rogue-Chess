@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bmh7qr1b7ei8l" path="res://chess_objects/units/pawn/main.tscn" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://c5k24k716nlpc" path="res://chess_objects/board/main.tscn" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://bhrs8mk8wpl2x" path="res://chess_systems/chess_camera/main.tscn" id="4_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://c4vg8g4rgo3fs" path="res://chess_systems/chess_player/main.tscn" id="5_lquwl"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
 size = Vector2(250, 250)
@@ -40,3 +41,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.554592, 3.8146973e-06, 10.
 [node name="ChessBoard" parent="ChessWorld3D" unique_id=700767895 instance=ExtResource("2_0xm2m")]
 
 [node name="Camera2D" parent="ChessWorld3D" unique_id=494723203 instance=ExtResource("4_1bvp3")]
+
+[node name="ChessPlayer" parent="ChessWorld3D" unique_id=564898980 instance=ExtResource("5_lquwl")]
