@@ -1,10 +1,8 @@
 [gd_scene format=3 uid="uid://ctfm8k1sg2568"]
 
-[ext_resource type="Script" uid="uid://w4q02uwvcwqm" path="res://chess_objects/pieces/pawn/main.gd" id="1_tqk3l"]
-[ext_resource type="Texture2D" uid="uid://bx7g0dwg2yeit" path="res://assets/pixel chess_v1.2/16x32 pieces/W_Rook.png" id="2_tqk3l"]
+[ext_resource type="Texture2D" uid="uid://bx7g0dwg2yeit" path="res://assets/pieces/white/rook.png" id="2_tqk3l"]
 
 [node name="Main" type="Node2D" unique_id=1918965999]
-script = ExtResource("1_tqk3l")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=406005044]
 texture = ExtResource("2_tqk3l")

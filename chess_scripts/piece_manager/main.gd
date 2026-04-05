@@ -9,103 +9,114 @@ extends Node2D
 ## built-in override methods
 
 func _ready() -> void:
+	var database = Scripts.BOARD_DATABASE.TILE_DICTIONARY
+	for coords in database.keys():
+		if database[coords]["piece"]["piece_type"] == Scripts.PIECE_LIST._0:
+			y_sort_enabled = true
+			_calculate_piece(database,coords)
+			_create_piece(database,coords)
 	pass 
 
-func _physics_process(delta: float) -> void:
-	build_pieces()
+func _physics_process(_delta:float) -> void:
+	#var database = Scripts.BOARD_DATABASE.TILE_DICTIONARY
+	#for coords in database.keys():
+		#if database[coords]["piece"]["piece_type"] == Scripts.PIECE_LIST._0:
+			#y_sort_enabled = true
+			#_calculate_piece(database,coords)
+			#_create_piece(database,coords)
 	pass
 
 ## public methods
 
-func build_pieces() -> void:
-	var database = Scripts.BOARD_DATABASE.TILE_DICTIONARY
-	for coords in database.keys():
-		if Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"] == Scripts.PIECE_LIST._0:
-			y_sort_enabled = true
-			calculate_pieces(database,coords)
-			create_piece(database,coords)
+static func call_movement(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
+	var possible_move = Scripts.PIECE_MOVEMENT_CALC.calculate_movement(current_coords,asked_coords)
+	#print("Piece, Current Coords: ",current_coords,", Asked, Coords: ",asked_coords,", Is Move Possible?: ",possible_move)
+	
+	if possible_move:
+		move_piece(current_coords,asked_coords)
+	return
 
-static func calculate_pieces(database:Dictionary,coords:Vector2i) -> void:
-	database[coords]["piece"] = Scripts.PIECE_LIST.NONE
+static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void:
+	var piece_object = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]["piece_object"]
+	var piece_type = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]["piece_type"]
+	var translated_coords = Scripts.BOARD_MANAGER.translate_coords(asked_coords)
+	
+	
+	# Remove Old Data
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.NONE
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]["piece_object"] = null
+	
+	# Add New Data
+	piece_object.global_position = translated_coords
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"]["piece_type"] = piece_type
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"]["piece_object"] = piece_object
+	piece_object.move_local_y(-96)
+	#print(Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords])
+## private methods
+
+static func _calculate_piece(database:Dictionary,coords:Vector2i) -> void: # Calculates which Tiles should have Pieces
+	database[coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.NONE
 	if coords.x == 2:
-		database[coords]["piece"] = Scripts.PIECE_LIST.PAWN
+		database[coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.PAWN
 		print("Pawn spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 1 or coords.y == 8):
-		database[coords]["piece"] = Scripts.PIECE_LIST.ROOK
+		database[coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.ROOK
 		print("Rook spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 2 or coords.y == 7):
-		database[coords]["piece"] = Scripts.PIECE_LIST.KNIGHT
+		database[coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.KNIGHT
 		print("Knight spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 3 or coords.y == 6):
-		database[coords]["piece"] = Scripts.PIECE_LIST.BISHOP
+		database[coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.BISHOP
 		print("Bishop spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 4):
-		database[coords]["piece"] = Scripts.PIECE_LIST.QUEEN
+		database[coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.QUEEN
 		print("Queen spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 5):
-		database[coords]["piece"] = Scripts.PIECE_LIST.KING
+		database[coords]["piece"]["piece_type"] = Scripts.PIECE_LIST.KING
 		print("King spawned at: ",coords,"!")
 
-func create_piece(database:Dictionary,coords:Vector2i) -> void: # TODO: Fix this mess
-	var translated_coords = Scripts.BOARD_MANAGER.translate_coords(coords)
-	var piece = database[coords]["piece"]
+func _create_piece(database:Dictionary,coords:Vector2i) -> void: # Creates The Pieces
+	var piece = database[coords]["piece"]["piece_type"]
 	
 	if piece == Scripts.PIECE_LIST.NONE:
 		return
 	
+	var translated_coords = Scripts.BOARD_MANAGER.translate_coords(coords)
+	var piece_object:Node2D = Node2D.new()
+	add_child(piece_object)
+	var piece_sprite:Sprite2D = Sprite2D.new()
+	piece_object.add_child(piece_sprite)
+	
+	var sprite:CompressedTexture2D
+	
 	if piece == Scripts.PIECE_LIST.PAWN:
-		var pawn = load("res://chess_objects/pieces/pawn/main.tscn")
-		var pawn_instance:Node2D = pawn.instantiate()
-		add_child(pawn_instance)
-		pawn_instance.global_position = translated_coords
-		pawn_instance.scale = Vector2i(8,8)
-		pawn_instance.move_local_y(-96)
+		sprite = load("res://assets/pieces/white/pawn.png")
 	
 	if piece == Scripts.PIECE_LIST.ROOK:
-		var rook = load("res://chess_objects/pieces/rook/main.tscn")
-		var rook_instance:Node2D = rook.instantiate()
-		add_child(rook_instance)
-		rook_instance.global_position = translated_coords
-		rook_instance.scale = Vector2i(8,8)
-		rook_instance.move_local_y(-96)
-	
-	if piece == Scripts.PIECE_LIST.KNIGHT:
-		var knight = load("res://chess_objects/pieces/knight/main.tscn")
-		var knight_instance:Node2D = knight.instantiate()
-		add_child(knight_instance)
-		knight_instance.global_position = translated_coords
-		knight_instance.scale = Vector2i(8,8)
-		knight_instance.move_local_y(-96)
-	
-	if piece == Scripts.PIECE_LIST.BISHOP:
-		var bishop = load("res://chess_objects/pieces/bishop/main.tscn")
-		var bishop_instance:Node2D = bishop.instantiate()
-		add_child(bishop_instance)
-		bishop_instance.global_position = translated_coords
-		bishop_instance.scale = Vector2i(8,8)
-		bishop_instance.move_local_y(-96)
-	
-	if piece == Scripts.PIECE_LIST.QUEEN:
-		var queen = load("res://chess_objects/pieces/queen/main.tscn")
-		var queen_instance:Node2D = queen.instantiate()
-		add_child(queen_instance)
-		queen_instance.global_position = translated_coords
-		queen_instance.scale = Vector2i(8,8)
-		queen_instance.move_local_y(-96)
-	
-	if piece == Scripts.PIECE_LIST.KING:
-		var king = load("res://chess_objects/pieces/king/main.tscn")
-		var king_instance:Node2D = king.instantiate()
-		add_child(king_instance)
-		king_instance.global_position = translated_coords
-		king_instance.scale = Vector2i(8,8)
-		king_instance.move_local_y(-96)
+		sprite = load("res://assets/pieces/white/rook.png")
 		
-
-
-## private methods
+	if piece == Scripts.PIECE_LIST.KNIGHT:
+		sprite = load("res://assets/pieces/white/knight.png")
+		
+	if piece == Scripts.PIECE_LIST.BISHOP:
+		sprite = load("res://assets/pieces/white/bishop.png")
+		
+	if piece == Scripts.PIECE_LIST.QUEEN:
+		sprite = load("res://assets/pieces/white/queen.png")
+		
+	if piece == Scripts.PIECE_LIST.KING:
+		sprite = load("res://assets/pieces/white/king.png")
+	
+	piece_sprite.texture = sprite
+	
+	piece_object.global_position = translated_coords
+	piece_object.scale = Vector2i(8,8)
+	piece_object.move_local_y(-96)
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]["piece_object"] = piece_object
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]["sprite_object"] = piece_sprite
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]["piece_object_position"] = piece_object.position

@@ -1,10 +1,8 @@
 [gd_scene format=3 uid="uid://wc31c7irrrxr"]
 
-[ext_resource type="Script" uid="uid://w4q02uwvcwqm" path="res://chess_objects/pieces/pawn/main.gd" id="1_bh4ok"]
-[ext_resource type="Texture2D" uid="uid://ukwh8v3iua1" path="res://assets/pixel chess_v1.2/16x32 pieces/W_Pawn.png" id="2_bh4ok"]
+[ext_resource type="Texture2D" uid="uid://ukwh8v3iua1" path="res://assets/pieces/white/pawn.png" id="2_bh4ok"]
 
 [node name="Main" type="Node2D" unique_id=1918965999]
-script = ExtResource("1_bh4ok")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=406005044]
 texture = ExtResource("2_bh4ok")

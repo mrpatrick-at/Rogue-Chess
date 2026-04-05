@@ -1,13 +1,13 @@
 extends RefCounted
 ## enums
-enum TYPE_LIST{_0,_1,_2,_3, # use _0 for null
-	NONE,
-	PAWN,
-	ROOK,
-	KNIGHT,
-	BISHOP,
-	QUEEN,
-	KING,
+enum BOARD_LIST{_0,_1,_2,_3, # use _0 for none
+	COLOR,
+	PIECE,
+}
+enum COLOR_LIST{
+	NONE, # 0
+	WHITE, # 1
+	BLACK, # 2
 }
 ## consts
 ## exports

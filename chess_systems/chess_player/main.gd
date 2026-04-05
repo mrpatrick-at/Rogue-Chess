@@ -35,7 +35,7 @@ func _mouse_buttons(_delta) -> void:
 		if Input.is_action_just_released(&"_input_mouse_middle"):
 			print("Middle Mouse click detected at: ",mouse_coords)
 
-func _camera_movement(delta) -> void:
+static func _camera_movement(delta) -> void:
 	# Camera Movement
 	var direction:Vector2 = Vector2.ZERO
 	if Input.is_action_pressed(&"_input_up") and !Input.is_action_pressed(&"_input_down"): direction.y = -1
@@ -45,7 +45,7 @@ func _camera_movement(delta) -> void:
 	if direction == Vector2.ZERO:return # No movement
 	Scripts.CHESS_CAMERA2D.move_camera(direction,delta)
 
-func _camera_zoom(delta) -> void:
+static func _camera_zoom(delta) -> void:
 	# Camera Zoom
 	var direction:float = 0
 	if Input.is_action_just_released(&"_input_mouse_scroll_up"):
