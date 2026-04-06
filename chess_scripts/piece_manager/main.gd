@@ -10,7 +10,12 @@ extends Node2D
 ## built-in override methods
 
 func _ready() -> void:
-	initialize_pieces()
+	var i:int = 0
+	for coords in Scripts.BOARD_DATABASE.TILE_DICTIONARY.keys():
+		i += 1
+		y_sort_enabled = true
+		var piece:int = _calculate_piece(coords)
+		_create_piece(coords,piece,i)
 	pass 
 
 func _physics_process(_delta:float) -> void:
@@ -18,30 +23,16 @@ func _physics_process(_delta:float) -> void:
 
 ## public methods
 
-func initialize_pieces() -> void:
-	var i:int = 0
-	for coords in Scripts.BOARD_DATABASE.TILE_DICTIONARY.keys():
-		i += 1
-		y_sort_enabled = true
-		var piece:int = _calculate_piece(coords)
-		_create_piece(coords,piece,i)
-
-static func call_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void:
-	new().move_piece(current_coords,asked_coords,_moves)
-
-func move_piece(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement
+static func move_piece(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement
 	if asked_coords in _moves:
 		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
 		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(asked_coords)
 		
 		# Remove Old Data
-		print("piece_manager/move_piece- before ",Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"])
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
-		print("piece_manager/move_piece- after ",Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"])
 		
 		# Add New Data
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
-		print(Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"])
 		 
 		# Move Piece
 		var piece_object:Node2D = get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)

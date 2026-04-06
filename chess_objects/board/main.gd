@@ -8,8 +8,8 @@ static var tilemap_selection:TileMapLayer = TileMapLayer.new()
 static var tilemap_board:TileMapLayer = TileMapLayer.new()
 static var x_range:int = 9
 static var y_range:int = 9
-static var selected_tile:Vector2i = Vector2i(0,0)
-static var selected_tile_from:Vector2i = Vector2i(0,0)
+static var asked_coords:Vector2i = Vector2i(0,0)
+static var current_coords:Vector2i = Vector2i(0,0)
 ## private vars
 ## onready vars
 #@onready var tilemap_board:TileMapLayer = $TileMapLayer_Selection/TileMapLayer_Board
@@ -41,43 +41,45 @@ static func build_board() -> void: # Remember y_range needs to be +1 bc it stops
 	
 	print("Created Board of size: ",tilemap_board.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
 
-static func is_valid_position(asked_coords:Vector2i) -> bool:
-	if asked_coords.x >= 1 and asked_coords.x < 9 and asked_coords.y >= 1 and asked_coords.y < 9:
+static func is_valid_position(_asked_coords:Vector2i) -> bool:
+	if _asked_coords.x >= 1 and _asked_coords.x < 9 and _asked_coords.y >= 1 and _asked_coords.y < 9:
 		return true
 	return false
 
 static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Make Cleaner and more Functional
 	var mouse_pos:Vector2i = request_tile_below_mouse()
-	# Check if Tile inside Board
-	tilemap_selection.clear()
-	if is_valid_position(mouse_pos): # If Tile inside Board
-		if selected_tile == Vector2i(0,0):
+	if current_coords == Vector2i(0,0):
+		tilemap_selection.clear()
+		# Highlight Tiles if hovered
+		if is_valid_position(mouse_pos):
 			tilemap_selection.set_cell(mouse_pos,1,Vector2i(1,0),0)
 			
-			# Chess Piece Movement
-			if Input.is_action_just_pressed(&"_input_mouse_left"):
-				selected_tile = mouse_pos
+			# Initiate Piece Movement
+			if Input.is_action_just_pressed(&"_input_mouse_left") and (
+			!Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.NONE):
+				current_coords = mouse_pos
 		
-		else:
+	elif is_valid_position(mouse_pos):
+		
+		# Hightlight Piece Itself
+		tilemap_selection.set_cell(current_coords,1,Vector2i(2,0),0)
+		
+		# Hightlight Possible Moves
+		var _moves:Array = Scripts.PIECE_MOVEMENT_CALC.get_moves(current_coords)
+		for i in _moves:
+			tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
+		
+		if Input.is_action_just_pressed(&"_input_mouse_left"):
+			# Where to Move to: coord
+			asked_coords = mouse_pos
+			tilemap_selection.set_cell(asked_coords,1,Vector2i(2,0),0)
+			print("Move Piece from: ",current_coords,", Move Piece to: ",asked_coords)
 			
-			# Hightlight Piece Itself
-			tilemap_selection.set_cell(selected_tile,1,Vector2i(2,0),0)
+			# Call Movement
+			Scripts.PIECE_MANAGER.move_piece(current_coords,asked_coords,_moves)
+			current_coords = Vector2i(0,0)
+			asked_coords = Vector2i(0,0)
 			
-			# Hightlight Possible Moves
-			var _moves:Array = Scripts.PIECE_MOVEMENT_CALC.get_moves(selected_tile)
-			for i in _moves:
-				tilemap_selection.set_cell(i,1,Vector2i(2,0),0)
-			
-			selected_tile_from = selected_tile
-			if Input.is_action_just_pressed(&"_input_mouse_left"):
-				# Where to Move to: coord
-				selected_tile = mouse_pos
-				tilemap_selection.set_cell(selected_tile,1,Vector2i(2,0),0)
-				print("Move Piece from: ",selected_tile_from,", Move Piece to: ",selected_tile)
-				
-				# Call Movement
-				Scripts.PIECE_MANAGER.call_move(selected_tile_from,selected_tile,_moves)
-				selected_tile = Vector2i(0,0)
 	else:
 		if Input.is_action_just_pressed(&"_input_mouse_left"): # Error if mouse_pos Outside Board
 			print("Error: Tile Outside Board!")
@@ -90,9 +92,7 @@ static func request_tile_below_mouse() -> Vector2i: # Translates Mouse coords in
 		print("Tilemap is null")
 	
 	tilemap_selection_coords = tilemap_board.local_to_map(tilemap_selection_local_mouse_coords)
-	#Scripts.BOARD_DATABASE.TILEMAP_SELECTION_MOUSE_CORDS = tilemap_selection_coords # Uncomment to store Value in Database
 	
-	# Debug
 	#print("Updated highlighted Tile: ",tilemap_selection_local_mouse_coords," ; Tilemap Coords: ",tilemap_selection_coords,"!")
 	return tilemap_selection_coords
 
