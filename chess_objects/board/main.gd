@@ -37,54 +37,49 @@ static func build_board() -> void: # Remember y_range needs to be +1 bc it stops
 			if !Scripts.BOARD_DATABASE.TILE_DICTIONARY.has(coords):
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
+	_create_background()
 	
 	print("Created Board of size: ",tilemap_board.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
 
+static func is_valid_position(asked_coords:Vector2i) -> bool:
+	if asked_coords.x >= 1 and asked_coords.x < 9 and asked_coords.y >= 1 and asked_coords.y < 9:
+		return true
+	return false
+
 static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Make Cleaner and more Functional
-	var tilemap_selection_mouse_coords:Vector2i = request_tile_below_mouse()
+	var mouse_pos:Vector2i = request_tile_below_mouse()
 	# Check if Tile inside Board
-	var valid_tile:bool = false
-	if (tilemap_selection_mouse_coords.x  > 0 and tilemap_selection_mouse_coords.x < x_range) and (
-		tilemap_selection_mouse_coords.y > 0 and tilemap_selection_mouse_coords.y < y_range):
-		valid_tile = true
-	
-	# Loop for tile highlight
 	tilemap_selection.clear()
-	if valid_tile == true:
+	if is_valid_position(mouse_pos): # If Tile inside Board
 		if selected_tile == Vector2i(0,0):
-			Scripts.BOARD_DATABASE.highlighted_tile = tilemap_selection_mouse_coords
-			tilemap_selection.set_cell(tilemap_selection_mouse_coords,1,Vector2i(1,0),0)
-			
-			# Move Unit Slighty when selected TODO: Fix this
-			#var piece_object:Node2D = Scripts.BOARD_DATABASE.TILE_DICTIONARY[tilemap_selection_mouse_coords]["piece"]["piece_object"]
-			#var piece_object_position:Vector2 = Scripts.BOARD_DATABASE.TILE_DICTIONARY[tilemap_selection_mouse_coords]["piece"]["piece_object_position"]
-			#if !Scripts.BOARD_DATABASE.TILE_DICTIONARY[tilemap_selection_mouse_coords]["piece"]["piece_type"] == Scripts.PIECE_LIST.NONE:
-				#if piece_object.position.y >= piece_object_position.y -32:
-					#piece_object.move_local_y(-32)
-					#
-				#else:
-					#piece_object.move_local_y(+32)
+			tilemap_selection.set_cell(mouse_pos,1,Vector2i(1,0),0)
 			
 			# Chess Piece Movement
-			if Input.is_action_just_pressed(&"_input_mouse_left") and !Scripts.BOARD_DATABASE.TILE_DICTIONARY[tilemap_selection_mouse_coords]["piece"]["piece_type"] == Scripts.PIECE_LIST.NONE:
-				selected_tile = tilemap_selection_mouse_coords
-				Scripts.BOARD_DATABASE.selected_tile_from = selected_tile # Send Info to Database
+			if Input.is_action_just_pressed(&"_input_mouse_left"):
+				selected_tile = mouse_pos
+		
 		else:
-			# The Piece to Move: coord
+			
+			# Hightlight Piece Itself
 			tilemap_selection.set_cell(selected_tile,1,Vector2i(2,0),0)
+			
+			# Hightlight Possible Moves
+			var _moves:Array = Scripts.PIECE_MOVEMENT_CALC.get_moves(selected_tile)
+			for i in _moves:
+				tilemap_selection.set_cell(i,1,Vector2i(2,0),0)
+			
 			selected_tile_from = selected_tile
 			if Input.is_action_just_pressed(&"_input_mouse_left"):
 				# Where to Move to: coord
-				selected_tile = tilemap_selection_mouse_coords
-				Scripts.BOARD_DATABASE.selected_tile_to = selected_tile # Send Info to Database
+				selected_tile = mouse_pos
 				tilemap_selection.set_cell(selected_tile,1,Vector2i(2,0),0)
 				print("Move Piece from: ",selected_tile_from,", Move Piece to: ",selected_tile)
 				
 				# Call Movement
-				Scripts.PIECE_MANAGER.call_movement(selected_tile_from,selected_tile)
+				Scripts.PIECE_MANAGER.call_move(selected_tile_from,selected_tile,_moves)
 				selected_tile = Vector2i(0,0)
 	else:
-		if Input.is_action_just_pressed(&"_input_mouse_left"): # Error if tilemap_selection_mouse_coords Outside Board
+		if Input.is_action_just_pressed(&"_input_mouse_left"): # Error if mouse_pos Outside Board
 			print("Error: Tile Outside Board!")
 
 static func request_tile_below_mouse() -> Vector2i: # Translates Mouse coords into Board coords
@@ -146,21 +141,17 @@ static func _calculate_tile_color(coords:Vector2i) -> void: # Assing A Value to 
 		
 	if same_or_diffrent == 1: # Values same = black tile
 		Scripts.BOARD_DATABASE.TILE_BLACK += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,
-		{"color": Scripts.BOARD_CONSTS.COLOR_LIST.BLACK,
-		"piece":{
-			"piece_type": Scripts.PIECE_LIST._0,
-		}})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{
+		"color": Scripts.BOARD_CONSTS.COLOR_LIST.BLACK,
+		})
 		
 		colour_of_tile = "Black"
 	
 	if same_or_diffrent == 2: # values diffrent = white tile
 		Scripts.BOARD_DATABASE.TILE_WHITE += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,
-		{"color": Scripts.BOARD_CONSTS.COLOR_LIST.WHITE,
-		"piece":{
-			"piece_type": Scripts.PIECE_LIST._0,
-		}})
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{
+		"color": Scripts.BOARD_CONSTS.COLOR_LIST.WHITE,
+		})
 		
 		colour_of_tile = "White"
 		
@@ -179,3 +170,14 @@ func _center_tilemap() -> void: # Rotates and Centers ALL Tilemaps
 	global_position.x = ((x_range * 128.0) / 2.0 ) *-1
 	global_position.y = ((y_range * 128.0) / 2.0 ) *1
 	print("Tile Map Centered to: ",position.x," , ",position.y,"!")
+
+static func _create_background() -> void: # Creates the Board Background TODO: Make this
+	pass
+	
+	
+	
+	
+	
+	
+	
+	

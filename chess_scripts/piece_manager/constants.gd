@@ -1,6 +1,15 @@
 extends RefCounted
 ## enums
-enum TYPE_LIST{_0,_1,_2,_3, # use _0 for null
+enum PIECE_LIST{_0, # use _0 for null
+	TYPE,
+	PIECE_OBJ,
+	PIECE_SPRITE,
+	PIECE_OBJ_POSITION,
+	PAWN_MOVED,
+}
+
+enum TYPE_LIST{_0, # use _0 for null
+	UNINITIALIZED,
 	NONE,
 	PAWN,
 	ROOK,

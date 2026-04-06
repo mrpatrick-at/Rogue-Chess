@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bgxr68chixp88"]
+
+[node name="Main" type="Control" unique_id=170619106]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="." unique_id=435004644]
+layout_mode = 1
+offset_right = 1203.0
+offset_bottom = 884.0

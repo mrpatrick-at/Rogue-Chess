@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dvbleewenqdko"]
+
+[ext_resource type="Script" uid="uid://vt73rdb76emb" path="res://chess_scripts/piece_manager/main.gd" id="1_rhjpx"]
+
+[node name="PieceManager2D" type="Node2D" unique_id=1738762470]
+script = ExtResource("1_rhjpx")
+
+[node name="PieceNone" type="Node2D" parent="." unique_id=1550592779]
+
+[node name="Sprite2D" type="Sprite2D" parent="PieceNone" unique_id=530867731]
