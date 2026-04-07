@@ -4,6 +4,3 @@
 
 [node name="Main" type="Node2D" unique_id=929609471]
 script = ExtResource("2_8uyuk")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=494723203]
-zoom = Vector2(0.5, 0.5)

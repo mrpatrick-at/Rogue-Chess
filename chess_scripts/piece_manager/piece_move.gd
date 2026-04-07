@@ -40,7 +40,7 @@ static func move_piece(asked_coords:Vector2i) -> void: # Calls all funcs used fo
 		if is_enemy(asked_coords): # Add advanced logic for capturing here later if needed
 			var enemy_piece_object = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
 			enemy_piece_object.hide()
-			print("Enemy Piece Captured")
+			print("PIECE_MOVE- Enemy Piece Captured")
 		
 		# Remove Old Data
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
@@ -54,13 +54,15 @@ static func move_piece(asked_coords:Vector2i) -> void: # Calls all funcs used fo
 		piece_object.global_position = translated_coords
 		piece_object.move_local_y(-96)
 		
+		# Modify color_turn, keeps track of whose turn it is
 		if Scripts.color_turn == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
 			Scripts.color_turn = Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK
 		else:
 			Scripts.color_turn = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
-		
+		Scripts.turn_amount += 1
+		print("PIECE_MOVE- turn amount: ",Scripts.turn_amount)
 	else:
-		print("piece_manager/move_piece- coords not in _moves")
+		print("PIECE_MOVE- coords not in _moves")
 	
 	return
 

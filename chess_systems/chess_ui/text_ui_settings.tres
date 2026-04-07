@@ -1,0 +1,8 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://ck60ea7gdtef7"]
+
+[ext_resource type="FontFile" uid="uid://dpq1fh6twwvtg" path="res://assets/roboto/static/Roboto-SemiBold.ttf" id="1_lnhjc"]
+
+[resource]
+font = ExtResource("1_lnhjc")
+font_size = 42
+outline_color = Color(0, 0, 0, 1)

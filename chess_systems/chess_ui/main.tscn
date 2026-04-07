@@ -1,13 +1,55 @@
 [gd_scene format=3 uid="uid://bgxr68chixp88"]
 
-[node name="Main" type="Control" unique_id=170619106]
-visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[ext_resource type="Script" uid="uid://cskpf4n74la46" path="res://chess_systems/chess_ui/main.gd" id="1_ndxmu"]
+[ext_resource type="LabelSettings" uid="uid://ck60ea7gdtef7" path="res://chess_systems/chess_ui/text_ui_settings.tres" id="1_nfpch"]
 
-[node name="Panel" type="Panel" parent="." unique_id=435004644]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fny4v"]
+bg_color = Color(0.18, 0.18, 0.18, 1)
+border_color = Color(0.18039216, 0.18039216, 0.18039216, 1)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 15.0
+expand_margin_top = 15.0
+expand_margin_right = 15.0
+expand_margin_bottom = 15.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fny4v"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=944538626]
+
+[node name="Control" type="Control" parent="." unique_id=1007814565]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ndxmu")
+
+[node name="CenterContainer" type="CenterContainer" parent="Control" unique_id=693206669]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 1
-offset_right = 1203.0
-offset_bottom = 884.0
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/CenterContainer" unique_id=64978644]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fny4v")
+
+[node name="BoxContainer" type="BoxContainer" parent="Control/CenterContainer/PanelContainer" unique_id=174069713]
+material = SubResource("CanvasItemMaterial_fny4v")
+layout_mode = 2
+
+[node name="TurnAmount" type="Label" parent="Control/CenterContainer/PanelContainer/BoxContainer" unique_id=2012224454]
+layout_mode = 2
+text = "Turn Amount:"
+label_settings = ExtResource("1_nfpch")
+
+[node name="TurnAmountValue" type="Label" parent="Control/CenterContainer/PanelContainer/BoxContainer" unique_id=1825435652]
+layout_mode = 2
+label_settings = ExtResource("1_nfpch")

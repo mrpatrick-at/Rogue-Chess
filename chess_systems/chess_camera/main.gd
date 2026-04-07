@@ -10,6 +10,7 @@ static var cam_movement_velocity:Vector2
 static var cam_zoom_velocity:float = 0.0
 ## private vars
 ## onready vars
+@onready var cam_node: Node2D = $"."
 @onready var cam: Camera2D = $Camera2D
 # obj_ for node refrences
 ## built-in override methods
@@ -40,8 +41,8 @@ func _apply_camera_movement() -> void:
 			CAMERA_ZOOM_RANGE.x,CAMERA_ZOOM_RANGE.y,
 			CAMERA_ZOOM_RANGE.y,CAMERA_ZOOM_RANGE.x)
 		print("real zoom: ",cam.zoom,"remaped zoom: ",camer_zoom_speed)
-		cam.position.x += cam_movement_velocity.x * camer_zoom_speed
-		cam.position.y += cam_movement_velocity.y * camer_zoom_speed
+		cam_node.position.x += cam_movement_velocity.x * camer_zoom_speed
+		cam_node.position.y += cam_movement_velocity.y * camer_zoom_speed
 		cam_movement_velocity = Vector2.ZERO
 
 func _apply_camera_zoom() -> void:
