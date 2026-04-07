@@ -116,7 +116,7 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 		add_child(piece_object)
 		piece_sprite = Sprite2D.new()
 		piece_object.add_child(piece_sprite)
-		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(coords)
+		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(coords)
 		piece_object.global_position = translated_coords
 		piece_object.scale = Vector2i(8,8)
 		piece_object.move_local_y(-96)
@@ -137,7 +137,7 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 			sprite = load("res://assets/pieces/white/w_pawn.png")
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
 			sprite = load("res://assets/pieces/black/b_pawn.png")
-		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED] = Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE
+		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED] = 0
 	
 	if piece == Scripts.PIECE_LIST.ROOK:
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:

@@ -48,7 +48,7 @@ static func is_valid_position(_asked_coords:Vector2i) -> bool:
 	return false
 
 static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Make Cleaner and more Functional
-	var mouse_pos:Vector2i = request_tile_below_mouse()
+	var mouse_pos:Vector2i = get_tile_from_mouse()
 	if current_coords == Vector2i(0,0):
 		tilemap_selection.clear()
 		# Highlight Tiles if hovered
@@ -86,7 +86,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 		if Input.is_action_just_pressed(&"_input_mouse_left"): # Error if mouse_pos Outside Board
 			print("Error: Tile Outside Board!")
 
-static func request_tile_below_mouse() -> Vector2i: # Translates Mouse coords into Board coords
+static func get_tile_from_mouse() -> Vector2i: # Translates Mouse coords into Board coords
 	var tilemap_selection_local_mouse_coords:Vector2 = tilemap_selection.get_local_mouse_position()
 	var tilemap_selection_coords:Vector2i
 	
@@ -98,7 +98,7 @@ static func request_tile_below_mouse() -> Vector2i: # Translates Mouse coords in
 	#print("Updated highlighted Tile: ",tilemap_selection_local_mouse_coords," ; Tilemap Coords: ",tilemap_selection_coords,"!")
 	return tilemap_selection_coords
 
-static func translate_coords(coords:Vector2i) -> Vector2: # Translates Coords from map to global
+static func get_mouse_from_tile(coords:Vector2i) -> Vector2: # Translates Coords from map to global
 	var translated_coords:Vector2 = tilemap_board.to_global(tilemap_board.map_to_local(coords))
 	return translated_coords
 

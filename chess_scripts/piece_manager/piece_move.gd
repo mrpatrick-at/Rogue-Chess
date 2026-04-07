@@ -38,7 +38,7 @@ static func get_moves(current_coords:Vector2i) -> Array:
 static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
 	if asked_coords in _moves:
 		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
-		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(asked_coords)
+		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(asked_coords)
 		var fifty_move_rule:int = Scripts.fifty_move_rule +1
 		
 		# Capture Enemy Piece
@@ -52,6 +52,17 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
 			fifty_move_rule = 0
 			print("PIECE_MOVE- Moved Piece is Pawn")
+			# Apply En Passant
+			if asked_coords.y != current_coords.y:
+				if Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] == 0:
+					var direction:int = 1
+					if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+						direction = -1
+					var en_passant_coords:Vector2i = Vector2i(asked_coords.x +direction,asked_coords.y)
+					print(en_passant_coords)
+					var en_passanted_piece:Node2D = Scripts.PIECE_MANAGER.get_piece_data(en_passant_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
+					en_passanted_piece.hide()
+					Scripts.BOARD_DATABASE.TILE_DICTIONARY[en_passant_coords]["piece"] = 0
 		
 		# Apply Fifty Move Rule
 		Scripts.fifty_move_rule = fifty_move_rule
@@ -68,7 +79,10 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 		
 		# Add New Data
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
-		Scripts.PIECE_MANAGER.set_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED,Scripts.PIECE_CONSTS.PAWN_MOVED.TRUE)
+		var times_moved:int = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED)
+		times_moved += 1
+		Scripts.PIECE_MANAGER.set_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED,times_moved)
+		print("PIECE_MOVE- times_moved: ",times_moved)
 		 
 		# Move Piece
 		var piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
@@ -165,13 +179,13 @@ static func _get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSAN
 	var capture_squares:Array
 	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
 		capture_squares = [Vector2i(1,1),Vector2i(1,-1)]
-		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED) == Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE:
+		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 0:
 			move_range = range(1,3)
 		else:
 			move_range = range(1,2)
 	else:
 		capture_squares = [Vector2i(-1,-1),Vector2i(-1,1)]
-		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED) == Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE:
+		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 0:
 			move_range = range(-2,1)
 		else:
 			move_range = range(-1,1)
@@ -186,11 +200,17 @@ static func _get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSAN
 	
 	# Piece Capturing
 	for i:Vector2i in capture_squares:
-		var pos:Vector2i = current_coords
-		pos += i
+		var pos:Vector2i = current_coords + i
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_enemy(current_coords,pos):
 				_moves.append(pos)
+		var en_passant_squares:Array = [Vector2i(0,-1),Vector2i(0,1)]
+		for n:Vector2i in en_passant_squares:
+			var pos_passant:Vector2i = current_coords + n
+			if Scripts.BOARD_MANAGER.is_valid_position(pos_passant):
+				if is_enemy(current_coords,pos_passant):
+					if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 1:
+						_moves.append(pos)
 	
 	return _moves
 
