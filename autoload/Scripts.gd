@@ -11,7 +11,7 @@ const CHESS_CAMERA2D:= preload("res://chess_systems/chess_camera/main.gd")
 
 const PIECE_MANAGER:= preload("res://chess_scripts/piece_manager/main.gd")
 const PIECE_DATABASE:= preload("res://chess_scripts/piece_manager/database.gd")
-const PIECE_MOVEMENT_CALC = preload("res://chess_scripts/piece_manager/piece_move.gd")
+const PIECE_MOVE = preload("res://chess_scripts/piece_manager/piece_move.gd")
 const PIECE_CONSTS:= preload("res://chess_scripts/piece_manager/constants.gd")
 const PIECE_LIST:= preload("res://chess_scripts/piece_manager/constants.gd").TYPE_LIST
 
@@ -19,6 +19,7 @@ const PIECE_LIST:= preload("res://chess_scripts/piece_manager/constants.gd").TYP
 ## public vars
 static var color_turn:int = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 static var turn_amount:int = 0
+static var fifty_move_rule:int = 0
 ## private vars
 ## onready vars
 # obj_ for node refrences

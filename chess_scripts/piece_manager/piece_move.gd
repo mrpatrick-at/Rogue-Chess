@@ -4,43 +4,64 @@ extends RefCounted
 ## exports
 ## public vars
 static var _moves:Array
-static var directions:Array
-static var current_coords:Vector2i
+
+static var knight_directions:Array = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
+static var rook_directions:Array = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
+static var bishop_directions:Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
+
+static var white_king_pos:Vector2i
+static var black_king_pos:Vector2i
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
 ## public methods
 
-static func get_moves(coords:Vector2i) -> Array:
+static func get_moves(current_coords:Vector2i) -> Array:
 	_moves = []
-	current_coords = coords
 	match abs(Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)):
 		Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
-			_moves = _get_pawn_moves()
+			_moves = _get_pawn_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.ROOK:
-			_moves = _get_rook_moves()
+			_moves = _get_rook_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.KNIGHT:
-			_moves = _get_knight_moves()
+			_moves = _get_knight_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.BISHOP:
-			_moves = _get_bishop_moves()
+			_moves = _get_bishop_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.QUEEN:
-			_moves = _get_rook_moves() + _get_bishop_moves()
+			_moves = _get_rook_moves(current_coords) + _get_bishop_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.KING:
-			_moves = _get_king_moves()
+			_moves = _get_king_moves(current_coords)
 	#print("piece_move/get_moves- _moves: ",_moves)
 	return _moves
 
-static func move_piece(asked_coords:Vector2i) -> void: # Calls all funcs used for movement
+static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
 	if asked_coords in _moves:
 		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
 		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(asked_coords)
+		var fifty_move_rule:int = Scripts.fifty_move_rule +1
 		
 		# Capture Enemy Piece
-		if is_enemy(asked_coords): # Add advanced logic for capturing here later if needed
+		if is_enemy(current_coords,asked_coords): # Add advanced logic for capturing here later if needed
 			var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
 			enemy_piece_object.hide()
+			fifty_move_rule = 0
 			print("PIECE_MOVE- Enemy Piece Captured")
+		
+		# If Moved Piece is Pawn
+		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
+			fifty_move_rule = 0
+			print("PIECE_MOVE- Moved Piece is Pawn")
+		
+		# Apply Fifty Move Rule
+		Scripts.fifty_move_rule = fifty_move_rule
+		print("PIECE_MOVE- Fifty Move Rule: ",fifty_move_rule)
+		
+		# If Moved Piece is King for CheckMate!
+		if current_coords == white_king_pos:
+			white_king_pos = asked_coords
+		elif current_coords == black_king_pos:
+			black_king_pos = asked_coords
 		
 		# Remove Old Data
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
@@ -61,6 +82,7 @@ static func move_piece(asked_coords:Vector2i) -> void: # Calls all funcs used fo
 			Scripts.color_turn = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		Scripts.turn_amount += 1
 		print("PIECE_MOVE- turn amount: ",Scripts.turn_amount)
+	
 	else:
 		print("PIECE_MOVE- coords not in _moves")
 	
@@ -71,19 +93,73 @@ static func is_empty(asked_coords:Vector2i) -> bool:
 		return true
 	return false
 
-static func is_enemy(asked_coords:Vector2i) -> bool: # TODO: Finish this. NOT WORKING YET !!!!!!!! ONLY REFRENCE !!!! NO ENEMY TEAM EXISTS YET !!!!!
-	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # TODO: Finish this. NOT WORKING YET !!!!!!!! ONLY REFRENCE !!!! NO ENEMY TEAM EXISTS YET !!!!!
+	if Scripts.PIECE_MANAGER.get_piece_data(coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
 		if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
 			return true
 	elif Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
 		return true
 	return false
 
-
+static func is_in_check() -> bool:
+	var king_pos:Vector2i
+	var _is_in_check:bool = false
+	if Scripts.color_turn == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+		king_pos = white_king_pos
+	else:
+		king_pos = black_king_pos
+	
+	var pawn_direction:int
+	if Scripts.color_turn == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+		pawn_direction = 1
+	else:
+		pawn_direction = -1
+	
+	var pawn_attacks:Array = [king_pos + Vector2i(pawn_direction,-1),king_pos + Vector2i(pawn_direction,1)]
+	
+	for pos:Vector2i in pawn_attacks:
+		if Scripts.BOARD_MANAGER.is_valid_position(pos):
+			if is_enemy(king_pos,pos):
+				var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)
+				if piece == Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
+					print("PIECE_MOVE- pawn_check")
+					_is_in_check = true
+	
+	for pos:Vector2i in _get_knight_moves(king_pos):
+		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)
+		if piece == Scripts.PIECE_CONSTS.TYPE_LIST.KNIGHT:
+			print("PIECE_MOVE- knight_check")
+			_is_in_check = true
+	
+	for pos:Vector2i in _get_rook_moves(king_pos):
+		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)
+		if piece == Scripts.PIECE_CONSTS.TYPE_LIST.ROOK:
+			print("PIECE_MOVE- rook_check")
+			_is_in_check = true
+		elif piece == Scripts.PIECE_CONSTS.TYPE_LIST.QUEEN:
+			print("PIECE_MOVE- queen_check")
+			_is_in_check = true
+	
+	for pos:Vector2i in _get_bishop_moves(king_pos):
+		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)
+		if piece == Scripts.PIECE_CONSTS.TYPE_LIST.BISHOP:
+			print("PIECE_MOVE- bishop_check")
+			_is_in_check = true
+		elif piece == Scripts.PIECE_CONSTS.TYPE_LIST.QUEEN:
+			print("PIECE_MOVE- queen_check")
+			_is_in_check = true
+	
+	for pos:Vector2i in _get_king_moves(king_pos):
+		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)
+		if piece == Scripts.PIECE_CONSTS.TYPE_LIST.KING:
+			print("PIECE_MOVE- king_check???")
+			_is_in_check = true
+	
+	return _is_in_check
 
 ## private methods
 
-static func _get_pawn_moves() -> Array: # TODO: EN PASSANT
+static func _get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSANT
 	_moves = []
 	var move_range:Array
 	var capture_squares:Array
@@ -113,38 +189,36 @@ static func _get_pawn_moves() -> Array: # TODO: EN PASSANT
 		var pos:Vector2i = current_coords
 		pos += i
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
-			if is_enemy(pos):
+			if is_enemy(current_coords,pos):
 				_moves.append(pos)
 	
 	return _moves
 
-static func _get_knight_moves() -> Array: # Idk if this is the best it can be, but maybe it is
+static func _get_knight_moves(current_coords:Vector2i) -> Array: # Idk if this is the best it can be, but maybe it is
 	_moves = []
-	directions = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
 	
-	for i:Vector2i in directions:
+	for i:Vector2i in knight_directions:
 		var pos:Vector2i = current_coords
 		pos += i
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
 				_moves.append(pos)
-			elif is_enemy(pos):
+			elif is_enemy(current_coords,pos):
 				_moves.append(pos)
 	
 	return _moves
 
-static func _get_rook_moves() -> Array:
+static func _get_rook_moves(current_coords:Vector2i) -> Array:
 	_moves = []
-	directions = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
 	
-	for i:Vector2i in directions:
+	for i:Vector2i in rook_directions:
 		var pos:Vector2i = current_coords
 		pos += i
 		
 		while Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
 				_moves.append(pos)
-			elif is_enemy(pos):
+			elif is_enemy(current_coords,pos):
 				_moves.append(pos)
 				break
 			else: break
@@ -153,18 +227,17 @@ static func _get_rook_moves() -> Array:
 	
 	return _moves
 
-static func _get_bishop_moves() -> Array:
+static func _get_bishop_moves(current_coords:Vector2i) -> Array:
 	_moves = []
-	directions = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 	
-	for i:Vector2i in directions:
+	for i:Vector2i in bishop_directions:
 		var pos:Vector2i = current_coords
 		pos += i
 		
 		while Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
 				_moves.append(pos)
-			elif is_enemy(pos):
+			elif is_enemy(current_coords,pos):
 				_moves.append(pos)
 				break
 			else: break
@@ -173,7 +246,7 @@ static func _get_bishop_moves() -> Array:
 	
 	return _moves
 
-static func _get_king_moves() -> Array:
+static func _get_king_moves(current_coords:Vector2i) -> Array:
 	_moves = []
 	
 	for x in range(-1,2):
@@ -185,7 +258,7 @@ static func _get_king_moves() -> Array:
 			if Scripts.BOARD_MANAGER.is_valid_position(pos):
 				if is_empty(pos):
 					_moves.append(pos)
-				elif is_enemy(pos):
+				elif is_enemy(current_coords,pos):
 					_moves.append(pos)
 	
 	return _moves

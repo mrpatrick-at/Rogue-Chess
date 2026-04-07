@@ -24,6 +24,7 @@ func _ready() -> void: # Runs on Startup
 	pass
 
 func _physics_process(_delta:float) -> void: # Runs Every Tick
+	Scripts.PIECE_MOVE.is_in_check()
 	if InputEventMouse:
 		select_tile()
 	pass
@@ -34,7 +35,7 @@ static func build_board() -> void: # Remember y_range needs to be +1 bc it stops
 	for x in range(1,x_range):
 		for y in range(1,y_range):
 			var coords:Vector2i = Vector2i(x,y)
-			if !Scripts.BOARD_DATABASE.TILE_DICTIONARY.has(coords):
+			if coords not in Scripts.BOARD_DATABASE.TILE_DICTIONARY:
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
 	_create_background()
@@ -66,7 +67,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 		tilemap_selection.set_cell(current_coords,1,Vector2i(2,0),0)
 		
 		# Hightlight Possible Moves
-		var _moves:Array = Scripts.PIECE_MOVEMENT_CALC.get_moves(current_coords)
+		var _moves:Array = Scripts.PIECE_MOVE.get_moves(current_coords)
 		for i:Vector2i in _moves:
 			tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
 		
@@ -77,7 +78,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 			print("Move Piece from: ",current_coords,", Move Piece to: ",asked_coords)
 			
 			# Call Movement
-			Scripts.PIECE_MOVEMENT_CALC.move_piece(asked_coords)
+			Scripts.PIECE_MOVE.move_piece(current_coords,asked_coords)
 			current_coords = Vector2i(0,0)
 			asked_coords = Vector2i(0,0)
 			

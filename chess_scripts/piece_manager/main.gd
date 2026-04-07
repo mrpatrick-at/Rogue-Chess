@@ -69,6 +69,7 @@ static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Ti
 		
 		if coords.y == 5:
 			piece = Scripts.PIECE_LIST.KING
+			Scripts.PIECE_MOVE.white_king_pos = Vector2i(coords.x,coords.y)
 			print("White King spawned at: ",coords,"!")
 	
 	if coords.x == 8:
@@ -92,6 +93,7 @@ static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Ti
 		
 		if coords.y == 5:
 			piece = Scripts.PIECE_LIST.KING
+			Scripts.PIECE_MOVE.black_king_pos = Vector2i(coords.x,coords.y)
 			print("Black King spawned at: ",coords,"!")
 	
 	var piece_info:Vector2i = Vector2i(piece,color)

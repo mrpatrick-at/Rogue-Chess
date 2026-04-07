@@ -40,7 +40,6 @@ func _apply_camera_movement() -> void:
 			cam.zoom.x,
 			CAMERA_ZOOM_RANGE.x,CAMERA_ZOOM_RANGE.y,
 			CAMERA_ZOOM_RANGE.y,CAMERA_ZOOM_RANGE.x)
-		print("real zoom: ",cam.zoom,"remaped zoom: ",camer_zoom_speed)
 		cam_node.position.x += cam_movement_velocity.x * camer_zoom_speed
 		cam_node.position.y += cam_movement_velocity.y * camer_zoom_speed
 		cam_movement_velocity = Vector2.ZERO
