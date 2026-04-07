@@ -13,12 +13,15 @@ func _ready() -> void:
 	pass 
 
 func _physics_process(_delta: float) -> void:
-	set_turn_value()
+	set_labels()
 	pass
 
 ## public methods
 
-func set_turn_value() -> void:
+func set_labels() -> void:
+	set_turn_label()
+
+func set_turn_label() -> void:
 	turn_amount_label.text = str(Scripts.turn_amount)
 
 ## private methods

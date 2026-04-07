@@ -11,7 +11,7 @@ extends Node2D
 
 func _ready() -> void:
 	var i:int = 0
-	for coords in Scripts.BOARD_DATABASE.TILE_DICTIONARY.keys():
+	for coords:Vector2i in Scripts.BOARD_DATABASE.TILE_DICTIONARY.keys():
 		i += 1
 		y_sort_enabled = true
 		var piece_info:Vector2i = _calculate_piece(coords)
@@ -24,12 +24,12 @@ func _physics_process(_delta:float) -> void:
 ## public methods
 
 static func get_piece_data(coords:Vector2i,data:int) -> Variant: # 1. coords 2. value to get
-	var piece_object = Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]
-	var value = Scripts.PIECE_DATABASE.PIECE_DICTIONARY[piece_object][data]
+	var piece_object:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]
+	var value:Variant = Scripts.PIECE_DATABASE.PIECE_DICTIONARY[piece_object][data]
 	return value
 
 static func set_piece_data(coords:Vector2i,data:int,value:int) -> void: # 1. coords 2. value to set 3. what to set it to
-	var piece_object = Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]
+	var piece_object:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]
 	Scripts.PIECE_DATABASE.PIECE_DICTIONARY[piece_object][data] = value
 
 ## private methods
@@ -94,15 +94,15 @@ static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Ti
 			piece = Scripts.PIECE_LIST.KING
 			print("Black King spawned at: ",coords,"!")
 	
-	var piece_info = Vector2i(piece,color)
+	var piece_info:Vector2i = Vector2i(piece,color)
 	
 	return piece_info
 
 func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks at DataBase then creates Node2D's that contain the Piece Sprites
-	var piece = piece_info.x 
-	var color = piece_info.y
-	var piece_object
-	var piece_sprite
+	var piece:int = piece_info.x 
+	var color:int = piece_info.y
+	var piece_object:Node2D
+	var piece_sprite:Sprite2D
 	
 	if piece == Scripts.PIECE_CONSTS.TYPE_LIST.NONE:
 		piece_object = $PieceNone
@@ -114,7 +114,7 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 		add_child(piece_object)
 		piece_sprite = Sprite2D.new()
 		piece_object.add_child(piece_sprite)
-		var translated_coords = Scripts.BOARD_MANAGER.translate_coords(coords)
+		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(coords)
 		piece_object.global_position = translated_coords
 		piece_object.scale = Vector2i(8,8)
 		piece_object.move_local_y(-96)

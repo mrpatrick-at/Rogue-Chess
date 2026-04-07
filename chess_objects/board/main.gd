@@ -67,7 +67,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 		
 		# Hightlight Possible Moves
 		var _moves:Array = Scripts.PIECE_MOVEMENT_CALC.get_moves(current_coords)
-		for i in _moves:
+		for i:Vector2i in _moves:
 			tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
 		
 		if Input.is_action_just_pressed(&"_input_mouse_left"):

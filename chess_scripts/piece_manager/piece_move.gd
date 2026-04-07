@@ -38,7 +38,7 @@ static func move_piece(asked_coords:Vector2i) -> void: # Calls all funcs used fo
 		
 		# Capture Enemy Piece
 		if is_enemy(asked_coords): # Add advanced logic for capturing here later if needed
-			var enemy_piece_object = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
+			var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
 			enemy_piece_object.hide()
 			print("PIECE_MOVE- Enemy Piece Captured")
 		
@@ -101,16 +101,16 @@ static func _get_pawn_moves() -> Array: # TODO: EN PASSANT
 			move_range = range(-1,1)
 	
 	# Main Movement
-	for x in move_range:
-		var pos = current_coords
-		pos.x += x
+	for i:int in move_range:
+		var pos:Vector2i = current_coords
+		pos.x += i
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
 				_moves.append(pos)
 	
 	# Piece Capturing
-	for i in capture_squares:
-		var pos = current_coords
+	for i:Vector2i in capture_squares:
+		var pos:Vector2i = current_coords
 		pos += i
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_enemy(pos):
@@ -122,8 +122,8 @@ static func _get_knight_moves() -> Array: # Idk if this is the best it can be, b
 	_moves = []
 	directions = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
 	
-	for i in directions:
-		var pos = current_coords
+	for i:Vector2i in directions:
+		var pos:Vector2i = current_coords
 		pos += i
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
@@ -137,8 +137,8 @@ static func _get_rook_moves() -> Array:
 	_moves = []
 	directions = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
 	
-	for i in directions:
-		var pos = current_coords
+	for i:Vector2i in directions:
+		var pos:Vector2i = current_coords
 		pos += i
 		
 		while Scripts.BOARD_MANAGER.is_valid_position(pos):
@@ -157,8 +157,8 @@ static func _get_bishop_moves() -> Array:
 	_moves = []
 	directions = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 	
-	for i in directions:
-		var pos = current_coords
+	for i:Vector2i in directions:
+		var pos:Vector2i = current_coords
 		pos += i
 		
 		while Scripts.BOARD_MANAGER.is_valid_position(pos):
