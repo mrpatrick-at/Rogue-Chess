@@ -123,11 +123,11 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 	
 	Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"] = i
 	Scripts.PIECE_DATABASE.PIECE_DICTIONARY.set(i,{ # Remember values with "" in here are not done yet and need to be set to an Int thru consts file
-		Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ:piece_object,
 		Scripts.PIECE_CONSTS.PIECE_LIST.TYPE:piece,
 		Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR:color,
-		"piece_sprite":piece_sprite,
-		"piece_object_position":piece_object.position,
+		Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ:piece_object,
+		Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_SPRITE:piece_sprite,
+		Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED:0,
 		})
 	
 	var sprite:CompressedTexture2D
@@ -137,7 +137,7 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 			sprite = load("res://assets/pieces/white/w_pawn.png")
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
 			sprite = load("res://assets/pieces/black/b_pawn.png")
-		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED] = 0
+		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED] = Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE
 	
 	if piece == Scripts.PIECE_LIST.ROOK:
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:

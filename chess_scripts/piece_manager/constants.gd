@@ -4,9 +4,9 @@ enum PIECE_LIST{_0, # use _0 for null
 	TYPE,
 	PIECE_COLOR,
 	PIECE_OBJ,
-	PIECE_OBJ_POSITION,
 	PIECE_SPRITE,
 	TIMES_MOVED,
+	PAWN_MOVED,
 }
 enum TYPE_LIST{_0, # use _0 for null
 	NONE,
@@ -20,6 +20,10 @@ enum TYPE_LIST{_0, # use _0 for null
 enum PIECE_COLOR{_0, # use _0 for null
 WHITE,
 BLACK,
+}
+enum PAWN_MOVED{_0, # use _0 for null
+TRUE,
+FALSE,
 }
 ## consts
 ## exports

@@ -35,47 +35,43 @@ static func get_moves(current_coords:Vector2i) -> Array:
 	#print("piece_move/get_moves- _moves: ",_moves)
 	return _moves
 
-static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
+static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement # TODO: Finish En Passant
 	if asked_coords in _moves:
 		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
 		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(asked_coords)
 		var fifty_move_rule:int = Scripts.fifty_move_rule +1
 		
-		# Capture Enemy Piece
-		if is_enemy(current_coords,asked_coords): # Add advanced logic for capturing here later if needed
-			var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
-			enemy_piece_object.hide()
-			fifty_move_rule = 0
-			print("PIECE_MOVE- Enemy Piece Captured")
-		
 		# If Moved Piece is Pawn
 		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
 			fifty_move_rule = 0
 			print("PIECE_MOVE- Moved Piece is Pawn")
-			# Apply En Passant
+			# Apply En Passant ## Lowkey Kinda Sketch but works
 			if asked_coords.y != current_coords.y:
 				if Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] == 0:
 					var direction:int = 1
 					if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
 						direction = -1
 					var en_passant_coords:Vector2i = Vector2i(asked_coords.x +direction,asked_coords.y)
-					print(en_passant_coords)
-					var en_passanted_piece:Node2D = Scripts.PIECE_MANAGER.get_piece_data(en_passant_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
-					en_passanted_piece.hide()
+					print("PIECE_MOVE- en_passant_coords: ",en_passant_coords)
+					capture_piece(en_passant_coords)
 					Scripts.BOARD_DATABASE.TILE_DICTIONARY[en_passant_coords]["piece"] = 0
+		
+		# If Moved Piece is King
+		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.KING:
+			if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 0:
+				if asked_coords.y == current_coords.y +2:
+					print("gay")
 		
 		# Apply Fifty Move Rule
 		Scripts.fifty_move_rule = fifty_move_rule
 		print("PIECE_MOVE- Fifty Move Rule: ",fifty_move_rule)
 		
-		# If Moved Piece is King for CheckMate!
-		if current_coords == white_king_pos:
-			white_king_pos = asked_coords
-		elif current_coords == black_king_pos:
-			black_king_pos = asked_coords
-		
 		# Remove Old Data
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
+		# Capture Enemy Piece
+		if is_enemy(current_coords,asked_coords): # Add advanced logic for capturing here later if needed
+			capture_piece(asked_coords)
+		
 		
 		# Add New Data
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
@@ -84,6 +80,12 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 		Scripts.PIECE_MANAGER.set_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED,times_moved)
 		print("PIECE_MOVE- times_moved: ",times_moved)
 		 
+		# If Moved Piece is King for CheckMate!
+		if current_coords == white_king_pos:
+			white_king_pos = asked_coords
+		elif current_coords == black_king_pos:
+			black_king_pos = asked_coords
+		
 		# Move Piece
 		var piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
 		piece_object.global_position = translated_coords
@@ -107,7 +109,7 @@ static func is_empty(asked_coords:Vector2i) -> bool:
 		return true
 	return false
 
-static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # TODO: Finish this. NOT WORKING YET !!!!!!!! ONLY REFRENCE !!!! NO ENEMY TEAM EXISTS YET !!!!!
+static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # Checks if piece on coords is diffrent team than piece on asked_coords
 	if Scripts.PIECE_MANAGER.get_piece_data(coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
 		if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
 			return true
@@ -115,7 +117,7 @@ static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # TODO: Fin
 		return true
 	return false
 
-static func is_in_check() -> bool:
+static func is_in_check() -> bool: # Checks if King is in check
 	var king_pos:Vector2i
 	var _is_in_check:bool = false
 	if Scripts.color_turn == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
@@ -163,13 +165,24 @@ static func is_in_check() -> bool:
 			print("PIECE_MOVE- queen_check")
 			_is_in_check = true
 	
-	for pos:Vector2i in _get_king_moves(king_pos):
-		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)
-		if piece == Scripts.PIECE_CONSTS.TYPE_LIST.KING:
-			print("PIECE_MOVE- king_check???")
-			_is_in_check = true
+	for x in range(-1,2):
+		for y in range(-1,2):
+			var pos:Vector2i = king_pos
+			pos.x += x
+			pos.y += y
+			
+			if Scripts.BOARD_MANAGER.is_valid_position(pos):
+				if is_enemy(king_pos,pos):
+					print("PIECE_MOVE- king_check????????????????")
+					_is_in_check = true
 	
 	return _is_in_check
+
+static func capture_piece(asked_coords:Vector2i) -> void:
+	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
+	enemy_piece_object.hide()
+	Scripts.fifty_move_rule = 0
+	print("PIECE_MOVE- Enemy Piece Captured")
 
 ## private methods
 
@@ -280,5 +293,14 @@ static func _get_king_moves(current_coords:Vector2i) -> Array:
 					_moves.append(pos)
 				elif is_enemy(current_coords,pos):
 					_moves.append(pos)
+	
+	
+	# Castling
+	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 0:
+		if Scripts.PIECE_MANAGER.get_piece_data(Vector2i(current_coords.x,current_coords.y + 3),Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.ROOK:
+			if Scripts.PIECE_MANAGER.get_piece_data(Vector2i(current_coords.x,current_coords.y + 3),Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 0:
+				if is_empty(Vector2i(current_coords.x,current_coords.y + 1)):
+					if is_empty(Vector2i(current_coords.x,current_coords.y + 2)):
+						_moves.append(Vector2i(current_coords.x,current_coords.y + 2))
 	
 	return _moves
