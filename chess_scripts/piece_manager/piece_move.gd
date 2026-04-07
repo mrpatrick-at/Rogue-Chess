@@ -54,6 +54,11 @@ static func move_piece(asked_coords:Vector2i) -> void: # Calls all funcs used fo
 		piece_object.global_position = translated_coords
 		piece_object.move_local_y(-96)
 		
+		if Scripts.color_turn == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+			Scripts.color_turn = Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK
+		else:
+			Scripts.color_turn = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
+		
 	else:
 		print("piece_manager/move_piece- coords not in _moves")
 	
