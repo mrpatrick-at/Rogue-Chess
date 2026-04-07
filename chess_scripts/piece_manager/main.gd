@@ -41,32 +41,58 @@ static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Ti
 	if coords.x == 2:
 		piece = Scripts.PIECE_LIST.PAWN
 		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
-		print("Pawn spawned at: ",coords,"!")
+		print("White Pawn spawned at: ",coords,"!")
 	
-	if coords.x == 1 and (coords.y == 1 or coords.y == 8):
-		piece = Scripts.PIECE_LIST.ROOK
-		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
-		print("Rook spawned at: ",coords,"!")
+	if coords.x == 7:
+		piece = Scripts.PIECE_LIST.PAWN
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK
+		print("Black Pawn spawned at: ",coords,"!")
 	
-	if coords.x == 1 and (coords.y == 2 or coords.y == 7):
-		piece = Scripts.PIECE_LIST.KNIGHT
+	if coords.x == 1:
 		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
-		print("Knight spawned at: ",coords,"!")
+		
+		if coords.y == 1 or coords.y == 8:
+			piece = Scripts.PIECE_LIST.ROOK
+			print("Rook spawned at: ",coords,"!")
+		
+		if coords.y == 2 or coords.y == 7:
+			piece = Scripts.PIECE_LIST.KNIGHT
+			print("Knight spawned at: ",coords,"!")
+		
+		if coords.y == 3 or coords.y == 6:
+			piece = Scripts.PIECE_LIST.BISHOP
+			print("Bishop spawned at: ",coords,"!")
+		
+		if coords.y == 4:
+			piece = Scripts.PIECE_LIST.QUEEN
+			print("Queen spawned at: ",coords,"!")
+		
+		if coords.y == 5:
+			piece = Scripts.PIECE_LIST.KING
+			print("King spawned at: ",coords,"!")
 	
-	if coords.x == 1 and (coords.y == 3 or coords.y == 6):
-		piece = Scripts.PIECE_LIST.BISHOP
-		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
-		print("Bishop spawned at: ",coords,"!")
-	
-	if coords.x == 1 and (coords.y == 4):
-		piece = Scripts.PIECE_LIST.QUEEN
-		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
-		print("Queen spawned at: ",coords,"!")
-	
-	if coords.x == 1 and (coords.y == 5):
-		piece = Scripts.PIECE_LIST.KING
-		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
-		print("King spawned at: ",coords,"!")
+	if coords.x == 8:
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK
+		
+		if coords.y == 1 or coords.y == 8:
+			piece = Scripts.PIECE_LIST.ROOK
+			print("Rook spawned at: ",coords,"!")
+		
+		if coords.y == 2 or coords.y == 7:
+			piece = Scripts.PIECE_LIST.KNIGHT
+			print("Knight spawned at: ",coords,"!")
+		
+		if coords.y == 3 or coords.y == 6:
+			piece = Scripts.PIECE_LIST.BISHOP
+			print("Bishop spawned at: ",coords,"!")
+		
+		if coords.y == 4:
+			piece = Scripts.PIECE_LIST.QUEEN
+			print("Queen spawned at: ",coords,"!")
+		
+		if coords.y == 5:
+			piece = Scripts.PIECE_LIST.KING
+			print("King spawned at: ",coords,"!")
 	
 	var piece_info = Vector2i(piece,color)
 	
@@ -108,7 +134,7 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
 			sprite = load("res://assets/pieces/white/w_pawn.png")
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/pieces/black/b_Pawn.png")
+			sprite = load("res://assets/pieces/black/b_pawn.png")
 		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED] = Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE
 	
 	if piece == Scripts.PIECE_LIST.ROOK:

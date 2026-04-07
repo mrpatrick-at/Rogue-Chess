@@ -74,10 +74,16 @@ static func is_enemy(asked_coords:Vector2i) -> bool: # TODO: Finish this. NOT WO
 static func _get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSANT
 	_moves = []
 	var move_range:Array
-	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED) == Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE:
-		move_range = range(1,3)
+	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED) == Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE:
+			move_range = range(1,3)
+		else:
+			move_range = range(1,2)
 	else:
-		move_range = range(1,2)
+		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED) == Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE:
+			move_range = range(-2,1)
+		else:
+			move_range = range(-1,1)
 	
 	for x in move_range:
 		var pos = current_coords
