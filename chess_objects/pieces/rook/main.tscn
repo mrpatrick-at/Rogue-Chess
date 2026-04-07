@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ctfm8k1sg2568"]
 
-[ext_resource type="Texture2D" uid="uid://bx7g0dwg2yeit" path="res://assets/pieces/white/rook.png" id="2_tqk3l"]
+[ext_resource type="Texture2D" uid="uid://bx7g0dwg2yeit" path="res://assets/pieces/white/w_rook.png" id="2_tqk3l"]
 
 [node name="Main" type="Node2D" unique_id=1918965999]
 

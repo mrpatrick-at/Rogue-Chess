@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://wc31c7irrrxr"]
 
-[ext_resource type="Texture2D" uid="uid://ukwh8v3iua1" path="res://assets/pieces/white/pawn.png" id="2_bh4ok"]
+[ext_resource type="Texture2D" uid="uid://ukwh8v3iua1" path="res://assets/pieces/white/w_pawn.png" id="2_bh4ok"]
 
 [node name="Main" type="Node2D" unique_id=1918965999]
 

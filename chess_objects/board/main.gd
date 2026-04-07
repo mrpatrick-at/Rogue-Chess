@@ -76,7 +76,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 			print("Move Piece from: ",current_coords,", Move Piece to: ",asked_coords)
 			
 			# Call Movement
-			Scripts.PIECE_MANAGER.move_piece(current_coords,asked_coords,_moves)
+			Scripts.PIECE_MOVEMENT_CALC.move_piece(current_coords,asked_coords)
 			current_coords = Vector2i(0,0)
 			asked_coords = Vector2i(0,0)
 			

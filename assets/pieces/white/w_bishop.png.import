@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ci1887fyu2gmc"
-path="res://.godot/imported/B_Pawn.png-c623e5ea8df971ad96c561e1037ecdae.ctex"
+uid="uid://d2i6u1kqi8q02"
+path="res://.godot/imported/w_bishop.png-1513604b948c723791050aa924b6df45.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/pieces/black/B_Pawn.png"
-dest_files=["res://.godot/imported/B_Pawn.png-c623e5ea8df971ad96c561e1037ecdae.ctex"]
+source_file="res://assets/pieces/white/w_bishop.png"
+dest_files=["res://.godot/imported/w_bishop.png-1513604b948c723791050aa924b6df45.ctex"]
 
 [params]
 

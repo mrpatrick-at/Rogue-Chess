@@ -23,24 +23,41 @@ static func get_moves(current_coords:Vector2i) -> Array:
 	_moves = []
 	match abs(Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE)):
 		Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
-			_moves = get_pawn_moves(current_coords)
+			_moves = _get_pawn_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.ROOK:
-			_moves = get_rook_moves(current_coords)
+			_moves = _get_rook_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.KNIGHT:
-			_moves = get_knight_moves(current_coords)
+			_moves = _get_knight_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.BISHOP:
-			_moves = get_bishop_moves(current_coords)
+			_moves = _get_bishop_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.QUEEN:
-			_moves = get_rook_moves(current_coords) + get_bishop_moves(current_coords)
+			_moves = _get_rook_moves(current_coords) + _get_bishop_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.KING:
-			_moves = get_king_moves(current_coords)
-	print("piece_move/get_moves- _moves: ",_moves)
+			_moves = _get_king_moves(current_coords)
+	#print("piece_move/get_moves- _moves: ",_moves)
 	return _moves
 
-#static func is_valid_position(asked_coords:Vector2i) -> bool:
-	#if asked_coords.x >= 1 and asked_coords.x < 9 and asked_coords.y >= 1 and asked_coords.y < 9:
-		#return true
-	#return false
+static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
+	if asked_coords in _moves:
+		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
+		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(asked_coords)
+		
+		# Remove Old Data
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
+		
+		# Add New Data
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
+		Scripts.PIECE_MANAGER.set_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED,Scripts.PIECE_CONSTS.PAWN_MOVED.TRUE)
+		 
+		# Move Piece
+		var piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
+		piece_object.global_position = translated_coords
+		piece_object.move_local_y(-96)
+		
+	else:
+		print("piece_manager/move_piece- coords not in _moves")
+	
+	return
 
 static func is_empty(asked_coords:Vector2i) -> bool:
 	if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_LIST.NONE:
@@ -48,15 +65,16 @@ static func is_empty(asked_coords:Vector2i) -> bool:
 	return false
 
 static func is_enemy(asked_coords:Vector2i) -> bool: # TODO: Finish this. NOT WORKING YET !!!!!!!! ONLY REFRENCE !!!! NO ENEMY TEAM EXISTS YET !!!!!
-	print("type ",Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE))
 	if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_LIST.NONE:
 		return true
 	return false
 
-static func get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSANT
+## private methods
+
+static func _get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSANT
 	_moves = []
 	var move_range:Array
-	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED) == false:
+	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED) == Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE:
 		move_range = range(1,3)
 	else:
 		move_range = range(1,2)
@@ -72,7 +90,7 @@ static func get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSANT
 	
 	return _moves
 
-static func get_knight_moves(current_coords:Vector2i) -> Array: # Idk if this is the best it can be, but maybe it is
+static func _get_knight_moves(current_coords:Vector2i) -> Array: # Idk if this is the best it can be, but maybe it is
 	_moves = []
 	directions = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
 	
@@ -87,7 +105,7 @@ static func get_knight_moves(current_coords:Vector2i) -> Array: # Idk if this is
 	
 	return _moves
 
-static func get_rook_moves(current_coords:Vector2i) -> Array:
+static func _get_rook_moves(current_coords:Vector2i) -> Array:
 	_moves = []
 	directions = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
 	
@@ -107,7 +125,7 @@ static func get_rook_moves(current_coords:Vector2i) -> Array:
 	
 	return _moves
 
-static func get_bishop_moves(current_coords:Vector2i) -> Array:
+static func _get_bishop_moves(current_coords:Vector2i) -> Array:
 	_moves = []
 	directions = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 	
@@ -127,7 +145,7 @@ static func get_bishop_moves(current_coords:Vector2i) -> Array:
 	
 	return _moves
 
-static func get_king_moves(current_coords:Vector2i) -> Array:
+static func _get_king_moves(current_coords:Vector2i) -> Array:
 	_moves = []
 	
 	for x in range(-1,2):
@@ -143,5 +161,3 @@ static func get_king_moves(current_coords:Vector2i) -> Array:
 					_moves.append(pos)
 	
 	return _moves
-
-## private methods

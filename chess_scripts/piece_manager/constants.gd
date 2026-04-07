@@ -1,15 +1,14 @@
 extends RefCounted
 ## enums
 enum PIECE_LIST{_0, # use _0 for null
-	TYPE,
 	PIECE_OBJ,
+	TYPE,
+	PIECE_COLOR,
 	PIECE_SPRITE,
 	PIECE_OBJ_POSITION,
 	PAWN_MOVED,
 }
-
 enum TYPE_LIST{_0, # use _0 for null
-	UNINITIALIZED,
 	NONE,
 	PAWN,
 	ROOK,
@@ -17,6 +16,14 @@ enum TYPE_LIST{_0, # use _0 for null
 	BISHOP,
 	QUEEN,
 	KING,
+}
+enum PIECE_COLOR{_0, # use _0 for null
+WHITE,
+BLACK,
+}
+enum PAWN_MOVED{_0,
+FALSE,
+TRUE,
 }
 ## consts
 ## exports

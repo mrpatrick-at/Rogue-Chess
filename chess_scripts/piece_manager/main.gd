@@ -14,35 +14,14 @@ func _ready() -> void:
 	for coords in Scripts.BOARD_DATABASE.TILE_DICTIONARY.keys():
 		i += 1
 		y_sort_enabled = true
-		var piece:int = _calculate_piece(coords)
-		_create_piece(coords,piece,i)
+		var piece_info:Vector2i = _calculate_piece(coords)
+		_create_piece(coords,piece_info,i)
 	pass 
 
 func _physics_process(_delta:float) -> void:
 	pass
 
 ## public methods
-
-static func move_piece(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement
-	if asked_coords in _moves:
-		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
-		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(asked_coords)
-		
-		# Remove Old Data
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
-		
-		# Add New Data
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
-		 
-		# Move Piece
-		var piece_object:Node2D = get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
-		piece_object.global_position = translated_coords
-		piece_object.move_local_y(-96)
-		
-	else:
-		print("piece_manager/move_piece- coords not in _moves")
-	
-	return
 
 static func get_piece_data(coords:Vector2i,data:int) -> Variant: # 1. coords 2. value to get
 	var piece_object = Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]
@@ -51,40 +30,51 @@ static func get_piece_data(coords:Vector2i,data:int) -> Variant: # 1. coords 2. 
 
 static func set_piece_data(coords:Vector2i,data:int,value:int) -> void: # 1. coords 2. value to set 3. what to set it to
 	var piece_object = Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["piece"]
-	Scripts.PIECE_DATABASE.PIECE_DICTIONARY.get_or_add(piece_object,{data:value})
+	Scripts.PIECE_DATABASE.PIECE_DICTIONARY[piece_object][data] = value
 
 ## private methods
 
-static func _calculate_piece(coords:Vector2i) -> int: # Calculates which Tiles should have Pieces
+static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Tiles should have Pieces
 	var piece:int = Scripts.PIECE_LIST.NONE
+	var color:int = Scripts.PIECE_CONSTS.PIECE_COLOR._0
 	
 	if coords.x == 2:
 		piece = Scripts.PIECE_LIST.PAWN
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		print("Pawn spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 1 or coords.y == 8):
 		piece = Scripts.PIECE_LIST.ROOK
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		print("Rook spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 2 or coords.y == 7):
 		piece = Scripts.PIECE_LIST.KNIGHT
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		print("Knight spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 3 or coords.y == 6):
 		piece = Scripts.PIECE_LIST.BISHOP
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		print("Bishop spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 4):
 		piece = Scripts.PIECE_LIST.QUEEN
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		print("Queen spawned at: ",coords,"!")
 	
 	if coords.x == 1 and (coords.y == 5):
 		piece = Scripts.PIECE_LIST.KING
+		color = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		print("King spawned at: ",coords,"!")
 	
-	return piece
+	var piece_info = Vector2i(piece,color)
+	
+	return piece_info
 
-func _create_piece(coords:Vector2i,piece:int,i:int) -> void: # Looks at DataBase then creates Node2D's that contain the Piece Sprites
+func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks at DataBase then creates Node2D's that contain the Piece Sprites
+	var piece = piece_info.x 
+	var color = piece_info.y
 	var piece_object
 	var piece_sprite
 	
@@ -107,6 +97,7 @@ func _create_piece(coords:Vector2i,piece:int,i:int) -> void: # Looks at DataBase
 	Scripts.PIECE_DATABASE.PIECE_DICTIONARY.set(i,{ # Remember values with "" in here are not done yet and need to be set to an Int thru consts file
 		Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ:piece_object,
 		Scripts.PIECE_CONSTS.PIECE_LIST.TYPE:piece,
+		Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR:color,
 		"piece_sprite":piece_sprite,
 		"piece_object_position":piece_object.position,
 		})
@@ -114,22 +105,40 @@ func _create_piece(coords:Vector2i,piece:int,i:int) -> void: # Looks at DataBase
 	var sprite:CompressedTexture2D
 	
 	if piece == Scripts.PIECE_LIST.PAWN:
-		sprite = load("res://assets/pieces/white/pawn.png")
-		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED] = false
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+			sprite = load("res://assets/pieces/white/w_pawn.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
+			sprite = load("res://assets/pieces/black/b_Pawn.png")
+		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED] = Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE
 	
 	if piece == Scripts.PIECE_LIST.ROOK:
-		sprite = load("res://assets/pieces/white/rook.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+			sprite = load("res://assets/pieces/white/w_rook.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
+			sprite = load("res://assets/pieces/black/b_rook.png")
 		
 	if piece == Scripts.PIECE_LIST.KNIGHT:
-		sprite = load("res://assets/pieces/white/knight.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+			sprite = load("res://assets/pieces/white/w_knight.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
+			sprite = load("res://assets/pieces/black/b_knight.png")
 		
 	if piece == Scripts.PIECE_LIST.BISHOP:
-		sprite = load("res://assets/pieces/white/bishop.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+			sprite = load("res://assets/pieces/white/w_bishop.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
+			sprite = load("res://assets/pieces/black/b_bishop.png")
 		
 	if piece == Scripts.PIECE_LIST.QUEEN:
-		sprite = load("res://assets/pieces/white/queen.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+			sprite = load("res://assets/pieces/white/w_queen.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
+			sprite = load("res://assets/pieces/black/b_queen.png")
 		
 	if piece == Scripts.PIECE_LIST.KING:
-		sprite = load("res://assets/pieces/white/king.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+			sprite = load("res://assets/pieces/white/w_king.png")
+		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
+			sprite = load("res://assets/pieces/black/b_king.png")
 	
 	piece_sprite.texture = sprite

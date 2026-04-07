@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cqot425do27jf"
-path="res://.godot/imported/B_King.png-0d0e87e12c134ccc443a35703379ca0f.ctex"
+uid="uid://bh527yn37v8ps"
+path="res://.godot/imported/b_rook.png-8bee2df8fee5b3618f63bf5d61d78125.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/pieces/black/B_King.png"
-dest_files=["res://.godot/imported/B_King.png-0d0e87e12c134ccc443a35703379ca0f.ctex"]
+source_file="res://assets/pieces/black/b_rook.png"
+dest_files=["res://.godot/imported/b_rook.png-8bee2df8fee5b3618f63bf5d61d78125.ctex"]
 
 [params]
 
