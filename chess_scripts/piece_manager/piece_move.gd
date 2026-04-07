@@ -31,7 +31,7 @@ static func get_moves(coords:Vector2i) -> Array:
 	#print("piece_move/get_moves- _moves: ",_moves)
 	return _moves
 
-static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
+static func move_piece(asked_coords:Vector2i) -> void: # Calls all funcs used for movement
 	if asked_coords in _moves:
 		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
 		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.translate_coords(asked_coords)

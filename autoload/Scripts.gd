@@ -17,6 +17,7 @@ const PIECE_LIST:= preload("res://chess_scripts/piece_manager/constants.gd").TYP
 
 ## exports
 ## public vars
+static var color_turn:int = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 ## private vars
 ## onready vars
 # obj_ for node refrences

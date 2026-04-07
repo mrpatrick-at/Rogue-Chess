@@ -53,46 +53,46 @@ static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Ti
 		
 		if coords.y == 1 or coords.y == 8:
 			piece = Scripts.PIECE_LIST.ROOK
-			print("Rook spawned at: ",coords,"!")
+			print("White Rook spawned at: ",coords,"!")
 		
 		if coords.y == 2 or coords.y == 7:
 			piece = Scripts.PIECE_LIST.KNIGHT
-			print("Knight spawned at: ",coords,"!")
+			print("White Knight spawned at: ",coords,"!")
 		
 		if coords.y == 3 or coords.y == 6:
 			piece = Scripts.PIECE_LIST.BISHOP
-			print("Bishop spawned at: ",coords,"!")
+			print("White Bishop spawned at: ",coords,"!")
 		
 		if coords.y == 4:
 			piece = Scripts.PIECE_LIST.QUEEN
-			print("Queen spawned at: ",coords,"!")
+			print("White Queen spawned at: ",coords,"!")
 		
 		if coords.y == 5:
 			piece = Scripts.PIECE_LIST.KING
-			print("King spawned at: ",coords,"!")
+			print("White King spawned at: ",coords,"!")
 	
 	if coords.x == 8:
 		color = Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK
 		
 		if coords.y == 1 or coords.y == 8:
 			piece = Scripts.PIECE_LIST.ROOK
-			print("Rook spawned at: ",coords,"!")
+			print("Black Rook spawned at: ",coords,"!")
 		
 		if coords.y == 2 or coords.y == 7:
 			piece = Scripts.PIECE_LIST.KNIGHT
-			print("Knight spawned at: ",coords,"!")
+			print("Black Knight spawned at: ",coords,"!")
 		
 		if coords.y == 3 or coords.y == 6:
 			piece = Scripts.PIECE_LIST.BISHOP
-			print("Bishop spawned at: ",coords,"!")
+			print("Black Bishop spawned at: ",coords,"!")
 		
 		if coords.y == 4:
 			piece = Scripts.PIECE_LIST.QUEEN
-			print("Queen spawned at: ",coords,"!")
+			print("Black Queen spawned at: ",coords,"!")
 		
 		if coords.y == 5:
 			piece = Scripts.PIECE_LIST.KING
-			print("King spawned at: ",coords,"!")
+			print("Black King spawned at: ",coords,"!")
 	
 	var piece_info = Vector2i(piece,color)
 	

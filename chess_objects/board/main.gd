@@ -56,7 +56,8 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 			
 			# Initiate Piece Movement
 			if Input.is_action_just_pressed(&"_input_mouse_left") and (
-			!Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.NONE):
+			!Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.NONE and
+			Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.color_turn):
 				current_coords = mouse_pos
 		
 	elif is_valid_position(mouse_pos):
@@ -76,7 +77,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 			print("Move Piece from: ",current_coords,", Move Piece to: ",asked_coords)
 			
 			# Call Movement
-			Scripts.PIECE_MOVEMENT_CALC.move_piece(current_coords,asked_coords)
+			Scripts.PIECE_MOVEMENT_CALC.move_piece(asked_coords)
 			current_coords = Vector2i(0,0)
 			asked_coords = Vector2i(0,0)
 			
