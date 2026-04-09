@@ -39,21 +39,29 @@ static func get_moves(current_coords:Vector2i) -> Array:
 	#print("piece_move/get_moves- _moves: ",_moves)
 	return _moves
 
-static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement # TODO: Finish En Passant
+static func calc_move(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement # TODO: Finish En Passant
 	if asked_coords in _moves:
-		var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
-		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(asked_coords)
-		var fifty_move_rule:int = Scripts.fifty_move_rule +1
+		Scripts.fifty_move_rule += 1 # For each Turn Rule +=1
 		
-		# If Moved Piece is Pawn TODO: Fix Pawns not disapearing after capture
+		# If Moved Piece is Pawn
 		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
-			fifty_move_rule = 0
-			print("PIECE_MOVE- Moved Piece is Pawn")
-			# Apply En Passant ## Lowkey Kinda Sketch but works
+			Scripts.fifty_move_rule = 0 # If Pawn is Moved Rule is Reset
+			print("GET_MOVE- MOVED PIECE IS PAWN")
+			# Get Direction
+			var direction:int = 0
+			if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+				direction = 1
+			elif Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
+				direction = -1
+			# Update PAWN_MOVED_TWO_TILES
+			if asked_coords.x == current_coords.x +direction*2:
+				print("GET_MOVE- MADE PAWN TWO TILE MOVE")
+				Scripts.PIECE_MANAGER.set_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED_TWO_TILES,Scripts.PIECE_CONSTS.PAWN_MOVED_TWO_TILES.TRUE)
+			# Apply En Passant Rules
 			if asked_coords.y != current_coords.y:
 				if Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] == 0:
 					var en_passant_coords:Vector2i = Vector2i(current_coords.x,asked_coords.y)
-					print("PIECE_MOVE- en_passant_coords: ",en_passant_coords)
+					print("GET_MOVE- en_passant_coords: ",en_passant_coords)
 					capture_piece(en_passant_coords)
 					Scripts.BOARD_DATABASE.TILE_DICTIONARY[en_passant_coords]["piece"] = 0
 		
@@ -63,35 +71,7 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 				if asked_coords.y == current_coords.y +2:
 					print("gay")
 		
-		## Special Rules
-		# Apply Fifty Move Rule
-		Scripts.fifty_move_rule = fifty_move_rule
-		print("PIECE_MOVE- Fifty Move Rule: ",fifty_move_rule)
-		
-		# Capture Enemy Piece
-		if is_enemy(current_coords,asked_coords): # Add advanced logic for capturing here later if needed
-			capture_piece(asked_coords)
-		
-		# Remove Old Data
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
-		
-		# Add New Data
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
-		var times_moved:int = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED)
-		times_moved += 1
-		Scripts.PIECE_MANAGER.set_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED,times_moved)
-		print("PIECE_MOVE- times_moved: ",times_moved)
-		 
-		# If Moved Piece is King for CheckMate!
-		if current_coords == white_king_pos:
-			white_king_pos = asked_coords
-		elif current_coords == black_king_pos:
-			black_king_pos = asked_coords
-		
-		# Move Piece
-		var piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
-		piece_object.global_position = translated_coords
-		piece_object.move_local_y(-96)
+		move_piece(current_coords,asked_coords)
 		
 		# Modify color_turn, keeps track of whose turn it is
 		if Scripts.color_turn == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
@@ -99,12 +79,48 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 		else:
 			Scripts.color_turn = Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE
 		Scripts.turn_amount += 1
-		print("PIECE_MOVE- turn amount: ",Scripts.turn_amount)
+		print("GET_MOVE- TURN AMOUNT: ",Scripts.turn_amount)
 	
 	else:
-		print("PIECE_MOVE- coords not in _moves")
+		print("GET_MOVE- COORDS NOT IN _MOVES!")
 	
 	return
+
+static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Captures Pieces, Upates Dictionaries and moves Piece
+	
+	# Capture Enemy Piece
+	if is_enemy(current_coords,asked_coords): # Add advanced logic for capturing here later if needed
+		capture_piece(asked_coords)
+	
+	var piece:int = Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"]
+	
+	# Remove Old Data
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
+	
+	# Write New Data
+	Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
+	var times_moved:int = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED)
+	times_moved += 1
+	Scripts.PIECE_MANAGER.set_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED,times_moved)
+	print("MOVE_PIECE- TIMES_MOVED: ",times_moved)
+	
+	# Update King Position for Checkmate
+	if current_coords == white_king_pos:
+		white_king_pos = asked_coords
+	elif current_coords == black_king_pos:
+		black_king_pos = asked_coords
+	
+	# Move Piece
+	var piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
+	var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(asked_coords)
+	piece_object.global_position = translated_coords
+	piece_object.move_local_y(-96)
+
+static func capture_piece(asked_coords:Vector2i) -> void:
+	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
+	enemy_piece_object.hide()
+	Scripts.fifty_move_rule = 0 # If Captured Piece Rule is Reset
+	print("CAPTURE_PIECE- Enemy Piece Captured at: ",asked_coords)
 
 static func is_empty(asked_coords:Vector2i) -> bool:
 	if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_LIST.NONE:
@@ -180,15 +196,9 @@ static func is_in_check() -> bool: # Checks if King is in check
 	
 	return _is_in_check
 
-static func capture_piece(asked_coords:Vector2i) -> void:
-	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
-	enemy_piece_object.hide()
-	Scripts.fifty_move_rule = 0
-	print("CAPTURE_PIECE- Enemy Piece Captured at: ",asked_coords)
-
 ## private methods
 
-static func _get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSANT
+static func _get_pawn_moves(current_coords:Vector2i) -> Array:
 	_moves = []
 	var move_range:Array
 	var capture_squares:Array
@@ -219,12 +229,13 @@ static func _get_pawn_moves(current_coords:Vector2i) -> Array: # TODO: EN PASSAN
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_enemy(current_coords,pos):
 				_moves.append(pos)
-		var en_passant_squares:Array = [Vector2i(0,-1),Vector2i(0,1)]
-		for n:Vector2i in en_passant_squares:
-			var pos_passant:Vector2i = current_coords + n
-			if Scripts.BOARD_MANAGER.is_valid_position(pos_passant):
-				if is_enemy(current_coords,pos_passant):
-					if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 1:
+		# En Passant Rules
+		var pos_passant:Vector2i = Vector2i(current_coords.x,pos.y)
+		if Scripts.BOARD_MANAGER.is_valid_position(pos_passant):
+			if is_enemy(current_coords,pos_passant):
+				if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 1: # Bug if 1 En Passant is possible both appear
+					print("pos: ",pos,"pos_passant: ",pos_passant)
+					if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.PIECE_CONSTS.PAWN_MOVED_TWO_TILES.TRUE:
 						_moves.append(pos)
 	
 	return _moves

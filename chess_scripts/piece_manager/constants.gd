@@ -6,7 +6,7 @@ enum PIECE_LIST{_0, # use _0 for null
 	PIECE_OBJ,
 	PIECE_SPRITE,
 	TIMES_MOVED,
-	PAWN_MOVED,
+	PAWN_MOVED_TWO_TILES,
 }
 enum TYPE_LIST{_0, # use _0 for null
 	NONE,
@@ -21,7 +21,7 @@ enum PIECE_COLOR{_0, # use _0 for null
 WHITE,
 BLACK,
 }
-enum PAWN_MOVED{_0, # use _0 for null
+enum PAWN_MOVED_TWO_TILES{_0, # use _0 for null
 TRUE,
 FALSE,
 }

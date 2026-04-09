@@ -137,7 +137,7 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 			sprite = load("res://assets/pieces/white/w_pawn.png")
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.BLACK:
 			sprite = load("res://assets/pieces/black/b_pawn.png")
-		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED] = Scripts.PIECE_CONSTS.PAWN_MOVED.FALSE
+		Scripts.PIECE_DATABASE.PIECE_DICTIONARY[i][Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED_TWO_TILES] = Scripts.PIECE_CONSTS.PAWN_MOVED_TWO_TILES.FALSE
 	
 	if piece == Scripts.PIECE_LIST.ROOK:
 		if color == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
