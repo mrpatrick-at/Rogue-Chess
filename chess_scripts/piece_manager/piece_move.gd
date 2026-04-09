@@ -3,14 +3,18 @@ extends RefCounted
 ## consts
 ## exports
 ## public vars
-static var _moves:Array
+static var _moves:Array = []
+
+# Special Moves Vars
+static var _en_passant_flag:bool = false
+
 
 static var knight_directions:Array = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
 static var rook_directions:Array = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
 static var bishop_directions:Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 
-static var white_king_pos:Vector2i
-static var black_king_pos:Vector2i
+static var white_king_pos:Vector2i = Vector2i(0,0)
+static var black_king_pos:Vector2i = Vector2i(0,0)
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -41,17 +45,14 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(asked_coords)
 		var fifty_move_rule:int = Scripts.fifty_move_rule +1
 		
-		# If Moved Piece is Pawn
+		# If Moved Piece is Pawn TODO: Fix Pawns not disapearing after capture
 		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
 			fifty_move_rule = 0
 			print("PIECE_MOVE- Moved Piece is Pawn")
 			# Apply En Passant ## Lowkey Kinda Sketch but works
 			if asked_coords.y != current_coords.y:
 				if Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] == 0:
-					var direction:int = 1
-					if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
-						direction = -1
-					var en_passant_coords:Vector2i = Vector2i(asked_coords.x +direction,asked_coords.y)
+					var en_passant_coords:Vector2i = Vector2i(current_coords.x,asked_coords.y)
 					print("PIECE_MOVE- en_passant_coords: ",en_passant_coords)
 					capture_piece(en_passant_coords)
 					Scripts.BOARD_DATABASE.TILE_DICTIONARY[en_passant_coords]["piece"] = 0
@@ -62,16 +63,17 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 				if asked_coords.y == current_coords.y +2:
 					print("gay")
 		
+		## Special Rules
 		# Apply Fifty Move Rule
 		Scripts.fifty_move_rule = fifty_move_rule
 		print("PIECE_MOVE- Fifty Move Rule: ",fifty_move_rule)
 		
-		# Remove Old Data
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
 		# Capture Enemy Piece
 		if is_enemy(current_coords,asked_coords): # Add advanced logic for capturing here later if needed
 			capture_piece(asked_coords)
 		
+		# Remove Old Data
+		Scripts.BOARD_DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
 		
 		# Add New Data
 		Scripts.BOARD_DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
@@ -182,7 +184,7 @@ static func capture_piece(asked_coords:Vector2i) -> void:
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_OBJ)
 	enemy_piece_object.hide()
 	Scripts.fifty_move_rule = 0
-	print("PIECE_MOVE- Enemy Piece Captured")
+	print("CAPTURE_PIECE- Enemy Piece Captured at: ",asked_coords)
 
 ## private methods
 
