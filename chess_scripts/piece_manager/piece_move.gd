@@ -32,7 +32,7 @@ static func get_moves(current_coords:Vector2i) -> Array:
 			_moves = _get_rook_moves(current_coords) + _get_bishop_moves(current_coords)
 		Scripts.PIECE_CONSTS.TYPE_LIST.KING:
 			_moves = _get_king_moves(current_coords)
-	#print("piece_move/get_moves- _moves: ",_moves)
+	#print("GET_MOVES- _moves: ",_moves)
 	return _moves
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
@@ -235,9 +235,10 @@ static func _get_pawn_moves(current_coords:Vector2i) -> Array:
 		var pos_passant:Vector2i = Vector2i(current_coords.x,pos.y)
 		if Scripts.BOARD_MANAGER.is_valid_position(pos_passant):
 			if is_enemy(current_coords,pos_passant):
-				if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 1: # Bug if 1 En Passant is possible both appear
-					if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.PIECE_CONSTS.PAWN_MOVED_TWO_TILES.TRUE:
-						_moves.append(pos)
+				if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.PAWN:
+					if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.TIMES_MOVED) == 1: # Bug if 1 En Passant is possible both appear
+						if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.PIECE_CONSTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.PIECE_CONSTS.PAWN_MOVED_TWO_TILES.TRUE:
+							_moves.append(pos)
 	
 	return _moves
 
