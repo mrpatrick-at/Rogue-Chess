@@ -3,13 +3,11 @@ extends Node2D
 ## consts
 ## exports
 ## public vars
-static var built:bool = false
 static var tilemap_selection:TileMapLayer = TileMapLayer.new()
 static var tilemap_board:TileMapLayer = TileMapLayer.new()
 static var x_range:int = 9
 static var y_range:int = 9
-static var asked_coords:Vector2i = Vector2i(0,0)
-static var current_coords:Vector2i = Vector2i(0,0)
+
 ## private vars
 ## onready vars
 #@onready var tilemap_board:TileMapLayer = $TileMapLayer_Selection/TileMapLayer_Board
@@ -26,8 +24,7 @@ func _ready() -> void: # Runs on Startup
 func _physics_process(_delta:float) -> void: # Runs Every Tick
 	Scripts.PIECE_MOVE.is_in_check()
 	if InputEventMouse:
-		select_tile()
-	pass
+		Scripts.SELECTION_MANAGER.select_tile()
 
 ## public methods
 
@@ -35,7 +32,7 @@ static func build_board() -> void: # Remember y_range needs to be +1 bc it stops
 	for x in range(1,x_range):
 		for y in range(1,y_range):
 			var coords:Vector2i = Vector2i(x,y)
-			if coords not in Scripts.BOARD_DATABASE.TILE_DICTIONARY:
+			if coords not in Scripts.DATABASE.TILE_DICTIONARY:
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
 	_create_background()
@@ -46,45 +43,6 @@ static func is_valid_position(_asked_coords:Vector2i) -> bool:
 	if _asked_coords.x >= 1 and _asked_coords.x < 9 and _asked_coords.y >= 1 and _asked_coords.y < 9:
 		return true
 	return false
-
-static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Make Cleaner and more Functional
-	var mouse_pos:Vector2i = get_tile_from_mouse()
-	if current_coords == Vector2i(0,0):
-		tilemap_selection.clear()
-		# Highlight Tiles if hovered
-		if is_valid_position(mouse_pos):
-			tilemap_selection.set_cell(mouse_pos,1,Vector2i(1,0),0)
-			
-			# Initiate Piece Movement
-			if Input.is_action_just_pressed(&"_input_mouse_left") and (
-			!Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.PIECE_CONSTS.PIECE_LIST.TYPE) == Scripts.PIECE_CONSTS.TYPE_LIST.NONE and
-			Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.PIECE_CONSTS.PIECE_LIST.PIECE_COLOR) == Scripts.color_turn):
-				current_coords = mouse_pos
-		
-	elif is_valid_position(mouse_pos):
-		
-		# Hightlight Piece Itself
-		tilemap_selection.set_cell(current_coords,1,Vector2i(2,0),0)
-		
-		# Hightlight Possible Moves
-		var _moves:Array = Scripts.PIECE_MOVE.get_moves(current_coords)
-		for i:Vector2i in _moves:
-			tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
-		
-		if Input.is_action_just_pressed(&"_input_mouse_left"):
-			# Where to Move to: coord
-			asked_coords = mouse_pos
-			tilemap_selection.set_cell(asked_coords,1,Vector2i(2,0),0)
-			print("Move Piece from: ",current_coords,", Move Piece to: ",asked_coords)
-			
-			# Call Movement
-			Scripts.PIECE_MOVE.make_move(current_coords,asked_coords)
-			current_coords = Vector2i(0,0)
-			asked_coords = Vector2i(0,0)
-			
-	else:
-		if Input.is_action_just_pressed(&"_input_mouse_left"): # Error if mouse_pos Outside Board
-			print("Error: Tile Outside Board!")
 
 static func get_tile_from_mouse() -> Vector2i: # Translates Mouse coords into Board coords
 	var tilemap_selection_local_mouse_coords:Vector2 = tilemap_selection.get_local_mouse_position()
@@ -104,7 +62,7 @@ static func get_mouse_from_tile(coords:Vector2i) -> Vector2: # Translates Coords
 
 ## private methods
 
-func _create_tilemap_layers(quadrant_size:int = 128,tile_set:TileSet = preload("res://chess_objects/board/tile_set.tres")) -> void:
+func _create_tilemap_layers(quadrant_size:int = 128,tile_set:TileSet = preload("res://assets/board/tile_set.tres")) -> void:
 	# Config tilemap_selection
 	add_child(tilemap_selection)
 	tilemap_selection.rendering_quadrant_size = quadrant_size
@@ -142,27 +100,27 @@ static func _calculate_tile_color(coords:Vector2i) -> void: # Assing A Value to 
 		same_or_diffrent = 2
 		
 	if same_or_diffrent == 1: # Values same = black tile
-		Scripts.BOARD_DATABASE.TILE_BLACK += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{
-		"color": Scripts.BOARD_CONSTS.COLOR_LIST.BLACK,
+		Scripts.DATABASE.TILE_BLACK += 1
+		Scripts.DATABASE.TILE_DICTIONARY.get_or_add(coords,{
+		"color": Scripts.CONSTANTS.COLOR_LIST.BLACK,
 		})
 		
 		colour_of_tile = "Black"
 	
 	if same_or_diffrent == 2: # values diffrent = white tile
-		Scripts.BOARD_DATABASE.TILE_WHITE += 1
-		Scripts.BOARD_DATABASE.TILE_DICTIONARY.get_or_add(coords,{
-		"color": Scripts.BOARD_CONSTS.COLOR_LIST.WHITE,
+		Scripts.DATABASE.TILE_WHITE += 1
+		Scripts.DATABASE.TILE_DICTIONARY.get_or_add(coords,{
+		"color": Scripts.CONSTANTS.COLOR_LIST.WHITE,
 		})
 		
 		colour_of_tile = "White"
 		
-	Scripts.BOARD_DATABASE.TOTAL_TILES = Scripts.BOARD_DATABASE.TILE_BLACK + Scripts.BOARD_DATABASE.TILE_WHITE # Total Ints (Should be 64 for Chess board)
-	print(colour_of_tile," Tile Found at: ",coords," ; Now there is ",Scripts.BOARD_DATABASE.TOTAL_TILES,"/64 Total Tiles!")
+	Scripts.DATABASE.TOTAL_TILES = Scripts.DATABASE.TILE_BLACK + Scripts.DATABASE.TILE_WHITE # Total Ints (Should be 64 for Chess board)
+	print(colour_of_tile," Tile Found at: ",coords," ; Now there is ",Scripts.DATABASE.TOTAL_TILES,"/64 Total Tiles!")
 	return
 
 static func _create_board_cells(coords:Vector2i) -> void: # Create Board Cells Based on the Colour Value
-	var atlas_coords:Vector2i = Vector2i(Scripts.BOARD_DATABASE.TILE_DICTIONARY[coords]["color"],0) # Blank: 0,0 ; White: 1,0 ; Black: 2,0 ; Selection_Sprite: 3,0 ;
+	var atlas_coords:Vector2i = Vector2i(Scripts.DATABASE.TILE_DICTIONARY[coords]["color"],0) # Blank: 0,0 ; White: 1,0 ; Black: 2,0 ; Selection_Sprite: 3,0 ;
 	var atlas_selection_coords:Vector2i = Vector2i(0,0) # Blank: 0,0 ; Selection: 1,0 ;
 	tilemap_board.set_cell(coords,0,atlas_coords,0)
 	tilemap_selection.set_cell(coords,1,atlas_selection_coords,0)

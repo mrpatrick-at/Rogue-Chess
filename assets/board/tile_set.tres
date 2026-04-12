@@ -1,7 +1,7 @@
 [gd_resource type="TileSet" format=3 uid="uid://big83lg6450ys"]
 
-[ext_resource type="Texture2D" uid="uid://el6babusmuu7" path="res://chess_objects/board/tiles_selection.png" id="1_i3fpf"]
-[ext_resource type="Texture2D" uid="uid://b5edx8j05dwlx" path="res://chess_objects/board/tiles_board.png" id="2_scnhg"]
+[ext_resource type="Texture2D" uid="uid://el6babusmuu7" path="res://assets/board/tiles_selection.png" id="1_i3fpf"]
+[ext_resource type="Texture2D" uid="uid://b5edx8j05dwlx" path="res://assets/board/tiles_board.png" id="2_scnhg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_a2c7e"]
 texture = ExtResource("2_scnhg")

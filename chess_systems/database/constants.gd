@@ -1,14 +1,25 @@
 extends RefCounted
-## enums
+## Board Consts
+enum BOARD_LIST{_0, # use _0 for none
+	COLOR,
+	PIECE,
+}
+enum COLOR_LIST{
+	NONE, # 0
+	WHITE, # 1
+	BLACK, # 2
+}
+
+## Piece Consts
 enum PIECE_LIST{_0, # use _0 for null
-	TYPE,
+	PIECE_TYPE,
 	PIECE_COLOR,
 	PIECE_OBJ,
 	PIECE_SPRITE,
 	TIMES_MOVED,
 	PAWN_MOVED_TWO_TILES,
 }
-enum TYPE_LIST{_0, # use _0 for null
+enum PIECE_TYPE{_0, # use _0 for null
 	NONE,
 	PAWN,
 	ROOK,
@@ -25,12 +36,3 @@ enum PAWN_MOVED_TWO_TILES{_0, # use _0 for null
 TRUE,
 FALSE,
 }
-## consts
-## exports
-## public vars
-## private vars
-## onready vars
-# obj_ for node refrences
-## built-in override methods
-## public methods
-## private methods

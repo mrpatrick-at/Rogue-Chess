@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c5k24k716nlpc"]
 
 [ext_resource type="Script" uid="uid://ci7yr8f2qu242" path="res://chess_objects/board/main.gd" id="1_k1o7p"]
-[ext_resource type="TileSet" uid="uid://big83lg6450ys" path="res://chess_objects/board/tile_set.tres" id="2_5f208"]
+[ext_resource type="TileSet" uid="uid://big83lg6450ys" path="res://assets/board/tile_set.tres" id="2_5f208"]
 
 [node name="Main" type="Node2D" unique_id=591363710]
 script = ExtResource("1_k1o7p")

@@ -29,7 +29,7 @@ func set_turn_label() -> void:
 	turn_amount_label.text = str(Scripts.turn_amount)
 
 func set_color_move_label() -> void:
-	if Scripts.color_turn == Scripts.PIECE_CONSTS.PIECE_COLOR.WHITE:
+	if Scripts.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		color_move_label.text = "White's"
 	else:
 		color_move_label.text = "Black's"

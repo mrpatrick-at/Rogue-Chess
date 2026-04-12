@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://el6babusmuu7"
-path="res://.godot/imported/tiles_selection.png-c64ef94e70cc9efbe9469168e47b56dd.ctex"
+uid="uid://b5edx8j05dwlx"
+path="res://.godot/imported/tiles_board.png-907f8d20cce74a7fb2e69e0798ff962b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chess_objects/board/tiles_selection.png"
-dest_files=["res://.godot/imported/tiles_selection.png-c64ef94e70cc9efbe9469168e47b56dd.ctex"]
+source_file="res://assets/board/tiles_board.png"
+dest_files=["res://.godot/imported/tiles_board.png-907f8d20cce74a7fb2e69e0798ff962b.ctex"]
 
 [params]
 
