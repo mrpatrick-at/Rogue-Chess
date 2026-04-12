@@ -114,7 +114,7 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 	var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(asked_coords)
 	piece_object.global_position = translated_coords
 	piece_object.move_local_y(-96)
-	Scripts.SELECTION_MANAGER.piece_highlighted = false # TEMP FIX. CHANGE LATER !!!!!!!
+	Scripts.SELECTION_MANAGER._moved.erase(piece_object) # TEMP FIX. CHANGE LATER !!!!!!!
 
 static func capture_piece(asked_coords:Vector2i) -> void:
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)

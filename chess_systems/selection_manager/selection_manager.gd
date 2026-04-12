@@ -4,12 +4,10 @@ extends RefCounted
 ## exports
 ## public vars
 ## private vars
-static var piece_highlighted:bool = false
-static var last_piece_object:Node2D
-static var last_translated_coords:Vector2i
-
 static var current_coords:Vector2i = Vector2i(0,0)
 static var asked_coords:Vector2i = Vector2i(0,0)
+
+static var _moved:Dictionary = {}
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
@@ -62,17 +60,25 @@ static func hightlight_piece(coords:Vector2i) -> void:
 	var piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)
 	var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(coords)
 	
-	if piece_highlighted == true and last_piece_object != piece_object:
-		piece_highlighted = false
-		last_piece_object.move_local_y(+32)
-	
-	elif (Scripts.BOARD_MANAGER.is_valid_position(coords) and 
+	if (Scripts.BOARD_MANAGER.is_valid_position(coords) and 
 	Scripts.color_turn == Scripts.PIECE_MANAGER.get_piece_data(coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) and 
 	piece_object.position.y == -96 + translated_coords.y):
-		piece_object.move_local_y(-32)
-		last_piece_object = piece_object
-		last_translated_coords = translated_coords
-		piece_highlighted = true
-
-
+		var tween:Tween = piece_object.create_tween()
+		var old_y:float = piece_object.position.y
+		_moved[piece_object] = [tween,old_y]
+		tween.tween_property(piece_object,"position",Vector2(piece_object.position.x,piece_object.position.y -32), 0.05)
+		print(piece_object.get_children())
+	
+	if !_moved.is_empty():
+			
+		for last_piece_object:Node2D in _moved:
+			if last_piece_object == piece_object:
+				return
+			var array:Array = _moved.get(last_piece_object)
+			var tween:Tween = array.get(0)
+			var old_y:float = array.get(1)
+			tween.kill()
+			last_piece_object.position.y = old_y
+			_moved.erase(last_piece_object)
+	
 ## private methods
