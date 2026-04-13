@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://cskpf4n74la46" path="res://chess_systems/chess_ui/main.gd" id="1_ndxmu"]
 [ext_resource type="LabelSettings" uid="uid://ck60ea7gdtef7" path="res://chess_systems/chess_ui/text_ui_settings.tres" id="1_nfpch"]
 [ext_resource type="StyleBox" uid="uid://bukayp0talqv6" path="res://chess_systems/chess_ui/style_box_flat_gray.tres" id="2_soikl"]
+[ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://chess_systems/chess_camera/main.gdshader" id="4_r4mqq"]
+[ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="5_c4vah"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d5rf6"]
 bg_color = Color(0.18, 0.18, 0.18, 0.5019608)
@@ -19,6 +21,12 @@ corner_radius_bottom_left = 10
 expand_margin_top = 20.0
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fny4v"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d0qb3"]
+shader = ExtResource("4_r4mqq")
+shader_parameter/see_uv = false
+shader_parameter/cam_passthru = true
+shader_parameter/offset = -0.001
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=944538626]
 
@@ -121,3 +129,15 @@ clip_contents = true
 layout_mode = 2
 text = "00"
 label_settings = ExtResource("1_nfpch")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1366013786]
+z_index = -1
+texture_filter = 1
+texture_repeat = 2
+material = SubResource("ShaderMaterial_d0qb3")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_c4vah")

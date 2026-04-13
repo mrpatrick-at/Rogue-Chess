@@ -3,6 +3,7 @@ extends RefCounted
 ## consts
 const hightlight_speed_up:float = 0.05
 const hightlight_speed_down:float = 0.03
+const highlight_height:int = 32
 ## exports
 ## public vars
 ## private vars
@@ -58,7 +59,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 		if Input.is_action_just_pressed(&"_input_mouse_left"): # Error if mouse_pos Outside Board
 				print("Error: Tile Outside Board!")
 
-static func hightlight_piece(coords:Vector2i) -> void:
+static func hightlight_piece(coords:Vector2i) -> void: # Has Problem where you can only select Unit when its on Base Position, but barely noticeable under normal conditions
 	var piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)
 	var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(coords)
 	
@@ -68,8 +69,7 @@ static func hightlight_piece(coords:Vector2i) -> void:
 		var tween:Tween = piece_object.create_tween()
 		var old_y:float = piece_object.position.y
 		_moved[piece_object] = [tween,old_y]
-		tween.tween_property(piece_object,"position",Vector2(piece_object.position.x,piece_object.position.y -32), hightlight_speed_up)
-		print(piece_object.get_children())
+		tween.tween_property(piece_object,"position",Vector2(piece_object.position.x,piece_object.position.y -highlight_height), hightlight_speed_up)
 	
 	if !_moved.is_empty():
 			
@@ -84,4 +84,5 @@ static func hightlight_piece(coords:Vector2i) -> void:
 			tween.tween_property(last_piece_object,"position",Vector2(last_piece_object.position.x,old_y), hightlight_speed_down)
 			_moved.erase(last_piece_object)
 	
+
 ## private methods

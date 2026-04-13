@@ -28,6 +28,7 @@ static func get_piece_data(coords:Vector2i,data:int) -> Variant: # 1. coords 2. 
 		var piece_object:int = Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"]
 		var value:Variant = Scripts.DATABASE.PIECE_DICTIONARY[piece_object][data]
 		return value
+	#print("Invalid Coords / Board not Loaded Yet")
 	return
 
 static func set_piece_data(coords:Vector2i,data:int,value:int) -> void: # 1. coords 2. value to set 3. what to set it to
