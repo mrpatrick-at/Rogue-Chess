@@ -1,6 +1,5 @@
 shader_type canvas_item;
 
-//uniform vec4 color:source_color = vec4(0.0, 0.0, 0.0, 1.0);
 //uniform int my_enum:hint_enum("Zero", "One", "Two");
 //uniform sampler2D my_tex;
 uniform bool see_uv = false;
@@ -10,11 +9,7 @@ uniform sampler2D screen_tex : hint_screen_texture, repeat_disable, filter_linea
 uniform vec4 overlay_color:source_color = vec4(0.0, 0.0, 0.0, 1.0);
 
 void vertex() { // Called for every vertex the material is visible on.
-	float steps = 5.0;
-	vec4 v4 = vec4(0.3, 0.7, 0.5, 1.0);
 	
-	//COLOR = color;
-	//VERTEX.y = VERTEX.y + 20.0;
 }
 
 void fragment() { // Called for every pixel the material is visible on.

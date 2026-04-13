@@ -25,6 +25,11 @@ shader_parameter/overlay_color = Color(0, 0, 0, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
 shader = ExtResource("9_kek77")
+shader_parameter/see_uv = false
+shader_parameter/tile_background = false
+shader_parameter/color = Color(0, 0, 0, 1)
+shader_parameter/grid_size = Vector2(4, 4)
+shader_parameter/pixelation_factor = 30.0
 
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_h2yge")
@@ -69,7 +74,8 @@ material = SubResource("ShaderMaterial_4c57u")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -6.0
+offset_right = -6.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("5_5vw27")
-stretch_mode = 1
