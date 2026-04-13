@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://main.gd" id="1_h2yge"]
 [ext_resource type="PackedScene" uid="uid://c5k24k716nlpc" path="res://chess_objects/board/main.tscn" id="2_0xm2m"]
-[ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://chess_systems/chess_camera/main.gdshader" id="4_5vw27"]
+[ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="4_5vw27"]
 [ext_resource type="Script" uid="uid://dfcemd6356nld" path="res://chess_systems/chess_camera/main.gd" id="4_272bh"]
 [ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="5_5vw27"]
 [ext_resource type="PackedScene" uid="uid://dvbleewenqdko" path="res://chess_systems/piece_manager/piece_manager_2d.tscn" id="5_7mycd"]
 [ext_resource type="PackedScene" uid="uid://c4vg8g4rgo3fs" path="res://chess_systems/chess_player/main.tscn" id="5_lquwl"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://chess_systems/chess_ui/main.tscn" id="6_7mycd"]
+[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background.gdshader" id="9_kek77"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
 size = Vector2(250, 250)
@@ -18,7 +19,12 @@ albedo_color = Color(0, 0, 0, 1)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
 shader = ExtResource("4_5vw27")
 shader_parameter/see_uv = false
+shader_parameter/cam_passthru = false
 shader_parameter/offset = 0.01
+shader_parameter/overlay_color = Color(0, 0, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
+shader = ExtResource("9_kek77")
 
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_h2yge")
@@ -34,6 +40,10 @@ script = ExtResource("1_h2yge")
 
 [node name="ChessBoard2D" parent="ChessWorld2D" unique_id=700767895 instance=ExtResource("2_0xm2m")]
 
+[node name="ChessPlayer" parent="ChessWorld2D" unique_id=564898980 instance=ExtResource("5_lquwl")]
+
+[node name="PieceManager2D" parent="ChessWorld2D" unique_id=1738762470 instance=ExtResource("5_7mycd")]
+
 [node name="ChessCamera" type="Node2D" parent="ChessWorld2D" unique_id=699846906]
 script = ExtResource("4_272bh")
 
@@ -47,9 +57,19 @@ material = SubResource("ShaderMaterial_kek77")
 scale = Vector2(10, 10)
 texture = ExtResource("5_5vw27")
 
-[node name="ChessPlayer" parent="ChessWorld2D" unique_id=564898980 instance=ExtResource("5_lquwl")]
-
-[node name="PieceManager2D" parent="ChessWorld2D" unique_id=1738762470 instance=ExtResource("5_7mycd")]
-
-[node name="Chess_UI" parent="." unique_id=170619106 instance=ExtResource("6_7mycd")]
+[node name="Foreground" parent="ChessWorld2D/ChessCamera" unique_id=170619106 instance=ExtResource("6_7mycd")]
 metadata/_edit_use_anchors_ = true
+
+[node name="Background" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=764705812]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background" unique_id=1815771888]
+show_behind_parent = true
+material = SubResource("ShaderMaterial_4c57u")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_5vw27")
+stretch_mode = 1
