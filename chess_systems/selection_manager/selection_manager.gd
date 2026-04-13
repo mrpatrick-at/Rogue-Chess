@@ -1,6 +1,8 @@
 extends RefCounted
 ## enums
 ## consts
+const hightlight_speed_up:float = 0.05
+const hightlight_speed_down:float = 0.03
 ## exports
 ## public vars
 ## private vars
@@ -66,7 +68,7 @@ static func hightlight_piece(coords:Vector2i) -> void:
 		var tween:Tween = piece_object.create_tween()
 		var old_y:float = piece_object.position.y
 		_moved[piece_object] = [tween,old_y]
-		tween.tween_property(piece_object,"position",Vector2(piece_object.position.x,piece_object.position.y -32), 0.05)
+		tween.tween_property(piece_object,"position",Vector2(piece_object.position.x,piece_object.position.y -32), hightlight_speed_up)
 		print(piece_object.get_children())
 	
 	if !_moved.is_empty():
@@ -75,10 +77,11 @@ static func hightlight_piece(coords:Vector2i) -> void:
 			if last_piece_object == piece_object:
 				return
 			var array:Array = _moved.get(last_piece_object)
-			var tween:Tween = array.get(0)
+			var old_tween:RefCounted = array.get(0)
 			var old_y:float = array.get(1)
-			tween.kill()
-			last_piece_object.position.y = old_y
+			old_tween.kill()
+			var tween:RefCounted = last_piece_object.create_tween()
+			tween.tween_property(last_piece_object,"position",Vector2(last_piece_object.position.x,old_y), hightlight_speed_down)
 			_moved.erase(last_piece_object)
 	
 ## private methods
