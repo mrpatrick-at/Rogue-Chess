@@ -13,7 +13,7 @@ void vertex() { // Called for every vertex the material is visible on.
 void fragment() { // Called for every pixel the material is visible on.
 	vec2 uv = vec2(UV.x, UV.y);
 	
-	uv = fract(uv * grid_size);
+	//uv = fract(uv * grid_size);
 	vec2 pixelated_uv = floor(uv * (pixelation_factor)) / pixelation_factor;
 	
 	COLOR = texture(TEXTURE,pixelated_uv);

@@ -35,7 +35,7 @@ void fragment() { // Called for every pixel the material is visible on.
 	
 	float crt = sin(uv.y * 400.0 - TIME * crt_speed) * 0.1 + 0.1;
 	float crt2 = sin(uv.y * 20.0 - TIME * (crt_speed / 2.0)) * 0.1 + 0.3;
-	COLOR.rgb += vec3(crt,crt+0.1,crt) * 0.3 + vec3(crt2,crt2,crt2) * 0.3;
+	COLOR.rgb += vec3(crt,crt+0.07,crt) * 0.3 + vec3(crt2,crt2,crt2) * 0.3;
 	
 	//COLOR += overlay_color;
 	

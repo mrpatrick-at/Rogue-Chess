@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c4vg8g4rgo3fs" path="res://chess_systems/chess_player/main.tscn" id="5_lquwl"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://chess_systems/chess_ui/main.tscn" id="6_7mycd"]
 [ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background.gdshader" id="9_kek77"]
+[ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/background/temp_background.jpg" id="10_4c57u"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
 size = Vector2(250, 250)
@@ -23,13 +24,20 @@ shader_parameter/cam_passthru = false
 shader_parameter/offset = 0.01
 shader_parameter/overlay_color = Color(0, 0, 0, 1)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_efxa6"]
+shader = ExtResource("4_5vw27")
+shader_parameter/see_uv = false
+shader_parameter/cam_passthru = true
+shader_parameter/offset = 0.001
+shader_parameter/overlay_color = Color(0, 0.078431375, 0, 1)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
 shader = ExtResource("9_kek77")
 shader_parameter/see_uv = false
 shader_parameter/tile_background = false
 shader_parameter/color = Color(0, 0, 0, 1)
 shader_parameter/grid_size = Vector2(4, 4)
-shader_parameter/pixelation_factor = 30.0
+shader_parameter/pixelation_factor = 250.0
 
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_h2yge")
@@ -65,10 +73,20 @@ texture = ExtResource("5_5vw27")
 [node name="Foreground" parent="ChessWorld2D/ChessCamera" unique_id=170619106 instance=ExtResource("6_7mycd")]
 metadata/_edit_use_anchors_ = true
 
+[node name="VHS_Filter" type="TextureRect" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=2109015937]
+z_index = -1
+material = SubResource("ShaderMaterial_efxa6")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_5vw27")
+
 [node name="Background" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=764705812]
 layer = -1
 
-[node name="TextureRect" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background" unique_id=1815771888]
+[node name="Tiled_Background" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background" unique_id=1815771888]
 show_behind_parent = true
 material = SubResource("ShaderMaterial_4c57u")
 anchors_preset = 15
@@ -78,4 +96,4 @@ offset_left = -6.0
 offset_right = -6.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("5_5vw27")
+texture = ExtResource("10_4c57u")
