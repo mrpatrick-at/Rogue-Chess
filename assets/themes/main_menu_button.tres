@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3 uid="uid://cdmybg8xr06i6"]
+
+[ext_resource type="FontFile" uid="uid://dpq1fh6twwvtg" path="res://assets/font/roboto/static/Roboto-SemiBold.ttf" id="1_ew4w0"]
+
+[resource]
+default_font = ExtResource("1_ew4w0")
+default_font_size = 32

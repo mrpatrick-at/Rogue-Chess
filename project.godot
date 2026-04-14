@@ -11,8 +11,11 @@ config_version=5
 [application]
 
 config/name="Rogue Chess"
+config/description="Chess that is Rogue"
+config/version="v0.2"
 run/main_scene="uid://bxmeugje5h5ew"
 config/features=PackedStringArray("4.6", "Forward Plus")
+boot_splash/image="uid://ukwh8v3iua1"
 config/icon="res://icon.svg"
 
 [autoload]
