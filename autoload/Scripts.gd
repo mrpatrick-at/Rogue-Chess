@@ -1,13 +1,13 @@
 extends Node
 ## enums
 ## consts
-const BOARD_MANAGER:= preload("res://chess_objects/board/main.gd")
+const BOARD_MANAGER:= preload("res://chess_scenes/board/main.gd")
 const SELECTION_MANAGER:= preload("res://chess_systems/selection_manager/selection_manager.gd")
 
 const CHESS_PLAYER:= preload("res://chess_systems/chess_player/main.gd")
 const CHESS_CAMERA2D:= preload("res://chess_systems/chess_camera/main.gd")
 
-const PIECE_MANAGER:= preload("res://chess_systems/piece_manager/main.gd")
+const PIECE_MANAGER:= preload("res://chess_systems/piece_manager/piece_manager.gd")
 const PIECE_MOVE = preload("res://chess_systems/piece_manager/piece_move.gd")
 
 const DATABASE:= preload("res://chess_systems/database/database.gd")

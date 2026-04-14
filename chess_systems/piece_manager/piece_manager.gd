@@ -3,14 +3,24 @@ extends Node2D
 ## consts
 ## exports
 ## public vars
+static var blank_node:Node2D
+static var blank_sprite:Sprite2D
 ## private vars
 ## onready vars
-@onready var piece_none:Node2D = $PieceNone
 # obj_ for node refrences
 ## built-in override methods
 
 func _ready() -> void:
 	var i:int = 0
+	
+	# Add Blank Node for Empty Squares
+	blank_node = Node2D.new()
+	blank_node.name = "PieceNone"
+	add_child(blank_node)
+	blank_sprite = Sprite2D.new()
+	blank_sprite.name = "SpriteNone"
+	blank_node.add_child(blank_sprite)
+	
 	for coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY.keys():
 		i += 1
 		y_sort_enabled = true
@@ -111,8 +121,8 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 	var piece_sprite:Sprite2D
 	
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.NONE:
-		piece_object = $PieceNone
-		piece_sprite = $PieceNone/Sprite2D
+		piece_object = blank_node
+		piece_sprite = blank_sprite
 		i = 0
 	
 	else:

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://boa2i5m7m328b"]
 
-[ext_resource type="ArrayMesh" uid="uid://qcucn1imc0xn" path="res://chess_objects/pieces/pawn/mesh_3d.tres" id="1_trh7t"]
+[ext_resource type="ArrayMesh" uid="uid://qcucn1imc0xn" path="res://chess_scenes/pieces/pawn/mesh_3d.tres" id="1_trh7t"]
 
 [node name="MeshSource" type="Node3D" unique_id=1463737552]
 
