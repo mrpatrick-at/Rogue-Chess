@@ -11,6 +11,8 @@ static var bishop_directions:Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1
 
 static var white_king_pos:Vector2i = Vector2i(0,0)
 static var black_king_pos:Vector2i = Vector2i(0,0)
+
+static var king_pos:Vector2i
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -136,7 +138,6 @@ static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # Checks if
 	return false
 
 static func is_in_check() -> bool: # Checks if King is in check
-	var king_pos:Vector2i
 	var _is_in_check:bool = false
 	if Scripts.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		king_pos = white_king_pos

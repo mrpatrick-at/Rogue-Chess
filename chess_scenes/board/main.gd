@@ -1,17 +1,16 @@
 extends Node2D
 ## enums
 ## consts
+const quadrant_size:int = 128
+const x_range:int = 9
+const y_range:int = 9
+
 ## exports
 ## public vars
-static var tilemap_selection:TileMapLayer = TileMapLayer.new()
-static var tilemap_board:TileMapLayer = TileMapLayer.new()
-static var x_range:int = 9
-static var y_range:int = 9
-
+static var tilemap_selection:TileMapLayer
+static var tilemap_board:TileMapLayer
 ## private vars
 ## onready vars
-#@onready var tilemap_board:TileMapLayer = $TileMapLayer_Selection/TileMapLayer_Board
-#@onready var tilemap_selection:TileMapLayer = $TileMapLayer_Selection
 # obj_ for node refrences
 ## built-in override methods
 
@@ -23,10 +22,18 @@ func _ready() -> void: # Runs on Startup
 
 func _physics_process(_delta:float) -> void: # Runs Every Tick
 	Scripts.PIECE_MOVE.is_in_check()
+	end_game()
 	if InputEventMouse:
 		Scripts.SELECTION_MANAGER.select_tile()
 
 ## public methods
+
+func end_game() -> void:
+	if Input.is_action_just_pressed(&"_input_esc"):
+		get_tree().reload_current_scene()
+		Scripts.DATABASE.TILE_DICTIONARY.clear()
+		#Scripts.DATABASE.PIECE_DICTIONARY.clear()
+		#get_tree().change_scene_to_file("res://chess_scenes/main_menu/main.tscn")
 
 static func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before
 	for x in range(1,x_range):
@@ -62,7 +69,10 @@ static func get_mouse_from_tile(coords:Vector2i) -> Vector2: # Translates Coords
 
 ## private methods
 
-func _create_tilemap_layers(quadrant_size:int = 128,tile_set:TileSet = preload("res://assets/board/tile_set.tres")) -> void:
+func _create_tilemap_layers(tile_set:TileSet = preload("res://assets/board/tile_set.tres")) -> void:
+	tilemap_selection = TileMapLayer.new()
+	tilemap_board = TileMapLayer.new()
+	
 	# Config tilemap_selection
 	add_child(tilemap_selection)
 	tilemap_selection.rendering_quadrant_size = quadrant_size

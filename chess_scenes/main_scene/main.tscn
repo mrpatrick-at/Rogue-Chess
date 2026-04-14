@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bxmeugje5h5ew"]
 
-[ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://main.gd" id="1_h2yge"]
+[ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://chess_scenes/main_scene/main.gd" id="1_h2yge"]
 [ext_resource type="PackedScene" uid="uid://c5k24k716nlpc" path="res://chess_scenes/board/main.tscn" id="2_0xm2m"]
 [ext_resource type="Script" uid="uid://cc4t54f7tvv6f" path="res://chess_systems/chess_player/main.gd" id="4_4c57u"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="4_5vw27"]
