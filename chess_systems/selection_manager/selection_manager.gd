@@ -45,7 +45,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 			if got_move == false:
 				got_move = true
 				print("SELECT_TILE- got_move = true")
-				var _moves:Array = Scripts.PIECE_MOVE.get_valid_moves(current_coords)
+				var _moves:Array = Scripts.PIECE_MOVE.get_moves(current_coords)
 				for i:Vector2i in _moves:
 					tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
 			
