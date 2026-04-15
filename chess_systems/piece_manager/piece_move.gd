@@ -3,7 +3,7 @@ extends RefCounted
 ## consts
 ## exports
 ## public vars
-static var _moves:Array = []
+static var _valid_moves:Array = []
 
 static var knight_directions:Array = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
 static var rook_directions:Array = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
@@ -20,15 +20,24 @@ static var king_pos:Vector2i
 ## public methods
 
 static func get_valid_moves(current_coords:Vector2i) -> Array:
-	_moves = get_moves(current_coords)
+	_valid_moves = []
+	var _moves:Array = get_moves(current_coords)
 	
-	for move in _moves:
-		if !is_in_checkmate(move):
-			_moves.erase(move)
-	return _moves
+	if is_in_checkmate():
+		for move in _moves:
+			var check_coords:Array = get_check_coords(king_pos)
+			for piece:Vector2i in check_coords:
+				var _tiles_inbetween:Array = get_tiles_between_points(piece,move)
+				if move in _tiles_inbetween:
+					_valid_moves.append(move)
+	
+	else:
+		_valid_moves.append_array(_moves)
+	
+	return _valid_moves
 
 static func get_moves(current_coords:Vector2i) -> Array:
-	_moves = []
+	var _moves:Array = []
 	
 	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		king_pos = white_king_pos
@@ -53,7 +62,7 @@ static func get_moves(current_coords:Vector2i) -> Array:
 	return _moves
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
-	if asked_coords in _moves:
+	if asked_coords in _valid_moves:
 		Scripts.DATABASE.fifty_move_rule += 1 # For each Turn Rule +=1
 		
 		# If Moved Piece is Pawn
@@ -153,47 +162,35 @@ static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # Checks if
 		return true
 	return false
 
-static func is_in_checkmate(asked_coords:Vector2i) -> bool:
-	var _is_in_checkmate:bool = false
-	
-	var check_array:Array = get_check_coords(king_pos)
-	print("check coords: ",check_array)
+static func is_in_checkmate() -> bool:
+	var check_coords:Array = get_check_coords(king_pos)
+	print("check coords: ",check_coords)
 	var _king_in_check:bool = false
 	
-	if !check_array.is_empty():
-		_king_in_check = true
-	
-	if _king_in_check:
+	if !check_coords.is_empty():
 		var king_moves:Array = get_moves(king_pos)
 		for move:Vector2i in king_moves:
 			if !is_in_check(move):
 				print("IS_IN_CHECKMATE- King can Escape!")
-				return true
-		
-		for piece:Vector2i in check_array:
-			if is_in_check(piece):
-				print("IS_IN_CHECKMATE- Piece is Capturable!")
-				return true
-			
-			var _tiles_between:Array = get_tiles_between_points(piece,king_pos)
-			if asked_coords not in _tiles_between:
 				return false
 		
-		
-		print(_moves)
-		
+		for piece:Vector2i in check_coords:
+			if is_in_check(piece):
+				print("IS_IN_CHECKMATE- Piece is Capturable!")
+				return false
 		
 		print("IS_IN_CHECKMATE- Checkmate!")
+		return true # Piece in Checkmate 
 	
-	return false
 	print("IS_IN_CHECKMATE- No Check Detected!")
+	return false # Piece not in Check
 
-static func is_in_check(check_pos:Vector2i) -> bool:
+static func is_in_check(check_pos:Vector2i) -> bool: # Checks if Piece is being Checked
 	if get_check_coords(check_pos).size() > 0:
 		return true
 	return false
 
-static func get_check_coords(check_pos:Vector2i) -> Array: # Checks if King is in check
+static func get_check_coords(check_pos:Vector2i) -> Array: # Get The Coords of all Pieces Checking the asked Piece
 	var check_coords:Array = []
 	
 	var pawn_direction:int
@@ -252,7 +249,7 @@ static func get_check_coords(check_pos:Vector2i) -> Array: # Checks if King is i
 	
 	return check_coords
 
-static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array:
+static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Gets all the Points in a Straight line between 2 Points
 	var value_x:int
 	var value_y:int
 	
@@ -284,7 +281,7 @@ static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) 
 ## private methods
 
 static func _get_pawn_moves(current_coords:Vector2i) -> Array:
-	_moves = []
+	var _moves:Array = []
 	var move_range:Array
 	var capture_squares:Array
 	if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
@@ -326,7 +323,7 @@ static func _get_pawn_moves(current_coords:Vector2i) -> Array:
 	return _moves
 
 static func _get_knight_moves(current_coords:Vector2i) -> Array: # TODO: Prob can Make this a little bit better !!!
-	_moves = []
+	var _moves:Array = []
 	
 	for i:Vector2i in knight_directions:
 		var pos:Vector2i = current_coords
@@ -340,7 +337,7 @@ static func _get_knight_moves(current_coords:Vector2i) -> Array: # TODO: Prob ca
 	return _moves
 
 static func _get_rook_moves(current_coords:Vector2i) -> Array:
-	_moves = []
+	var _moves:Array = []
 	
 	for i:Vector2i in rook_directions:
 		var pos:Vector2i = current_coords
@@ -359,7 +356,7 @@ static func _get_rook_moves(current_coords:Vector2i) -> Array:
 	return _moves
 
 static func _get_bishop_moves(current_coords:Vector2i) -> Array:
-	_moves = []
+	var _moves:Array = []
 	
 	for i:Vector2i in bishop_directions:
 		var pos:Vector2i = current_coords
@@ -378,7 +375,7 @@ static func _get_bishop_moves(current_coords:Vector2i) -> Array:
 	return _moves
 
 static func _get_king_moves(current_coords:Vector2i) -> Array: # TODO: Wow I just discovered how absolutely shit the Castling Code is. FIX IN FUTURE!!!!
-	_moves = []
+	var _moves:Array = []
 	
 	for x in range(-1,2):
 		for y in range(-1,2):
