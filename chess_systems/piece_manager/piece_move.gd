@@ -19,8 +19,22 @@ static var king_pos:Vector2i
 ## built-in override methods
 ## public methods
 
+static func get_valid_moves(current_coords:Vector2i) -> Array:
+	_moves = get_moves(current_coords)
+	
+	for move in _moves:
+		if !is_in_checkmate(move):
+			_moves.erase(move)
+	return _moves
+
 static func get_moves(current_coords:Vector2i) -> Array:
 	_moves = []
+	
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+		king_pos = white_king_pos
+	else:
+		king_pos = black_king_pos
+	
 	match abs(Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)):
 		Scripts.CONSTANTS.PIECE_TYPE.PAWN:
 			_moves = _get_pawn_moves(current_coords)
@@ -35,6 +49,7 @@ static func get_moves(current_coords:Vector2i) -> Array:
 		Scripts.CONSTANTS.PIECE_TYPE.KING:
 			_moves = _get_king_moves(current_coords)
 	#print("GET_MOVES- _moves: ",_moves)
+	
 	return _moves
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
@@ -81,6 +96,7 @@ static func make_move(current_coords:Vector2i,asked_coords:Vector2i) -> void: # 
 			Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
 		Scripts.DATABASE.turn_amount += 1
 		print("MAKE_MOVE- TURN AMOUNT: ",Scripts.DATABASE.turn_amount)
+		
 	
 	else:
 		print("MAKE_MOVE- COORDS NOT IN _MOVES!")
@@ -137,12 +153,48 @@ static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # Checks if
 		return true
 	return false
 
-static func is_in_check() -> bool: # Checks if King is in check
-	var _is_in_check:bool = false
-	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-		king_pos = white_king_pos
-	else:
-		king_pos = black_king_pos
+static func is_in_checkmate(asked_coords:Vector2i) -> bool:
+	var _is_in_checkmate:bool = false
+	
+	var check_array:Array = get_check_coords(king_pos)
+	print("check coords: ",check_array)
+	var _king_in_check:bool = false
+	
+	if !check_array.is_empty():
+		_king_in_check = true
+	
+	if _king_in_check:
+		var king_moves:Array = get_moves(king_pos)
+		for move:Vector2i in king_moves:
+			if !is_in_check(move):
+				print("IS_IN_CHECKMATE- King can Escape!")
+				return true
+		
+		for piece:Vector2i in check_array:
+			if is_in_check(piece):
+				print("IS_IN_CHECKMATE- Piece is Capturable!")
+				return true
+			
+			var _tiles_between:Array = get_tiles_between_points(piece,king_pos)
+			if asked_coords not in _tiles_between:
+				return false
+		
+		
+		print(_moves)
+		
+		
+		print("IS_IN_CHECKMATE- Checkmate!")
+	
+	return false
+	print("IS_IN_CHECKMATE- No Check Detected!")
+
+static func is_in_check(check_pos:Vector2i) -> bool:
+	if get_check_coords(check_pos).size() > 0:
+		return true
+	return false
+
+static func get_check_coords(check_pos:Vector2i) -> Array: # Checks if King is in check
+	var check_coords:Array = []
 	
 	var pawn_direction:int
 	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
@@ -150,55 +202,84 @@ static func is_in_check() -> bool: # Checks if King is in check
 	else:
 		pawn_direction = -1
 	
-	var pawn_attacks:Array = [king_pos + Vector2i(pawn_direction,-1),king_pos + Vector2i(pawn_direction,1)]
+	var pawn_attacks:Array = [check_pos + Vector2i(pawn_direction,-1),check_pos + Vector2i(pawn_direction,1)]
 	
 	for pos:Vector2i in pawn_attacks:
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
-			if is_enemy(king_pos,pos):
+			if is_enemy(check_pos,pos):
 				var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
 				if piece == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
 					print("IS_IN_CHECK- pawn_check")
-					_is_in_check = true
+					check_coords.append(pos)
 	
-	for pos:Vector2i in _get_knight_moves(king_pos):
+	for pos:Vector2i in _get_knight_moves(check_pos):
 		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
 		if piece == Scripts.CONSTANTS.PIECE_TYPE.KNIGHT:
 			print("IS_IN_CHECK- knight_check")
-			_is_in_check = true
+			check_coords.append(pos)
 	
-	for pos:Vector2i in _get_rook_moves(king_pos):
+	for pos:Vector2i in _get_rook_moves(check_pos):
 		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
 		if piece == Scripts.CONSTANTS.PIECE_TYPE.ROOK:
 			print("IS_IN_CHECK- rook_check")
-			_is_in_check = true
+			check_coords.append(pos)
 		elif piece == Scripts.CONSTANTS.PIECE_TYPE.QUEEN:
 			print("IS_IN_CHECK- queen_check")
-			_is_in_check = true
+			check_coords.append(pos)
 	
-	for pos:Vector2i in _get_bishop_moves(king_pos):
+	for pos:Vector2i in _get_bishop_moves(check_pos):
 		var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
 		if piece == Scripts.CONSTANTS.PIECE_TYPE.BISHOP:
 			print("IS_IN_CHECK- bishop_check")
-			_is_in_check = true
+			check_coords.append(pos)
 		elif piece == Scripts.CONSTANTS.PIECE_TYPE.QUEEN:
 			print("IS_IN_CHECK- queen_check")
-			_is_in_check = true
+			check_coords.append(pos)
 	
 	for x in range(-1,2):
 		for y in range(-1,2):
-			var pos:Vector2i = king_pos
+			var pos:Vector2i = check_pos
 			pos.x += x
 			pos.y += y
-			if pos == king_pos:
+			if pos == check_pos:
 				continue
 			
 			if Scripts.BOARD_MANAGER.is_valid_position(pos):
-				if is_enemy(king_pos,pos):
+				if is_enemy(check_pos,pos):
 					if Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.KING:
 						print("IS_IN_CHECK- king_check????????????????")
-						_is_in_check = true
+						check_coords.append(pos)
 	
-	return _is_in_check
+	return check_coords
+
+static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array:
+	var value_x:int
+	var value_y:int
+	
+	if starting_pos.x < target_pos.x:
+		value_x = 1
+	else:
+		value_x = -1
+	if starting_pos.y < target_pos.y:
+		value_y = 1
+	else:
+		value_y = -1
+	
+	var step:Vector2i = Vector2i(starting_pos)
+	var _steps:Array = []
+	
+	while step != target_pos:
+		if step.x != target_pos.x:
+			step.x += value_x
+		if step.y != target_pos.y:
+			step.y += value_y
+		_steps.append(step)
+		print("steps +1")
+		
+	print("steps: ",_steps)
+	
+	return _steps
+
 
 ## private methods
 

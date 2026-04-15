@@ -11,6 +11,8 @@ static var current_coords:Vector2i = Vector2i(0,0)
 static var asked_coords:Vector2i = Vector2i(0,0)
 
 static var _moved:Dictionary = {}
+
+static var got_move:bool = false
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
@@ -40,9 +42,12 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 			tilemap_selection.set_cell(current_coords,1,Vector2i(2,0),0)
 			
 			# Hightlight Possible Moves
-			var _moves:Array = Scripts.PIECE_MOVE.get_moves(current_coords)
-			for i:Vector2i in _moves:
-				tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
+			if got_move == false:
+				got_move = true
+				print("SELECT_TILE- got_move = true")
+				var _moves:Array = Scripts.PIECE_MOVE.get_valid_moves(current_coords)
+				for i:Vector2i in _moves:
+					tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
 			
 			if Input.is_action_just_pressed(&"_input_mouse_left"):
 				# Where to Move to: coord
@@ -54,6 +59,8 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 				Scripts.PIECE_MOVE.make_move(current_coords,asked_coords)
 				current_coords = Vector2i(0,0)
 				asked_coords = Vector2i(0,0)
+				got_move = false
+				print("SELECT_TILE- got_move = false")
 				
 	else:
 		if Input.is_action_just_pressed(&"_input_mouse_left"): # Error if mouse_pos Outside Board

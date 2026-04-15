@@ -23,7 +23,7 @@ func _ready() -> void: # Runs on Startup
 	pass
 
 func _physics_process(_delta:float) -> void: # Runs Every Tick
-	Scripts.PIECE_MOVE.is_in_check()
+	#Scripts.PIECE_MOVE.is_in_check()
 	if !esc_menu.is_visible_in_tree():
 		if InputEventMouse:
 			Scripts.SELECTION_MANAGER.select_tile()
