@@ -16,6 +16,11 @@ static var BUILT:bool = false # If Board is already built
 ## Piece Data
 static var PIECE_DICTIONARY:Dictionary = {} # Dictionary for holding piece data
 
+## Checking Data
+static var IN_CHECKMATE:bool = false
+static var IN_DRAW:bool = false
+static var IN_STALEMATE:bool = false
+
 ## public methods
 
 static func get_piece_object(coords:Vector2i) -> Variant:

@@ -17,6 +17,8 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed(&"_input_esc"):
 		toggle_esc_menu()
+	if Scripts.DATABASE.IN_CHECKMATE:
+		get_tree().change_scene_to_file("res://chess_scenes/main_menu/main.tscn")
 	pass
 
 ## public methods

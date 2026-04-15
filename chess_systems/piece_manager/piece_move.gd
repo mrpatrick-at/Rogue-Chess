@@ -58,6 +58,7 @@ static func get_valid_moves(_moves:Array) -> Array: # Returns Positions from an 
 				if _tiles_inbetween.has(move):
 					_temp_valid_moves.append(move)
 					if _temp_valid_moves.is_empty():
+						Scripts.DATABASE.IN_CHECKMATE = true
 						print("Checkmate! ")
 					return _temp_valid_moves
 	else:
@@ -66,7 +67,7 @@ static func get_valid_moves(_moves:Array) -> Array: # Returns Positions from an 
 	print("closing: ",_valid_moves)
 	return _temp_valid_moves
 
-static func is_in_checkmate() -> bool: # Checks if King is in CHeckmate
+static func is_in_checkmate() -> bool: # Checks if King is in CHeckmate TODO: Improve this
 	var check_coords:Array = get_check_coords(king_pos)
 	print("check coords: ",check_coords)
 	var _king_in_check:bool = false
