@@ -11,6 +11,8 @@ static var tilemap_selection:TileMapLayer
 static var tilemap_board:TileMapLayer
 ## private vars
 ## onready vars
+@onready var esc_menu: Control = $"../ChessCamera/Foreground/EscMenu"
+
 # obj_ for node refrences
 ## built-in override methods
 
@@ -22,18 +24,11 @@ func _ready() -> void: # Runs on Startup
 
 func _physics_process(_delta:float) -> void: # Runs Every Tick
 	Scripts.PIECE_MOVE.is_in_check()
-	end_game()
-	if InputEventMouse:
-		Scripts.SELECTION_MANAGER.select_tile()
+	if !esc_menu.is_visible_in_tree():
+		if InputEventMouse:
+			Scripts.SELECTION_MANAGER.select_tile()
 
 ## public methods
-
-func end_game() -> void:
-	if Input.is_action_just_pressed(&"_input_esc"):
-		get_tree().reload_current_scene()
-		Scripts.DATABASE.TILE_DICTIONARY.clear()
-		#Scripts.DATABASE.PIECE_DICTIONARY.clear()
-		#get_tree().change_scene_to_file("res://chess_scenes/main_menu/main.tscn")
 
 static func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before
 	for x in range(1,x_range):
@@ -42,7 +37,6 @@ static func build_board() -> void: # Remember y_range needs to be +1 bc it stops
 			if coords not in Scripts.DATABASE.TILE_DICTIONARY:
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
-	_create_background()
 	
 	print("Created Board of size: ",tilemap_board.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
 
@@ -140,14 +134,3 @@ func _center_tilemap() -> void: # Rotates and Centers ALL Tilemaps
 	global_position.x = ((x_range * 128.0) / 2.0 ) *-1
 	global_position.y = ((y_range * 128.0) / 2.0 ) *1
 	print("Tile Map Centered to: ",position.x," , ",position.y,"!")
-
-static func _create_background() -> void: # Creates the Board Background TODO: Make this
-	pass
-	
-	
-	
-	
-	
-	
-	
-	

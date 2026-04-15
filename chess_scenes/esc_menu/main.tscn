@@ -1,12 +1,12 @@
-[gd_scene format=3 uid="uid://dx4eyy3a24cpk"]
+[gd_scene format=3 uid="uid://qfk2ipuga0om"]
 
-[ext_resource type="Script" uid="uid://wf0uu24p8acw" path="res://chess_scenes/main_menu/main.gd" id="1_nbxyt"]
-[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background.gdshader" id="2_s1i2w"]
-[ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/background/temp_background.jpg" id="3_mvrqo"]
-[ext_resource type="Theme" uid="uid://cdmybg8xr06i6" path="res://assets/themes/main_menu_button.tres" id="4_j8mb5"]
+[ext_resource type="Script" uid="uid://cw31amb7fur4t" path="res://chess_scenes/esc_menu/main.gd" id="1_3xua7"]
+[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background.gdshader" id="2_icw3k"]
+[ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/background/temp_background.jpg" id="3_7077p"]
+[ext_resource type="Theme" uid="uid://cdmybg8xr06i6" path="res://assets/themes/main_menu_button.tres" id="4_6pbu2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mn7x5"]
-shader = ExtResource("2_s1i2w")
+shader = ExtResource("2_icw3k")
 shader_parameter/see_uv = false
 shader_parameter/tile_background = false
 shader_parameter/color = Color(0, 0, 0, 1)
@@ -20,9 +20,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_nbxyt")
+script = ExtResource("1_3xua7")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1237339817]
+visible = false
 material = SubResource("ShaderMaterial_mn7x5")
 layout_mode = 1
 anchors_preset = 15
@@ -30,7 +31,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_mvrqo")
+texture = ExtResource("3_7077p")
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1946291087]
 layout_mode = 1
@@ -56,10 +57,10 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="Start" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer3" unique_id=1276947298]
+[node name="Continue" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer3" unique_id=1276947298]
 layout_mode = 2
-theme = ExtResource("4_j8mb5")
-text = "Start"
+theme = ExtResource("4_6pbu2")
+text = "Continue"
 
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=1580950290]
 custom_minimum_size = Vector2(0, 80)
@@ -71,8 +72,34 @@ theme_override_constants/margin_bottom = 5
 
 [node name="Options" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer" unique_id=891171130]
 layout_mode = 2
-theme = ExtResource("4_j8mb5")
+theme = ExtResource("4_6pbu2")
 text = "Options"
+
+[node name="MarginContainer5" type="MarginContainer" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=637346752]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Restart" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer5" unique_id=1289250036]
+layout_mode = 2
+theme = ExtResource("4_6pbu2")
+text = "Restart"
+
+[node name="MarginContainer4" type="MarginContainer" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=109040885]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Main Menu" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer4" unique_id=121001246]
+layout_mode = 2
+theme = ExtResource("4_6pbu2")
+text = "Main Menu"
 
 [node name="MarginContainer2" type="MarginContainer" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=1998641894]
 custom_minimum_size = Vector2(0, 80)
@@ -84,9 +111,11 @@ theme_override_constants/margin_bottom = 5
 
 [node name="Quit" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer2" unique_id=2072353422]
 layout_mode = 2
-theme = ExtResource("4_j8mb5")
+theme = ExtResource("4_6pbu2")
 text = "Quit"
 
-[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/MarginContainer3/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/MarginContainer3/Continue" to="." method="_on_continue_pressed"]
 [connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/Options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/MarginContainer5/Restart" to="." method="_on_restart_pressed"]
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/MarginContainer4/Main Menu" to="." method="_on_main_menu_pressed"]
 [connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/MarginContainer2/Quit" to="." method="_on_quit_pressed"]

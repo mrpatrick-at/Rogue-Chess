@@ -32,7 +32,7 @@ static func select_tile() -> void: # Highlight the Tile below the Mouse TODO: Ma
 			# Initiate Piece Movement
 			if Input.is_action_just_pressed(&"_input_mouse_left") and (
 			!Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.NONE and
-			Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.color_turn):
+			Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.DATABASE.color_turn):
 				current_coords = mouse_pos
 		else:
 			
@@ -64,7 +64,7 @@ static func hightlight_piece(coords:Vector2i) -> void: # Has Problem where you c
 	var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(coords)
 	
 	if (Scripts.BOARD_MANAGER.is_valid_position(coords) and 
-	Scripts.color_turn == Scripts.PIECE_MANAGER.get_piece_data(coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) and 
+	Scripts.DATABASE.color_turn == Scripts.PIECE_MANAGER.get_piece_data(coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) and 
 	piece_object.position.y == -96 + translated_coords.y):
 		var tween:Tween = piece_object.create_tween()
 		var old_y:float = piece_object.position.y

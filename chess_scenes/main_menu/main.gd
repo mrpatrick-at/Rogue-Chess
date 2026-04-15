@@ -15,10 +15,10 @@ func _process(_delta: float) -> void:
 	pass
 
 func _on_start_pressed() -> void:
-	get_tree().change_scene_to_file("res://main.tscn")
+	get_tree().change_scene_to_file("res://chess_scenes/main_scene/main.tscn")
 
 func _on_options_pressed() -> void:
-	pass # Replace with function body.
+	get_tree().change_scene_to_file("res://chess_scenes/main_scene/main.tscn") # Add Option Scene Later
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()

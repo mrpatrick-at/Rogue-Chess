@@ -39,11 +39,11 @@ static func get_moves(current_coords:Vector2i) -> Array:
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Calls all funcs used for movement
 	if asked_coords in _moves:
-		Scripts.fifty_move_rule += 1 # For each Turn Rule +=1
+		Scripts.DATABASE.fifty_move_rule += 1 # For each Turn Rule +=1
 		
 		# If Moved Piece is Pawn
 		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
-			Scripts.fifty_move_rule = 0 # If Pawn is Moved Rule is Reset
+			Scripts.DATABASE.fifty_move_rule = 0 # If Pawn is Moved Rule is Reset
 			print("MAKE_MOVE- MOVED PIECE IS PAWN")
 			# Get Direction
 			var direction:int = 0
@@ -75,12 +75,12 @@ static func make_move(current_coords:Vector2i,asked_coords:Vector2i) -> void: # 
 		move_piece(current_coords,asked_coords)
 		
 		# Modify color_turn, keeps track of whose turn it is
-		if Scripts.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			Scripts.color_turn = Scripts.CONSTANTS.PIECE_COLOR.BLACK
+		if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+			Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.BLACK
 		else:
-			Scripts.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
-		Scripts.turn_amount += 1
-		print("MAKE_MOVE- TURN AMOUNT: ",Scripts.turn_amount)
+			Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
+		Scripts.DATABASE.turn_amount += 1
+		print("MAKE_MOVE- TURN AMOUNT: ",Scripts.DATABASE.turn_amount)
 	
 	else:
 		print("MAKE_MOVE- COORDS NOT IN _MOVES!")
@@ -121,7 +121,7 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 static func capture_piece(asked_coords:Vector2i) -> void:
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)
 	enemy_piece_object.hide()
-	Scripts.fifty_move_rule = 0 # If Captured Piece Rule is Reset
+	Scripts.DATABASE.fifty_move_rule = 0 # If Captured Piece Rule is Reset
 	print("CAPTURE_PIECE- Enemy Piece Captured at: ",asked_coords)
 
 static func is_empty(asked_coords:Vector2i) -> bool:
@@ -139,13 +139,13 @@ static func is_enemy(coords:Vector2i,asked_coords:Vector2i) -> bool: # Checks if
 
 static func is_in_check() -> bool: # Checks if King is in check
 	var _is_in_check:bool = false
-	if Scripts.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		king_pos = white_king_pos
 	else:
 		king_pos = black_king_pos
 	
 	var pawn_direction:int
-	if Scripts.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		pawn_direction = 1
 	else:
 		pawn_direction = -1

@@ -26,15 +26,15 @@ func set_labels() -> void:
 	set_fifty_move_rule_label()
 
 func set_turn_label() -> void:
-	turn_amount_label.text = str(Scripts.turn_amount)
+	turn_amount_label.text = str(Scripts.DATABASE.turn_amount)
 
 func set_color_move_label() -> void:
-	if Scripts.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		color_move_label.text = "White's"
 	else:
 		color_move_label.text = "Black's"
 	
 
 func set_fifty_move_rule_label() -> void:
-	fifty_move_rule_label.text = str(Scripts.fifty_move_rule)
+	fifty_move_rule_label.text = str(Scripts.DATABASE.fifty_move_rule)
 ## private methods
