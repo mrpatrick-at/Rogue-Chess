@@ -22,18 +22,4 @@ static var IN_DRAW:bool = false
 static var IN_STALEMATE:bool = false
 
 ## public methods
-
-static func get_piece_object(coords:Vector2i) -> Variant:
-	var piece_object:int = Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"]
-	return piece_object
-
-static func get_piece_data(coords:Vector2i,data:int) -> Variant: # 1. coords 2. value to get
-	var piece_object:int = get_piece_object(coords)
-	var value:Variant = Scripts.DATABASE.PIECE_DICTIONARY[piece_object][data]
-	return value
-
-static func set_piece_data(coords:Vector2i,data:int,value:int) -> void: # 1. coords 2. value to set 3. what to set it to
-	var piece_object:int = get_piece_object(coords)
-	Scripts.DATABASE.PIECE_DICTIONARY[piece_object][data] = value
-
 ## private methods

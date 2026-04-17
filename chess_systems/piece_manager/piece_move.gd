@@ -10,20 +10,23 @@ static var bishop_directions:Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1
 static var white_king_pos:Vector2i = Vector2i(0,0)
 static var black_king_pos:Vector2i = Vector2i(0,0)
 
-static var king_pos:Vector2i
+static var king_pos:Vector2i = white_king_pos
+static var all_moves:Dictionary = {}
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
 ## public methods
 
+static func get_all_moves() -> void:
+	for coords in Scripts.DATABASE.TILE_DICTIONARY:
+		if !is_empty(coords):
+			var _moves:Array = get_moves(coords)
+			all_moves[coords] = _moves
+	#print("GET_ALL_MOVES- all moves: ",all_moves)
+
 static func get_moves(current_coords:Vector2i) -> Array:
 	var _moves:Array = []
-	
-	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-		king_pos = white_king_pos
-	else:
-		king_pos = black_king_pos
 	
 	match abs(Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)): # Checks which Piece, then gets Moves
 		Scripts.CONSTANTS.PIECE_TYPE.PAWN:
@@ -39,11 +42,10 @@ static func get_moves(current_coords:Vector2i) -> Array:
 		Scripts.CONSTANTS.PIECE_TYPE.KING:
 			_moves = _get_king_moves(current_coords)
 	
-	var _valid_moves = Scripts.PIECE_CHECK.get_valid_moves(_moves) # Checks which Moves are Valid
+	#if current_coords == king_pos:
+		#Scripts.PIECE_CHECK.is_in_checkmate(_moves)
 	
-	#print("GET_MOVES- _valid_moves: ",_valid_moves)
-	
-	return _valid_moves
+	return _moves
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement
 	if asked_coords in _moves:
@@ -82,14 +84,7 @@ static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array
 		
 		move_piece(current_coords,asked_coords)
 		
-		# Modify color_turn, keeps track of whose turn it is
-		if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.BLACK
-		else:
-			Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
-		Scripts.DATABASE.turn_amount += 1
-		print("MAKE_MOVE- TURN AMOUNT: ",Scripts.DATABASE.turn_amount)
-		
+		post_move()
 	
 	else:
 		print("MAKE_MOVE- COORDS NOT IN _MOVES!")
@@ -125,7 +120,24 @@ static func move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: #
 	var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(asked_coords)
 	piece_object.global_position = translated_coords
 	piece_object.move_local_y(-96)
+	
 	Scripts.SELECTION_MANAGER._moved.erase(piece_object) # TEMP FIX. CHANGE LATER !!!!!!!
+
+static func post_move() -> void: # Stuff to Do After Move was Called
+	# Modify color_turn, keeps track of whose turn it is
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+		Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.BLACK
+	else:
+		Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
+	# Increment Turn Amount
+	Scripts.DATABASE.turn_amount += 1
+	print("MAKE_MOVE- TURN AMOUNT: ",Scripts.DATABASE.turn_amount)
+	# Update king_pos depending on whose turn it is
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+		king_pos = white_king_pos
+	else:
+		king_pos = black_king_pos
+	get_all_moves()
 
 static func capture_piece(asked_coords:Vector2i) -> void: # Captures The Piece on the Given Tile
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)

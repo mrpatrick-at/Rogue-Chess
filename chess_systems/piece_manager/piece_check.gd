@@ -9,20 +9,25 @@ static var king_pos:Vector2i
 # obj_ for node refrences
 ## built-in override methods
 ## public methods
+
 static func get_valid_moves(_moves:Array) -> Array: # Returns Positions from an Array, after Compraring them to a Valid Position Array
 	king_pos = Scripts.PIECE_MOVE.king_pos
 	var _valid_moves:Array = []
-	if is_in_checkmate():
+	if is_in_check(king_pos):
+		
 		for move:Vector2i in _moves:
 			var check_coords:Array = get_check_coords(king_pos) # works so far
+			
 			for piece:Vector2i in check_coords:
 				var _tiles_inbetween:Array = get_tiles_between_points(piece,king_pos)
+				
 				if _tiles_inbetween.has(move):
 					_valid_moves.append(move)
-					if _valid_moves.is_empty():
-						Scripts.DATABASE.IN_CHECKMATE = true
-						print("GET_VALID_MOVES- Checkmate! ")
-					
+				
+				if _valid_moves.is_empty():
+					Scripts.DATABASE.IN_CHECKMATE = true
+					print("GET_VALID_MOVES- Checkmate! ")
+	
 	else:
 		_valid_moves.append_array(_moves)
 	
@@ -33,16 +38,11 @@ static func is_in_checkmate() -> bool: # Checks if King is in CHeckmate TODO: Im
 	var check_coords:Array = get_check_coords(king_pos)
 	print("IS_IN_CHECKMATE- check coords: ",check_coords)
 	
-	if !check_coords.is_empty():
+	if is_in_check(king_pos):
 		#var king_moves:Array = get_moves(king_pos)
 		#for move:Vector2i in king_moves:
 			#if !is_in_check(move):
 				#print("IS_IN_CHECKMATE- King can Escape!")
-				#return false
-		#
-		#for piece:Vector2i in check_coords:
-			#if is_in_check(piece):
-				#print("IS_IN_CHECKMATE- Piece is Capturable!")
 				#return false
 		
 		print("IS_IN_CHECKMATE- Checkmate!")
@@ -51,12 +51,12 @@ static func is_in_checkmate() -> bool: # Checks if King is in CHeckmate TODO: Im
 	print("IS_IN_CHECKMATE- No Check Detected!")
 	return false # Piece not in Check
 
-static func is_in_check(check_pos:Vector2i) -> bool: # Checks if Piece is being Checked
+static func is_in_check(check_pos:Vector2i) -> bool: # Returns True if Piece on check_pos is in check
 	if get_check_coords(check_pos).size() > 0:
 		return true
 	return false
 
-static func get_check_coords(check_pos:Vector2i) -> Array: # Get The Coords of all Pieces Checking the asked Piece
+static func get_check_coords(check_pos:Vector2i) -> Array: # Returns Array of all Pieces Checking the Piece on check_pos
 	var check_coords:Array = []
 	
 	var pawn_direction:int
@@ -116,7 +116,7 @@ static func get_check_coords(check_pos:Vector2i) -> Array: # Get The Coords of a
 	print("IS_IN_CHECK- Piece is Checked from these coords: ",check_coords)
 	return check_coords
 
-static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns Array of all Positions between 2 Points + Starting Point
+static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns Array of all Positions between 2 Points + starting_pos
 	var value_x:int
 	var value_y:int
 	
