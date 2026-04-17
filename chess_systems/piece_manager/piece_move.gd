@@ -11,7 +11,10 @@ static var white_king_pos:Vector2i = Vector2i(0,0)
 static var black_king_pos:Vector2i = Vector2i(0,0)
 
 static var king_pos:Vector2i = white_king_pos
+static var opponent_king_pos:Vector2i = black_king_pos
 static var got_all_moves:bool = false
+static var king_check:Array = []
+static var opponent_king_check:Array = []
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -19,11 +22,18 @@ static var got_all_moves:bool = false
 ## public methods
 
 static func get_all_moves() -> void:
+	king_check.clear()
+	opponent_king_check.clear()
 	for coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
 		if !is_empty(coords):
 			var _moves:Array = get_moves(coords)
+			if _moves.has(king_pos):
+				king_check.append(coords)
+			if _moves.has(opponent_king_pos):
+				opponent_king_check.append(coords)
 			Scripts.PIECE_MANAGER.set_piece_data(coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY,_moves)
 	got_all_moves = true
+	print("check pieces: ",king_check," opponent: ",opponent_king_check)
 
 static func get_moves(current_coords:Vector2i) -> Array:
 	var _moves:Array = []
@@ -41,9 +51,6 @@ static func get_moves(current_coords:Vector2i) -> Array:
 			_moves = _get_rook_moves(current_coords) + _get_bishop_moves(current_coords)
 		Scripts.CONSTANTS.PIECE_TYPE.KING:
 			_moves = _get_king_moves(current_coords)
-	
-	#if current_coords == king_pos:
-		#Scripts.PIECE_CHECK.is_in_checkmate(_moves)
 	
 	return _moves
 
@@ -137,10 +144,17 @@ static func post_move() -> void: # Stuff to Do After Move was Called
 	# Update king_pos depending on whose turn it is
 	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		king_pos = white_king_pos
+		opponent_king_pos = black_king_pos
 	else:
 		king_pos = black_king_pos
+		opponent_king_pos = white_king_pos
 	
 	get_all_moves() # Set New Data
+
+static func is_in_check() -> bool: # Returns True if Piece on check_pos is in check
+	if king_check.size() > 0:
+		return true
+	return false
 
 static func capture_piece(asked_coords:Vector2i) -> void: # Captures The Piece on the Given Tile
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)
