@@ -12,7 +12,8 @@ static var asked_coords:Vector2i = Vector2i(0,0)
 static var selected_tile:bool = false
 ## private vars
 static var _tilemap_selection:TileMapLayer
-static var _moved:Dictionary = {}
+static var _moves:Array = [] # List of Moves of Selected Piece
+static var _moved:Dictionary = {} # Keeps Track of Pieces In Hightlight Animation
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
@@ -42,7 +43,7 @@ static func select_tile() -> void: # Called on First Mouse Click. Hightlights cu
 		# Hightlight Possible Moves
 		if selected_tile == false:
 			selected_tile = true
-			var _moves:Array = Scripts.PIECE_MOVE.get_moves(current_coords)
+			_moves = Scripts.PIECE_MOVE.get_moves(current_coords)
 			for i:Vector2i in _moves:
 				_tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
 	else:
@@ -56,7 +57,7 @@ static func select_destination_tile() -> void: # Called on Second Mouse Click. C
 		print("SELECT_DESTINATION_TILE- Move Piece from: ",current_coords,", Move Piece to: ",asked_coords)
 		
 		# Call Movement
-		Scripts.PIECE_MOVE.make_move(current_coords,asked_coords)
+		Scripts.PIECE_MOVE.make_move(current_coords,asked_coords,_moves)
 		current_coords = Vector2i(0,0)
 		asked_coords = Vector2i(0,0)
 		selected_tile = false
@@ -87,6 +88,5 @@ static func hightlight_piece(coords:Vector2i) -> void: # Continously Called. Sli
 			var tween:RefCounted = last_piece_object.create_tween()
 			tween.tween_property(last_piece_object,"position",Vector2(last_piece_object.position.x,old_y), hightlight_speed_down)
 			_moved.erase(last_piece_object)
-	
 
 ## private methods

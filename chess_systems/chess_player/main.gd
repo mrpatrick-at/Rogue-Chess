@@ -30,16 +30,16 @@ func _mouse_buttons(_delta:float) -> void:
 		Scripts.SELECTION_MANAGER.reset_highlight()
 		if !esc_menu.is_visible_in_tree():
 			Scripts.SELECTION_MANAGER.highlight_tile()
-		var mouse_coords:Vector2 = get_viewport().get_mouse_position()
 		if Input.is_action_just_released(&"_input_mouse_left"):
+			#print("Left Mouse click detected")
 			if Scripts.SELECTION_MANAGER.selected_tile:
 				Scripts.SELECTION_MANAGER.select_destination_tile()
-			Scripts.SELECTION_MANAGER.select_tile()
-			print("Left Mouse click detected at: ",mouse_coords)
+			else:
+				Scripts.SELECTION_MANAGER.select_tile()
 		if Input.is_action_just_released(&"_input_mouse_right"):
-			print("Right Mouse click detected at: ",mouse_coords)
+			print("Right Mouse click detected")
 		if Input.is_action_just_released(&"_input_mouse_middle"):
-			print("Middle Mouse click detected at: ",mouse_coords)
+			print("Middle Mouse click detected")
 
 static func _camera_movement(delta:float) -> void:
 	# Camera Movement
