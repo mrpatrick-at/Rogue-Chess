@@ -11,7 +11,6 @@ static var tilemap_selection:TileMapLayer
 static var tilemap_board:TileMapLayer
 ## private vars
 ## onready vars
-@onready var esc_menu: Control = $"../ChessCamera/Foreground/EscMenu"
 
 # obj_ for node refrences
 ## built-in override methods
@@ -23,11 +22,7 @@ func _ready() -> void: # Runs on Startup
 	pass
 
 func _physics_process(_delta:float) -> void: # Runs Every Tick
-	#Scripts.PIECE_MOVE.is_in_check()
-	if !esc_menu.is_visible_in_tree():
-		if InputEventMouse:
-			Scripts.SELECTION_MANAGER.select_tile()
-
+	pass
 ## public methods
 
 static func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before

@@ -5,6 +5,7 @@ extends Node
 ## public vars
 ## private vars
 ## onready vars
+@onready var esc_menu: Control = $"../ChessCamera/Foreground/EscMenu"
 # obj_ for node refrences
 ## built-in override methods
 
@@ -26,8 +27,14 @@ func _physics_process(delta: float) -> void:
 func _mouse_buttons(_delta:float) -> void:
 	# Mouse Inputs
 	if InputEventMouse:
+		Scripts.SELECTION_MANAGER.reset_highlight()
+		if !esc_menu.is_visible_in_tree():
+			Scripts.SELECTION_MANAGER.highlight_tile()
 		var mouse_coords:Vector2 = get_viewport().get_mouse_position()
 		if Input.is_action_just_released(&"_input_mouse_left"):
+			if Scripts.SELECTION_MANAGER.selected_tile:
+				Scripts.SELECTION_MANAGER.select_destination_tile()
+			Scripts.SELECTION_MANAGER.select_tile()
 			print("Left Mouse click detected at: ",mouse_coords)
 		if Input.is_action_just_released(&"_input_mouse_right"):
 			print("Right Mouse click detected at: ",mouse_coords)
