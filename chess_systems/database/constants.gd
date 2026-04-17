@@ -18,6 +18,7 @@ enum PIECE_LIST{_0, # use _0 for null
 	PIECE_SPRITE,
 	TIMES_MOVED,
 	PAWN_MOVED_TWO_TILES,
+	MOVE_ARRAY,
 }
 enum PIECE_TYPE{_0, # use _0 for null
 	NONE,

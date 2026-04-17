@@ -43,9 +43,9 @@ static func select_tile() -> void: # Called on First Mouse Click. Hightlights cu
 		# Hightlight Possible Moves
 		if selected_tile == false:
 			selected_tile = true
-			if Scripts.PIECE_MOVE.all_moves.is_empty():
+			if !Scripts.PIECE_MOVE.got_all_moves:
 				Scripts.PIECE_MOVE.get_all_moves()
-			_moves = Scripts.PIECE_MOVE.all_moves[current_coords]
+			_moves = Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY)
 			for i:Vector2i in _moves:
 				_tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
 	else:

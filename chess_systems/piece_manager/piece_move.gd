@@ -11,7 +11,7 @@ static var white_king_pos:Vector2i = Vector2i(0,0)
 static var black_king_pos:Vector2i = Vector2i(0,0)
 
 static var king_pos:Vector2i = white_king_pos
-static var all_moves:Dictionary = {}
+static var got_all_moves:bool = false
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -19,11 +19,11 @@ static var all_moves:Dictionary = {}
 ## public methods
 
 static func get_all_moves() -> void:
-	for coords in Scripts.DATABASE.TILE_DICTIONARY:
+	for coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
 		if !is_empty(coords):
 			var _moves:Array = get_moves(coords)
-			all_moves[coords] = _moves
-	#print("GET_ALL_MOVES- all moves: ",all_moves)
+			Scripts.PIECE_MANAGER.set_piece_data(coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY,_moves)
+	got_all_moves = true
 
 static func get_moves(current_coords:Vector2i) -> Array:
 	var _moves:Array = []
@@ -129,15 +129,18 @@ static func post_move() -> void: # Stuff to Do After Move was Called
 		Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.BLACK
 	else:
 		Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
+		
 	# Increment Turn Amount
 	Scripts.DATABASE.turn_amount += 1
 	print("MAKE_MOVE- TURN AMOUNT: ",Scripts.DATABASE.turn_amount)
+	
 	# Update king_pos depending on whose turn it is
 	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		king_pos = white_king_pos
 	else:
 		king_pos = black_king_pos
-	get_all_moves()
+	
+	get_all_moves() # Set New Data
 
 static func capture_piece(asked_coords:Vector2i) -> void: # Captures The Piece on the Given Tile
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)
