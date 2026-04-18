@@ -11,6 +11,7 @@ const CHESS_CAMERA2D:= preload("res://chess_systems/chess_camera/main.gd")
 
 const PIECE_MANAGER:= preload("res://chess_systems/piece_manager/piece_manager.gd")
 const PIECE_MOVE = preload("res://chess_systems/piece_manager/piece_move.gd")
+const PIECE_ANIMATE = preload("res://chess_systems/piece_manager/piece_animate.gd")
 
 const DATABASE:= preload("res://chess_systems/database/database.gd")
 const CONSTANTS:= preload("res://chess_systems/database/constants.gd")

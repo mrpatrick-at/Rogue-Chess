@@ -3,6 +3,7 @@ extends Node
 ## consts
 ## exports
 ## public vars
+static var mouse_pos:Vector2
 ## private vars
 ## onready vars
 @onready var esc_menu: Control = $"../ChessCamera/Foreground/EscMenu"
@@ -27,15 +28,23 @@ func _physics_process(delta: float) -> void:
 func _mouse_buttons(_delta:float) -> void:
 	# Mouse Inputs
 	if InputEventMouse:
+		mouse_pos = Scripts.BOARD_MANAGER.get_tile_from_mouse()
 		Scripts.SELECTION_MANAGER.reset_highlight()
+		Scripts.PIECE_ANIMATE.reset_animation()
+		
 		if !esc_menu.is_visible_in_tree():
-			Scripts.SELECTION_MANAGER.highlight_tile()
+			Scripts.SELECTION_MANAGER.highlight_tile(mouse_pos)
+			Scripts.PIECE_ANIMATE.hightlight_piece(mouse_pos)
+			
 		if Input.is_action_just_released(&"_input_mouse_left"):
 			#print("Left Mouse click detected")
+			
 			if Scripts.SELECTION_MANAGER.selected_tile:
-				Scripts.SELECTION_MANAGER.select_destination_tile()
+				Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
+				
 			else:
-				Scripts.SELECTION_MANAGER.select_tile()
+				Scripts.SELECTION_MANAGER.select_tile(mouse_pos)
+				
 		if Input.is_action_just_released(&"_input_mouse_right"):
 			print("Right Mouse click detected")
 		if Input.is_action_just_released(&"_input_mouse_middle"):

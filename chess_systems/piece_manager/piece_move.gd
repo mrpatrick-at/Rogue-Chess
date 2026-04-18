@@ -11,17 +11,19 @@ static var white_king_pos:Vector2i = Vector2i(0,0)
 static var black_king_pos:Vector2i = Vector2i(0,0)
 
 static var king_pos:Vector2i = white_king_pos
-static var opponent_king_pos:Vector2i = black_king_pos
-static var got_all_moves:bool = false
 static var king_checked_from:Array = []
+
+static var opponent_king_pos:Vector2i = black_king_pos
 static var opponent_king_checked_from:Array = []
+
+static var got_all_moves:bool = false
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
 ## public methods
 
-static func get_all_moves() -> void: # TODO: FIX THIS REAL BAD :((((. FOUND BUG: FORGOT TO CLEAR OLD MOVES FROM DATABASE
+static func get_all_moves() -> void: # Gets All Moves. Ran After A Move is Made.
 	var _all_moves:Dictionary = {}
 	# Clear Old Data
 	king_checked_from.clear()
@@ -36,51 +38,45 @@ static func get_all_moves() -> void: # TODO: FIX THIS REAL BAD :((((. FOUND BUG:
 			if _moves.has(king_pos):
 				king_checked_from.append(piece_coords)
 				
-			if _moves.has(opponent_king_pos):
+			if _moves.has(opponent_king_pos): # Idk If I really need to keep track of Opponent King Checking
 				opponent_king_checked_from.append(piece_coords)
 				
 			_all_moves[piece_coords] = _moves
+	print("check pieces: ",king_checked_from," opponent: ",opponent_king_checked_from)
 	
-	var _between_moves:Array = []
 	var _all_valid_moves:Dictionary = {}
 	
 	if is_in_check():
 		# Get Moves that will stop Check
+		var _between_moves:Array = []
 		for checking_piece:Vector2i in king_checked_from:
 			_between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
-		
-		# Only Allow Moves which Moves are Valid
+			
+		# Write the Valid Positions to _valid_moves
 		for piece_coords:Vector2i in _all_moves:
 			var _moves:Array = _all_moves[piece_coords]
 			var _valid_moves:Array = []
-			
-			# Write the Valid Positions to _all_valid_moves
 			for move_coords:Vector2i in _moves:
-				#print("GET_ALL_MOVES- move_coords: ",move_coords)
-				for between_coords:Vector2i in _between_moves:
-					if move_coords == between_coords:
-						print("GET_ALL_MOVES- move_coords found in _between_coords")
-						_valid_moves.append(move_coords)
+				if move_coords in _between_moves:
+					#print("GET_ALL_MOVES- move_coords found in _between_coords")
+					_valid_moves.append(move_coords)
 			
-			# Write Moves into Temp Storage
+			# Write _valid_moves to Dictionary
 			_all_valid_moves[piece_coords] = _valid_moves
 			
-			print("GET_ALL_MOVES- CHECK: Wrote Valid Moves")
-			
+		#print("GET_ALL_MOVES- CHECK: Wrote Valid Moves")
+	
 	# If not in Check: Allow all Moves
 	else:
 		_all_valid_moves = _all_moves
-		print("GET_ALL_MOVES- NO CHECK: Wrote Valid Moves")
+		#print("GET_ALL_MOVES- NO CHECK: Wrote Valid Moves")
 	
 	# Write Moves to Database
 	for piece_coords:Vector2i in _all_valid_moves:
-		#print("GET_ALL_MOVES- Move Writing Initiated")
 		var _valid_moves:Array = _all_valid_moves[piece_coords]
 		Scripts.PIECE_MANAGER.clear_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY)
 		Scripts.PIECE_MANAGER.set_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY,_valid_moves)
 	got_all_moves = true
-	
-	print("check pieces: ",king_checked_from," opponent: ",opponent_king_checked_from)
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement
 	if asked_coords in _moves:
@@ -162,7 +158,7 @@ static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) 
 	else:
 		value_y = -1
 	
-	print("GET_TILES_BETWEEN_POINTS- step values: ",Vector2i(value_x,value_y))
+	#print("GET_TILES_BETWEEN_POINTS- step values: ",Vector2i(value_x,value_y))
 	var step:Vector2i = Vector2i(starting_pos)
 	var _steps:Array = []
 	
@@ -172,9 +168,9 @@ static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) 
 			step.x += value_x
 		if step.y != target_pos.y:
 			step.y += value_y
-		print("GET_TILES_BETWEEN_POINTS- steps +1")
+		#print("GET_TILES_BETWEEN_POINTS- steps +1")
 		
-	print("GET_TILES_BETWEEN_POINTS- steps: ",_steps)
+	#print("GET_TILES_BETWEEN_POINTS- steps: ",_steps)
 	
 	return _steps
 
@@ -229,7 +225,7 @@ static func _move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: 
 	piece_object.global_position = translated_coords
 	piece_object.move_local_y(-96)
 	
-	Scripts.SELECTION_MANAGER._moved.erase(piece_object) # TEMP FIX. CHANGE LATER !!!!!!!
+	Scripts.PIECE_ANIMATE._moved.erase(piece_object) # TEMP FIX. CHANGE LATER !!!!!!!
 
 static func _post_move() -> void: # Stuff to Do After Move was Called
 	# Modify color_turn, keeps track of whose turn it is
