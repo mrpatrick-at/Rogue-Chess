@@ -36,14 +36,14 @@ func _mouse_buttons(_delta:float) -> void:
 			Scripts.SELECTION_MANAGER.highlight_tile(mouse_pos)
 			Scripts.PIECE_ANIMATE.hightlight_piece(mouse_pos)
 			
-		if Input.is_action_just_released(&"_input_mouse_left"):
-			#print("Left Mouse click detected")
-			
-			if Scripts.SELECTION_MANAGER.selected_tile:
-				Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
+			if Input.is_action_just_released(&"_input_mouse_left"):
+				#print("Left Mouse click detected")
 				
-			else:
-				Scripts.SELECTION_MANAGER.select_tile(mouse_pos)
+				if Scripts.SELECTION_MANAGER.selected_tile:
+					Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
+					
+				else:
+					Scripts.SELECTION_MANAGER.select_tile(mouse_pos)
 				
 		if Input.is_action_just_released(&"_input_mouse_right"):
 			print("Right Mouse click detected")

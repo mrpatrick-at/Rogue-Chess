@@ -10,12 +10,8 @@ static var bishop_directions:Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1
 static var white_king_pos:Vector2i = Vector2i(0,0)
 static var black_king_pos:Vector2i = Vector2i(0,0)
 
-static var king_pos:Vector2i = white_king_pos
+static var king_pos:Vector2i = Vector2i(0,0)
 static var king_checked_from:Array = []
-
-static var opponent_king_pos:Vector2i = black_king_pos
-static var opponent_king_checked_from:Array = []
-
 static var got_all_moves:bool = false
 ## private vars
 ## onready vars
@@ -27,7 +23,6 @@ static func get_all_moves() -> void: # Gets All Moves. Ran After A Move is Made.
 	var _all_moves:Dictionary = {}
 	# Clear Old Data
 	king_checked_from.clear()
-	opponent_king_checked_from.clear()
 	
 	# Get Moves of all Pieces
 	for piece_coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
@@ -38,15 +33,12 @@ static func get_all_moves() -> void: # Gets All Moves. Ran After A Move is Made.
 			if _moves.has(king_pos):
 				king_checked_from.append(piece_coords)
 				
-			if _moves.has(opponent_king_pos): # Idk If I really need to keep track of Opponent King Checking
-				opponent_king_checked_from.append(piece_coords)
-				
 			_all_moves[piece_coords] = _moves
-	print("check pieces: ",king_checked_from," opponent: ",opponent_king_checked_from)
 	
 	var _all_valid_moves:Dictionary = {}
 	
 	if is_in_check():
+		print("GET_ALL_MOVES- King checked from: ",king_checked_from,)
 		# Get Moves that will stop Check
 		var _between_moves:Array = []
 		for checking_piece:Vector2i in king_checked_from:
@@ -225,7 +217,7 @@ static func _move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: 
 	piece_object.global_position = translated_coords
 	piece_object.move_local_y(-96)
 	
-	Scripts.PIECE_ANIMATE._moved.erase(piece_object) # TEMP FIX. CHANGE LATER !!!!!!!
+	Scripts.PIECE_ANIMATE.moved.erase(piece_object) # TEMP FIX. CHANGE LATER !!!!!!!
 
 static func _post_move() -> void: # Stuff to Do After Move was Called
 	# Modify color_turn, keeps track of whose turn it is
@@ -241,10 +233,8 @@ static func _post_move() -> void: # Stuff to Do After Move was Called
 	# Update king_pos depending on whose turn it is
 	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		king_pos = white_king_pos
-		opponent_king_pos = black_king_pos
 	else:
 		king_pos = black_king_pos
-		opponent_king_pos = white_king_pos
 	
 	get_all_moves() # Set New Data
 

@@ -35,6 +35,16 @@ static func clear_data() -> void:
 	Scripts.DATABASE.BUILT = false
 	
 	Scripts.DATABASE.PIECE_DICTIONARY.clear()
+	
+	Scripts.PIECE_MOVE.white_king_pos = Vector2i(0,0)
+	Scripts.PIECE_MOVE.black_king_pos = Vector2i(0,0)
+	Scripts.PIECE_MOVE.king_pos = Vector2i(0,0)
+	Scripts.PIECE_MOVE.king_checked_from = []
+	Scripts.PIECE_MOVE.got_all_moves = false
+	
+	Scripts.SELECTION_MANAGER.selected_tile = false
+	
+	Scripts.PIECE_ANIMATE.moved.clear()
 
 func toggle_esc_menu() -> void:
 	if esc_menu.is_visible_in_tree():
