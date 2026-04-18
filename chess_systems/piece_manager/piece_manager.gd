@@ -50,14 +50,9 @@ static func clear_piece_data(coords:Vector2i,value_to_clear:int) -> void: # 1. c
 	if Scripts.DATABASE.TILE_DICTIONARY.has(coords):
 		var piece_object:int = Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"]
 		if Scripts.DATABASE.PIECE_DICTIONARY[piece_object].has(value_to_clear):
-			#print("CLEAR_PIECE_DATA- ",coords," has: ",value_to_clear)
-			
-			var value = Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_clear]
-			
-			if (typeof(value)) == TYPE_ARRAY:
-				#print("CLEAR-PIECE-DATA- ",coords," value was: Array")
-				Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_clear].clear()
-			
+			match(typeof(Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_clear])): # Add Types when needed.
+				TYPE_ARRAY:
+					Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_clear].clear()
 			return
 			
 		#print("CLEAR_PIECE_DATA- ",coords," dosen't have: ",value_to_clear)

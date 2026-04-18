@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://chess_scenes/ingame_ui/main.tscn" id="8_0p6xv"]
 [ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background.gdshader" id="9_5rdu2"]
 [ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://chess_scenes/esc_menu/main.tscn" id="9_x6nru"]
+[ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://chess_scenes/lose_menu/main.tscn" id="10_ix53w"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/background/temp_background.jpg" id="10_o15j2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
@@ -79,6 +80,9 @@ grow_vertical = 2
 texture = ExtResource("7_whis5")
 
 [node name="EscMenu" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=5292294 instance=ExtResource("9_x6nru")]
+visible = false
+
+[node name="LoseMenu" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=1947740458 instance=ExtResource("10_ix53w")]
 visible = false
 
 [node name="Background" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=764705812]

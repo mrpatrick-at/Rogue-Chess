@@ -13,61 +13,26 @@ static var black_king_pos:Vector2i = Vector2i(0,0)
 static var king_pos:Vector2i = Vector2i(0,0)
 static var king_checked_from:Array = []
 static var got_all_moves:bool = false
+
+static var all_valid_moves:Dictionary = {}
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
 ## public methods
 
-static func get_all_moves() -> void: # Gets All Moves. Ran After A Move is Made.
-	var _all_moves:Dictionary = {}
-	# Clear Old Data
-	king_checked_from.clear()
-	
-	# Get Moves of all Pieces
-	for piece_coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
-		if !is_empty(piece_coords):
-			
-			var _moves:Array = _get_moves(piece_coords)
-			
-			if _moves.has(king_pos):
-				king_checked_from.append(piece_coords)
-				
-			_all_moves[piece_coords] = _moves
-	
-	var _all_valid_moves:Dictionary = {}
-	
+static func is_lost() -> bool:
 	if is_in_check():
-		print("GET_ALL_MOVES- King checked from: ",king_checked_from,)
-		# Get Moves that will stop Check
-		var _between_moves:Array = []
-		for checking_piece:Vector2i in king_checked_from:
-			_between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
-			
-		# Write the Valid Positions to _valid_moves
-		for piece_coords:Vector2i in _all_moves:
-			var _moves:Array = _all_moves[piece_coords]
-			var _valid_moves:Array = []
-			for move_coords:Vector2i in _moves:
-				if move_coords in _between_moves:
-					#print("GET_ALL_MOVES- move_coords found in _between_coords")
-					_valid_moves.append(move_coords)
-			
-			# Write _valid_moves to Dictionary
-			_all_valid_moves[piece_coords] = _valid_moves
-			
-		#print("GET_ALL_MOVES- CHECK: Wrote Valid Moves")
-	
-	# If not in Check: Allow all Moves
-	else:
-		_all_valid_moves = _all_moves
-		#print("GET_ALL_MOVES- NO CHECK: Wrote Valid Moves")
-	
-	# Write Moves to Database
-	for piece_coords:Vector2i in _all_valid_moves:
-		var _valid_moves:Array = _all_valid_moves[piece_coords]
+		if all_valid_moves.is_empty():
+			return true
+	return false
+
+static func set_all_moves() -> void: # Writes The Dict Provided To the Move Databse
+	all_valid_moves = _get_all_moves()
+	for piece_coords:Vector2i in all_valid_moves:
+		var valid_moves:Array = all_valid_moves[piece_coords]
 		Scripts.PIECE_MANAGER.clear_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY)
-		Scripts.PIECE_MANAGER.set_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY,_valid_moves)
+		Scripts.PIECE_MANAGER.set_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY,valid_moves)
 	got_all_moves = true
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement
@@ -168,6 +133,52 @@ static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) 
 
 ## private methods
 
+static func _get_all_moves() -> Dictionary: # Gets All Moves. Ran After A Move is Made.
+	var _all_moves:Dictionary = {}
+	# Clear Old Data
+	king_checked_from.clear()
+	
+	# Get Moves of all Pieces
+	for piece_coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
+		if !is_empty(piece_coords):
+			
+			var _moves:Array = _get_moves(piece_coords)
+			
+			if _moves.has(king_pos):
+				king_checked_from.append(piece_coords)
+				
+			_all_moves[piece_coords] = _moves
+	
+	var _all_valid_moves:Dictionary = {}
+	
+	if is_in_check():
+		print("GET_ALL_MOVES- King checked from: ",king_checked_from,)
+		# Get Moves that will stop Check
+		var _between_moves:Array = []
+		for checking_piece:Vector2i in king_checked_from:
+			_between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
+			
+		# Write the Valid Positions to _valid_moves
+		for piece_coords:Vector2i in _all_moves:
+			var _moves:Array = _all_moves[piece_coords]
+			var _valid_moves:Array = []
+			for move_coords:Vector2i in _moves:
+				if move_coords in _between_moves:
+					#print("GET_ALL_MOVES- move_coords found in _between_coords")
+					_valid_moves.append(move_coords)
+			
+			# Write _valid_moves to Dictionary
+			_all_valid_moves[piece_coords] = _valid_moves
+			
+		#print("GET_ALL_MOVES- CHECK: Wrote Valid Moves")
+	
+	# If not in Check: Allow all Moves
+	else:
+		_all_valid_moves = _all_moves
+		#print("GET_ALL_MOVES- NO CHECK: Wrote Valid Moves")
+	
+	return _all_valid_moves
+
 static func _get_moves(current_coords:Vector2i) -> Array:
 	var _moves:Array = []
 	
@@ -236,7 +247,7 @@ static func _post_move() -> void: # Stuff to Do After Move was Called
 	else:
 		king_pos = black_king_pos
 	
-	get_all_moves() # Set New Data
+	set_all_moves()
 
 static func _capture_piece(asked_coords:Vector2i) -> void: # Captures The Piece on the Given Tile
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)

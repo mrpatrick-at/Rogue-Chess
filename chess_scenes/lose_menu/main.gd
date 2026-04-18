@@ -8,9 +8,6 @@ extends Control
 # obj_ for node refrences
 ## built-in override methods
 
-func _on_continue_pressed() -> void:
-	hide()
-
 func _on_restart_pressed() -> void:
 	Scripts.MAIN.clear_data()
 	get_tree().reload_current_scene()

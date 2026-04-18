@@ -12,12 +12,11 @@ static var TILE_WHITE:int = 0 # White Tile Amount
 static var TOTAL_TILES:int = 0 # Total Tile Amount
 
 static var BUILT:bool = false # If Board is already built
-
 ## Piece Data
 static var PIECE_DICTIONARY:Dictionary = {} # Dictionary for holding piece data
 
 ## Checking Data
-static var IN_CHECKMATE:bool = false
+static var IN_CHECKMATE:bool = false # WTF DO THESE EVEN DO !?!?!?!?
 static var IN_DRAW:bool = false
 static var IN_STALEMATE:bool = false
 

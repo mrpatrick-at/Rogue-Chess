@@ -32,12 +32,11 @@ func _mouse_buttons(_delta:float) -> void:
 		Scripts.SELECTION_MANAGER.reset_highlight()
 		Scripts.PIECE_ANIMATE.reset_animation()
 		
-		if !esc_menu.is_visible_in_tree():
+		if !Scripts.MAIN.menu_is_open:
 			Scripts.SELECTION_MANAGER.highlight_tile(mouse_pos)
 			Scripts.PIECE_ANIMATE.hightlight_piece(mouse_pos)
 			
 			if Input.is_action_just_released(&"_input_mouse_left"):
-				#print("Left Mouse click detected")
 				
 				if Scripts.SELECTION_MANAGER.selected_tile:
 					Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
