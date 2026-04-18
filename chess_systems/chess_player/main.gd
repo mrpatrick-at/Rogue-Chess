@@ -6,7 +6,6 @@ extends Node
 static var mouse_pos:Vector2
 ## private vars
 ## onready vars
-@onready var esc_menu: Control = $"../ChessCamera/Foreground/EscMenu"
 # obj_ for node refrences
 ## built-in override methods
 
@@ -15,7 +14,7 @@ func _ready() -> void:
 	pass 
 
 func _physics_process(delta: float) -> void:
-	_mouse_buttons(delta)
+	_mouse_buttons()
 	_camera_movement(delta)
 	_camera_zoom(delta)
 
@@ -25,14 +24,14 @@ func _physics_process(delta: float) -> void:
 
 ## private methods
 
-func _mouse_buttons(_delta:float) -> void:
+static func _mouse_buttons() -> void:
 	# Mouse Inputs
 	if InputEventMouse:
 		mouse_pos = Scripts.BOARD_MANAGER.get_tile_from_mouse()
 		Scripts.SELECTION_MANAGER.reset_highlight()
 		Scripts.PIECE_ANIMATE.reset_animation()
 		
-		if !Scripts.MAIN.menu_is_open:
+		if !Scripts.DATABASE.menu_is_open:
 			Scripts.SELECTION_MANAGER.highlight_tile(mouse_pos)
 			Scripts.PIECE_ANIMATE.hightlight_piece(mouse_pos)
 			

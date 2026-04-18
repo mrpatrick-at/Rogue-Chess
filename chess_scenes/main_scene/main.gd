@@ -3,9 +3,6 @@ extends Node
 ## consts
 ## exports
 ## public vars
-static var menu_is_open:bool = false
-static var esc_menu_is_open:bool = false
-static var lose_menu_is_open:bool = false
 ## private vars
 ## onready vars
 @onready var esc_menu: Control = $ChessWorld2D/ChessCamera/Foreground/EscMenu
@@ -19,24 +16,24 @@ func _ready() -> void:
 	pass 
 
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"_input_esc"):
-		toggle_esc_menu()
-	if Scripts.DATABASE.IN_CHECKMATE:
-		get_tree().change_scene_to_file("res://chess_scenes/main_menu/main.tscn")
-	
+	if Scripts.DATABASE.is_lost:
+		open_lose_menu()
+	else:
+		if Input.is_action_just_pressed(&"_input_esc"):
+			toggle_esc_menu()
 
 ## public methods
 
-func is_a_menu_open() -> void:
-	menu_is_open = false
-	if esc_menu_is_open or lose_menu_is_open:
-		menu_is_open = true
-		
+func open_lose_menu() -> void:
+	lose_menu.show()
+	Scripts.DATABASE.menu_is_open = true
 
 static func clear_data() -> void:
 	Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
 	Scripts.DATABASE.turn_amount = 0
 	Scripts.DATABASE.fifty_move_rule = 0
+	Scripts.DATABASE.is_lost = false
+	Scripts.DATABASE.menu_is_open = false
 	
 	Scripts.DATABASE.TILE_DICTIONARY.clear()
 	Scripts.DATABASE.TILE_BLACK = 0
@@ -55,10 +52,9 @@ static func clear_data() -> void:
 func toggle_esc_menu() -> void:
 	if esc_menu.is_visible_in_tree():
 		esc_menu.hide()
-		esc_menu_is_open = false
+		Scripts.DATABASE.menu_is_open = false
 	else:
 		esc_menu.show()
-		esc_menu_is_open = true
-	is_a_menu_open()
+		Scripts.DATABASE.menu_is_open = true
 
 ## private methods

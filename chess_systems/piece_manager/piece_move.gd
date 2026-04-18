@@ -14,18 +14,13 @@ static var king_pos:Vector2i = Vector2i(0,0)
 static var king_checked_from:Array = []
 static var got_all_moves:bool = false
 
+static var _between_moves:Array = []
 static var all_valid_moves:Dictionary = {}
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
 ## public methods
-
-static func is_lost() -> bool:
-	if is_in_check():
-		if all_valid_moves.is_empty():
-			return true
-	return false
 
 static func set_all_moves() -> void: # Writes The Dict Provided To the Move Databse
 	all_valid_moves = _get_all_moves()
@@ -89,12 +84,18 @@ static func is_empty(asked_coords:Vector2i) -> bool: # Checks if Tile is Empty, 
 		return true
 	return false
 
-static func is_enemy(piece_coords:Vector2i,asked_coords:Vector2i) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
-	if Scripts.PIECE_MANAGER.get_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+static func is_enemy(asked_coords:Vector2i) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
 			return true
 	elif Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		return true
+	return false
+
+static func is_lost() -> bool:
+	if is_in_check():
+		if all_valid_moves.is_empty():
+			return true
 	return false
 
 static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns starting_pos + Array of all Positions between the two Points
@@ -138,46 +139,21 @@ static func _get_all_moves() -> Dictionary: # Gets All Moves. Ran After A Move i
 	# Clear Old Data
 	king_checked_from.clear()
 	
+	king_checked_from = _get_check_coords(king_pos)
+	
+	if is_in_check():
+		# Get Moves that will stop check
+		_between_moves.clear()
+		for checking_piece:Vector2i in king_checked_from:
+			_between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
+	
 	# Get Moves of all Pieces
 	for piece_coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
 		if !is_empty(piece_coords):
-			
 			var _moves:Array = _get_moves(piece_coords)
-			
-			if _moves.has(king_pos):
-				king_checked_from.append(piece_coords)
-				
 			_all_moves[piece_coords] = _moves
 	
-	var _all_valid_moves:Dictionary = {}
-	
-	if is_in_check():
-		print("GET_ALL_MOVES- King checked from: ",king_checked_from,)
-		# Get Moves that will stop Check
-		var _between_moves:Array = []
-		for checking_piece:Vector2i in king_checked_from:
-			_between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
-			
-		# Write the Valid Positions to _valid_moves
-		for piece_coords:Vector2i in _all_moves:
-			var _moves:Array = _all_moves[piece_coords]
-			var _valid_moves:Array = []
-			for move_coords:Vector2i in _moves:
-				if move_coords in _between_moves:
-					#print("GET_ALL_MOVES- move_coords found in _between_coords")
-					_valid_moves.append(move_coords)
-			
-			# Write _valid_moves to Dictionary
-			_all_valid_moves[piece_coords] = _valid_moves
-			
-		#print("GET_ALL_MOVES- CHECK: Wrote Valid Moves")
-	
-	# If not in Check: Allow all Moves
-	else:
-		_all_valid_moves = _all_moves
-		#print("GET_ALL_MOVES- NO CHECK: Wrote Valid Moves")
-	
-	return _all_valid_moves
+	return _all_moves
 
 static func _get_moves(current_coords:Vector2i) -> Array:
 	var _moves:Array = []
@@ -196,12 +172,20 @@ static func _get_moves(current_coords:Vector2i) -> Array:
 		Scripts.CONSTANTS.PIECE_TYPE.KING:
 			_moves = _get_king_moves(current_coords)
 	
+	if is_in_check():
+		# Only Write Valid Moves that will Stop Check
+		var _valid_moves:Array = []
+		for move_coords:Vector2i in _moves:
+			if move_coords in _between_moves:
+				_valid_moves.append(move_coords)
+		_moves = _valid_moves
+	
 	return _moves
 
 static func _move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Captures Pieces, Upates Dictionaries and moves Piece
 	
 	# Capture Enemy Piece
-	if is_enemy(current_coords,asked_coords): # Add advanced logic for capturing here later if needed
+	if is_enemy(asked_coords): # Add advanced logic for capturing here later if needed
 		_capture_piece(asked_coords)
 	
 	var piece:int = Scripts.DATABASE.TILE_DICTIONARY[current_coords]["piece"]
@@ -248,12 +232,78 @@ static func _post_move() -> void: # Stuff to Do After Move was Called
 		king_pos = black_king_pos
 	
 	set_all_moves()
+	Scripts.DATABASE.is_lost = is_lost()
 
 static func _capture_piece(asked_coords:Vector2i) -> void: # Captures The Piece on the Given Tile
 	var enemy_piece_object:Node2D = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ)
 	enemy_piece_object.hide()
 	Scripts.DATABASE.fifty_move_rule = 0 # If Captured Piece Rule is Reset
 	print("CAPTURE_PIECE- Enemy Piece Captured at: ",asked_coords)
+
+static func _get_check_coords(check_pos:Vector2i) -> Array: # Returns Array of all Pieces Checking the Piece on check_pos
+	var check_coords:Array = []
+	
+	var pawn_direction:int
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+		pawn_direction = 1
+	else:
+		pawn_direction = -1
+	
+	var pawn_attacks:Array = [check_pos + Vector2i(pawn_direction,-1),check_pos + Vector2i(pawn_direction,1)]
+	
+	for pos:Vector2i in pawn_attacks:
+		if Scripts.BOARD_MANAGER.is_valid_position(pos):
+			if Scripts.PIECE_MOVE.is_enemy(pos):
+				check_coords.append(pos)
+				var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
+				if piece == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
+					print("IS_IN_CHECK- pawn_check")
+	
+	for pos:Vector2i in Scripts.PIECE_MOVE._get_knight_moves(check_pos):
+		if Scripts.PIECE_MOVE.is_enemy(pos):
+			check_coords.append(pos)
+			
+			var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
+			if piece == Scripts.CONSTANTS.PIECE_TYPE.KNIGHT:
+				print("IS_IN_CHECK- knight_check")
+	
+	for pos:Vector2i in Scripts.PIECE_MOVE._get_rook_moves(check_pos):
+		if Scripts.PIECE_MOVE.is_enemy(pos):
+			check_coords.append(pos)
+			
+			var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
+			if piece == Scripts.CONSTANTS.PIECE_TYPE.ROOK:
+				print("IS_IN_CHECK- rook_check")
+			elif piece == Scripts.CONSTANTS.PIECE_TYPE.QUEEN:
+				print("IS_IN_CHECK- queen_check")
+	
+	for pos:Vector2i in Scripts.PIECE_MOVE._get_bishop_moves(check_pos):
+		if Scripts.PIECE_MOVE.is_enemy(pos):
+			check_coords.append(pos)
+			
+			var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
+			if piece == Scripts.CONSTANTS.PIECE_TYPE.BISHOP:
+				print("IS_IN_CHECK- bishop_check")
+			elif piece == Scripts.CONSTANTS.PIECE_TYPE.QUEEN:
+				print("IS_IN_CHECK- queen_check")
+	
+	for x in range(-1,2):
+		for y in range(-1,2):
+			var pos:Vector2i = check_pos
+			pos.x += x
+			pos.y += y
+			if pos == check_pos:
+				continue
+			
+			if Scripts.BOARD_MANAGER.is_valid_position(pos):
+				if Scripts.PIECE_MOVE.is_enemy(pos):
+					check_coords.append(pos)
+					
+					if Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.KING:
+						print("IS_IN_CHECK- king_check????????????????")
+	
+	print("GET_CHECK_COORDS- Piece is Checked from these coords: ",check_coords)
+	return check_coords
 
 static func _get_pawn_moves(current_coords:Vector2i) -> Array:
 	var _moves:Array = []
@@ -284,12 +334,12 @@ static func _get_pawn_moves(current_coords:Vector2i) -> Array:
 	for i:Vector2i in capture_squares:
 		var pos:Vector2i = current_coords + i
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
-			if is_enemy(current_coords,pos):
+			if is_enemy(pos):
 				_moves.append(pos)
 		# En Passant Rules
 		var pos_passant:Vector2i = Vector2i(current_coords.x,pos.y)
 		if Scripts.BOARD_MANAGER.is_valid_position(pos_passant):
-			if is_enemy(current_coords,pos_passant):
+			if is_enemy(pos_passant):
 				if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
 					if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED) == 1: # Bug if 1 En Passant is possible both appear
 						if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.TRUE:
@@ -306,7 +356,7 @@ static func _get_knight_moves(current_coords:Vector2i) -> Array: # TODO: Prob ca
 		if Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
 				_moves.append(pos)
-			elif is_enemy(current_coords,pos):
+			elif is_enemy(pos):
 				_moves.append(pos)
 	
 	return _moves
@@ -321,7 +371,7 @@ static func _get_rook_moves(current_coords:Vector2i) -> Array:
 		while Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
 				_moves.append(pos)
-			elif is_enemy(current_coords,pos):
+			elif is_enemy(pos):
 				_moves.append(pos)
 				break
 			else: break
@@ -340,7 +390,7 @@ static func _get_bishop_moves(current_coords:Vector2i) -> Array:
 		while Scripts.BOARD_MANAGER.is_valid_position(pos):
 			if is_empty(pos):
 				_moves.append(pos)
-			elif is_enemy(current_coords,pos):
+			elif is_enemy(pos):
 				_moves.append(pos)
 				break
 			else: break
@@ -361,7 +411,7 @@ static func _get_king_moves(current_coords:Vector2i) -> Array: # TODO: Wow I jus
 			if Scripts.BOARD_MANAGER.is_valid_position(pos):
 				if is_empty(pos):
 					_moves.append(pos)
-				elif is_enemy(current_coords,pos):
+				elif is_enemy(pos):
 					_moves.append(pos)
 	
 	
