@@ -33,18 +33,38 @@ func _physics_process(_delta:float) -> void:
 
 ## public methods
 
-static func get_piece_data(coords:Vector2i,data:int) -> Variant: # 1. coords 2. value to get
+static func get_piece_data(coords:Vector2i,value_to_get:int) -> Variant: # 1. coords 2. value to get
 	if Scripts.DATABASE.TILE_DICTIONARY.has(coords):
 		var piece_object:int = Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"]
-		var value:Variant = Scripts.DATABASE.PIECE_DICTIONARY[piece_object][data]
+		var value:Variant = Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_get]
 		return value
 	#print("Invalid Coords / Board not Loaded Yet")
 	return
 
-static func set_piece_data(coords:Vector2i,data:int,value:Variant) -> void: # 1. coords 2. value to set 3. what to set it to
+static func set_piece_data(coords:Vector2i,value_to_set:int,value:Variant) -> void: # 1. coords 2. value to set 3. what to set it to
 	if Scripts.DATABASE.TILE_DICTIONARY.has(coords):
 		var piece_object:int = Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"]
-		Scripts.DATABASE.PIECE_DICTIONARY[piece_object][data] = value
+		Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_set] = value
+
+static func clear_piece_data(coords:Vector2i,value_to_clear:int) -> void: # 1. coords 2. value to clear, ATTENTION: WILL CLEAR ALL VALUES IN THE DATA ARRAY OF THE PIECE
+	if Scripts.DATABASE.TILE_DICTIONARY.has(coords):
+		var piece_object:int = Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"]
+		if Scripts.DATABASE.PIECE_DICTIONARY[piece_object].has(value_to_clear):
+			#print("CLEAR_PIECE_DATA- ",coords," has: ",value_to_clear)
+			
+			var value = Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_clear]
+			
+			if (typeof(value)) == TYPE_ARRAY:
+				#print("CLEAR-PIECE-DATA- ",coords," value was: Array")
+				Scripts.DATABASE.PIECE_DICTIONARY[piece_object][value_to_clear].clear()
+			
+			return
+			
+		#print("CLEAR_PIECE_DATA- ",coords," dosen't have: ",value_to_clear)
+		return
+		
+	#print("CLEAR_PIECE_DATA- ",coords," don't exist")
+	return
 
 ## private methods
 
