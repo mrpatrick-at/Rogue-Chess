@@ -14,7 +14,7 @@ static var king_pos:Vector2i = Vector2i(0,0)
 static var king_checked_from:Array = []
 static var got_all_moves:bool = false
 
-static var _between_moves:Array = []
+static var between_moves:Array = []
 static var all_valid_moves:Dictionary = {}
 ## private vars
 ## onready vars
@@ -96,7 +96,7 @@ static func is_lost() -> bool: # TODO: Improve Lose Criteria. Currently Impossib
 	if is_in_check():
 		if all_valid_moves.is_empty():
 			return true
-	return false
+	return true
 
 static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns starting_pos + Array of all Positions between the two Points
 	var value_x:int
@@ -134,18 +134,18 @@ static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) 
 
 ## private methods
 
-static func _get_all_moves() -> Dictionary: # Gets All Moves. Ran After A Move is Made.
+static func _get_all_moves() -> Dictionary: # Ran After A Move is Made. TODO: Make Pieces not Move if Moving will put King under Check. Use: get_tiles_between_points
 	var _all_moves:Dictionary = {}
 	# Clear Old Data
 	king_checked_from.clear()
 	
 	king_checked_from = _get_check_coords(king_pos)
-	
 	if is_in_check():
+		print("GET_ALL_MOVES- Pieces Checking King: ",king_checked_from)
+		between_moves.clear()
 		# Get Moves that will stop check
-		_between_moves.clear()
 		for checking_piece:Vector2i in king_checked_from:
-			_between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
+			between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
 	
 	# Get Moves of all Pieces
 	for piece_coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
@@ -155,7 +155,7 @@ static func _get_all_moves() -> Dictionary: # Gets All Moves. Ran After A Move i
 	
 	return _all_moves
 
-static func _get_moves(current_coords:Vector2i) -> Array:
+static func _get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves for the Requested Piece
 	var _moves:Array = []
 	var piece_type:int = Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
 	
@@ -182,12 +182,12 @@ static func _get_moves(current_coords:Vector2i) -> Array:
 			continue
 		
 		if is_in_check():
-			if move_coords in _between_moves:
+			if move_coords in between_moves:
 				_valid_moves.append(move_coords)
-			continue
 		else:
 			_valid_moves = _moves
 	
+	print("GET_MOVES- these da piece: ",current_coords," these da movez: ",_valid_moves)
 	return _valid_moves
 
 static func _move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: # Captures Pieces, Upates Dictionaries and moves Piece
