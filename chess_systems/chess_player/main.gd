@@ -14,9 +14,12 @@ func _ready() -> void:
 	pass 
 
 func _physics_process(delta: float) -> void:
-	_mouse_buttons()
 	_camera_movement(delta)
 	_camera_zoom(delta)
+
+func _input(event:InputEvent):
+	_mouse_buttons(event)
+	return
 
 
 
@@ -24,9 +27,9 @@ func _physics_process(delta: float) -> void:
 
 ## private methods
 
-static func _mouse_buttons() -> void:
+static func _mouse_buttons(event:InputEvent) -> void:
 	# Mouse Inputs
-	if InputEventMouse:
+	if event is InputEventMouse:
 		mouse_pos = Scripts.BOARD_MANAGER.get_tile_from_mouse()
 		Scripts.SELECTION_MANAGER.reset_highlight()
 		Scripts.PIECE_ANIMATE.reset_animation()
@@ -36,7 +39,7 @@ static func _mouse_buttons() -> void:
 			Scripts.PIECE_ANIMATE.hightlight_piece(mouse_pos)
 			
 			if Input.is_action_just_released(&"_input_mouse_left"):
-				
+				print("Right Mouse click detected at: ",event.position)
 				if Scripts.SELECTION_MANAGER.selected_tile:
 					Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
 					

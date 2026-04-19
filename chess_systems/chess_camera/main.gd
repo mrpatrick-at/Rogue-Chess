@@ -67,10 +67,10 @@ func _apply_background_parallax() -> void:
 	#
 	#background_parallax.scale = Vector2(1 + background_scale,1 + background_scale)
 	
-	var background_speed:float = remap(
-		cam.zoom.x,
-		CAMERA_ZOOM_RANGE.x,CAMERA_ZOOM_RANGE.y,
-		PARALLAX_MOVE_SPEED.x,PARALLAX_MOVE_SPEED.y)
-		
-	background_parallax.scroll_scale = Vector2(background_speed,background_speed)
+	#var background_speed:float = remap(
+		#cam.zoom.x,
+		#CAMERA_ZOOM_RANGE.x,CAMERA_ZOOM_RANGE.y,
+		#PARALLAX_MOVE_SPEED.x,PARALLAX_MOVE_SPEED.y)
+		#
+	#background_parallax.scroll_scale = Vector2(background_speed,background_speed)
 	pass
