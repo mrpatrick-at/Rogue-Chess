@@ -2,10 +2,10 @@ extends Node2D
 ## enums
 ## consts
 const CAMERA_ZOOM_SPEED:float = 4.0
-const CAMERA_ZOOM_RANGE:Vector2 = Vector2(0.1,1.5)
+const CAMERA_ZOOM_RANGE:Vector2 = Vector2(0.1,1.0)
 const CAMERA_MOVE_SPEED:Vector2 = Vector2(0.1,2.5)
 
-const PARALLAX_MOVE_SPEED:Vector2 = Vector2(3.0,2.0)
+const PARALLAX_MOVE_SPEED:Vector2 = Vector2(1.0,5.0)
 const PARALLAX_ZOOM_RANGE:Vector2 = Vector2(1.0,5.0)
 ## exports
 ## public vars
@@ -55,6 +55,7 @@ func _apply_camera_zoom() -> void:
 		if (calculated_zoom > CAMERA_ZOOM_RANGE.x) and (calculated_zoom < CAMERA_ZOOM_RANGE.y):
 			cam.zoom.x += cam_zoom_velocity
 			cam.zoom.y += cam_zoom_velocity
+			
 	
 	cam_zoom_velocity = 0
 
@@ -62,14 +63,14 @@ func _apply_background_parallax() -> void:
 	#var background_scale:float = remap(
 	#cam.zoom.x,
 	#CAMERA_ZOOM_RANGE.x,CAMERA_ZOOM_RANGE.y,
-	#PARALLAX_ZOOM_RANGE.y,PARALLAX_ZOOM_RANGE.x)
+	#1,6)
 	#
-	#background_parallax.scale = Vector2(background_scale,background_scale)
+	#background_parallax.scale = Vector2(1 + background_scale,1 + background_scale)
 	
-	#var background_speed:float = remap(
-		#cam.zoom.x,
-		#CAMERA_ZOOM_RANGE.x,CAMERA_ZOOM_RANGE.y,
-		#PARALLAX_MOVE_SPEED.y,PARALLAX_MOVE_SPEED.x)
-		#
-	#background_parallax.scroll_scale = Vector2(background_speed,background_speed)
+	var background_speed:float = remap(
+		cam.zoom.x,
+		CAMERA_ZOOM_RANGE.x,CAMERA_ZOOM_RANGE.y,
+		PARALLAX_MOVE_SPEED.x,PARALLAX_MOVE_SPEED.y)
+		
+	background_parallax.scroll_scale = Vector2(background_speed,background_speed)
 	pass

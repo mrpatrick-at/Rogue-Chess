@@ -113,11 +113,11 @@ texture = ExtResource("10_o15j2")
 [node name="BackgroundParallax" type="Parallax2D" parent="ChessWorld2D" unique_id=2101069892]
 z_index = -1
 material = SubResource("ShaderMaterial_ix53w")
-use_parent_material = true
 scale = Vector2(6, 6)
 scroll_scale = Vector2(2, 2)
 repeat_size = Vector2(1206, 1080)
-repeat_times = 3
+repeat_times = 4
+follow_viewport = false
 
 [node name="Sprite2D" type="Sprite2D" parent="ChessWorld2D/BackgroundParallax" unique_id=36885580]
 texture = ExtResource("10_o15j2")
