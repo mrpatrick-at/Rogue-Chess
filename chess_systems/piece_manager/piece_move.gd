@@ -96,7 +96,7 @@ static func is_lost() -> bool: # TODO: Improve Lose Criteria. Currently Impossib
 	if is_in_check():
 		if all_valid_moves.is_empty():
 			return true
-	return true
+	return false
 
 static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns starting_pos + Array of all Positions between the two Points
 	var value_x:int

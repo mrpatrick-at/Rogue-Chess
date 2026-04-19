@@ -35,6 +35,14 @@ shader_parameter/color = Color(0, 0, 0, 1)
 shader_parameter/grid_size = Vector2(4, 4)
 shader_parameter/pixelation_factor = 250.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ix53w"]
+shader = ExtResource("9_5rdu2")
+shader_parameter/see_uv = true
+shader_parameter/tile_background = false
+shader_parameter/color = Color(0, 0, 0, 1)
+shader_parameter/grid_size = Vector2(4, 4)
+shader_parameter/pixelation_factor = 0.0
+
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
 
@@ -62,6 +70,7 @@ scale = Vector2(10, 10)
 texture = ExtResource("7_whis5")
 
 [node name="Foreground" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=786620078]
+visible = false
 
 [node name="IngameUI" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
 
@@ -89,11 +98,26 @@ visible = false
 layer = -1
 
 [node name="BackgroundImage" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background" unique_id=1815771888]
+visible = false
 show_behind_parent = true
 material = SubResource("ShaderMaterial_4c57u")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = 1206.0
+offset_bottom = 1080.0
 grow_horizontal = 2
 grow_vertical = 2
+texture = ExtResource("10_o15j2")
+
+[node name="BackgroundParallax" type="Parallax2D" parent="ChessWorld2D" unique_id=2101069892]
+z_index = -1
+material = SubResource("ShaderMaterial_ix53w")
+use_parent_material = true
+scale = Vector2(6, 6)
+scroll_scale = Vector2(2, 2)
+repeat_size = Vector2(1206, 1080)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="ChessWorld2D/BackgroundParallax" unique_id=36885580]
 texture = ExtResource("10_o15j2")
