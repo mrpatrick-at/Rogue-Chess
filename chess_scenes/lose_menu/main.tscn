@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://kbo1u2wwtp6p"]
 
 [ext_resource type="Script" uid="uid://bccoyxxjh2ui6" path="res://chess_scenes/lose_menu/main.gd" id="1_v625r"]
-[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background.gdshader" id="2_v625r"]
+[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="2_v625r"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/background/temp_background.jpg" id="3_acnc6"]
 [ext_resource type="Theme" uid="uid://cdmybg8xr06i6" path="res://assets/themes/main_menu_button.tres" id="4_1l45n"]
 [ext_resource type="LabelSettings" uid="uid://ck60ea7gdtef7" path="res://assets/themes/text_ui_settings.tres" id="4_v625r"]
@@ -9,10 +9,17 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mn7x5"]
 shader = ExtResource("2_v625r")
 shader_parameter/see_uv = false
-shader_parameter/tile_background = false
-shader_parameter/color = Color(0, 0, 0, 1)
-shader_parameter/grid_size = Vector2(4, 4)
-shader_parameter/pixelation_factor = 250.0
+shader_parameter/spin_rotation_speed = 2.0
+shader_parameter/move_speed = 7.0
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/colour_1 = Color(0.871, 0.267, 0.231, 1)
+shader_parameter/colour_2 = Color(0, 0.42, 0.706, 1)
+shader_parameter/colour_3 = Color(0.086, 0.137, 0.145, 1)
+shader_parameter/contrast = 3.5
+shader_parameter/lighting = 0.4
+shader_parameter/spin_amount = 0.25
+shader_parameter/pixel_filter = 740.0
+shader_parameter/is_rotating = false
 
 [node name="LoseMenu" type="Control" unique_id=5292294]
 layout_mode = 3

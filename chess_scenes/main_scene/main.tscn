@@ -8,10 +8,11 @@
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
 [ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="7_whis5"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://chess_scenes/ingame_ui/main.tscn" id="8_0p6xv"]
-[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background.gdshader" id="9_5rdu2"]
+[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="9_5rdu2"]
 [ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://chess_scenes/esc_menu/main.tscn" id="9_x6nru"]
 [ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://chess_scenes/lose_menu/main.tscn" id="10_ix53w"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/background/temp_background.jpg" id="10_o15j2"]
+[ext_resource type="Shader" uid="uid://bbnauwv33v8pk" path="res://assets/shaders/background.gdshader" id="13_43pjp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
 shader = ExtResource("6_nr3ba")
@@ -75,19 +76,11 @@ shader_parameter/pixel_filter = 745.0
 shader_parameter/is_rotating = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5bm2p"]
-shader = ExtResource("9_5rdu2")
-shader_parameter/see_uv = false
-shader_parameter/spin_rotation_speed = 2.0
-shader_parameter/move_speed = 7.0
-shader_parameter/offset = Vector2(0, 0)
-shader_parameter/colour_1 = Color(0.871, 0.267, 0.231, 1)
-shader_parameter/colour_2 = Color(0, 0.42, 0.706, 1)
-shader_parameter/colour_3 = Color(0.086, 0.137, 0.145, 1)
-shader_parameter/contrast = 3.5
-shader_parameter/lighting = 0.4
-shader_parameter/spin_amount = 0.25
-shader_parameter/pixel_filter = 740.0
-shader_parameter/is_rotating = false
+shader = ExtResource("13_43pjp")
+shader_parameter/circle_radius = 0.510000024225
+shader_parameter/color_1 = Color(1, 0, 0, 1)
+shader_parameter/color_2 = Color(0, 1, 0, 1)
+shader_parameter/color_3 = Color(0, 0, 1, 1)
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_ix53w"]
 
@@ -176,20 +169,18 @@ material = SubResource("ShaderMaterial_43pjp")
 centered = false
 
 [node name="TextureRect" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background/BackgroundParallax" unique_id=1456044447]
-visible = false
 material = SubResource("ShaderMaterial_5bm2p")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 1856.0
-offset_bottom = 1016.0
+offset_right = 1920.0
+offset_bottom = 1080.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("7_whis5")
 
 [node name="TextureRect2" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background/BackgroundParallax" unique_id=1848397648]
+visible = false
 material = SubResource("ShaderMaterial_5bm2p")
 offset_right = 1920.0
 offset_bottom = 1080.0
