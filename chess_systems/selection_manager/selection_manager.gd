@@ -28,19 +28,17 @@ static func select_tile(mouse_pos:Vector2i) -> void: # Called on First Mouse Cli
 	if(
 	!Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.NONE and
 	Scripts.PIECE_MANAGER.get_piece_data(mouse_pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.DATABASE.color_turn):
+		selected_tile = true
+		
 		current_coords = mouse_pos
 		
 		# Hightlight Piece Itself
 		_tilemap_selection.set_cell(current_coords,1,Vector2i(2,0),0)
 		
 		# Hightlight Possible Moves
-		if selected_tile == false:
-			selected_tile = true
-			if !Scripts.PIECE_MOVE.got_all_moves: # If Movement Dict not already Loaded: Load it in Bitch
-				Scripts.PIECE_MOVE.set_all_moves()
-			_moves = Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY)
-			for i:Vector2i in _moves:
-				_tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
+		_moves = Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY)
+		for i:Vector2i in _moves:
+			_tilemap_selection.set_cell(i,1,Vector2i(1,0),0)
 	else:
 		print("SELECT_TILE- ERROR: Selected Tile dosen't contain Valid Piece")
 

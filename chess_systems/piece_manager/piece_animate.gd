@@ -7,7 +7,7 @@ const highlight_height:int = 32
 ## exports
 ## public vars
 static var moved:Dictionary = {} # Keeps Track of Pieces In Hightlight Animation
-static var highlighted_piece:Node2D
+static var highlighted_piece:Node2D # Current Piece under Mouse
 ## private vars
 ## onready vars
 # obj_ for node refrences

@@ -58,7 +58,7 @@ static func get_mouse_from_tile(coords:Vector2i) -> Vector2: # Translates Coords
 
 ## private methods
 
-func _create_tilemap_layers(tile_set:TileSet = preload("res://assets/board/tile_set.tres")) -> void:
+func _create_tilemap_layers(tile_set:TileSet = preload("res://assets/images/board/tile_set.tres")) -> void:
 	tilemap_selection = TileMapLayer.new()
 	tilemap_board = TileMapLayer.new()
 	

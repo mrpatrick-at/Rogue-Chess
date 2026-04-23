@@ -10,42 +10,38 @@ static var mouse_pos:Vector2
 ## built-in override methods
 
 func _ready() -> void:
-	
 	pass 
 
 func _physics_process(delta: float) -> void:
 	_camera_movement(delta)
 	_camera_zoom(delta)
-
-func _input(event:InputEvent):
-	_mouse_buttons(event)
-	return
-
-
+	_mouse_buttons()
 
 ## public methods
 
 ## private methods
 
-static func _mouse_buttons(event:InputEvent) -> void:
-	# Mouse Inputs
-	if event is InputEventMouse:
-		mouse_pos = Scripts.BOARD_MANAGER.get_tile_from_mouse()
-		Scripts.SELECTION_MANAGER.reset_highlight()
-		Scripts.PIECE_ANIMATE.reset_animation()
+static func _mouse_buttons() -> void:
+	# Reset Stuff
+	Scripts.SELECTION_MANAGER.reset_highlight()
+	Scripts.PIECE_ANIMATE.reset_animation()
 		
-		if !Scripts.DATABASE.menu_is_open:
+	if !Scripts.DATABASE.menu_is_open:
+		if InputEventMouse:
+			# Highlight Tiles and Pieces on Hover
+			mouse_pos = Scripts.BOARD_MANAGER.get_tile_from_mouse()
 			Scripts.SELECTION_MANAGER.highlight_tile(mouse_pos)
 			Scripts.PIECE_ANIMATE.hightlight_piece(mouse_pos)
-			
-			if Input.is_action_just_released(&"_input_mouse_left"):
-				print("Right Mouse click detected at: ",event.position)
-				if Scripts.SELECTION_MANAGER.selected_tile:
-					Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
-					
-				else:
-					Scripts.SELECTION_MANAGER.select_tile(mouse_pos)
+		
+		if Input.is_action_just_released(&"_input_mouse_left"):
+			# Allow Piece Movement
+			print("Right Mouse click detected")
+			if Scripts.SELECTION_MANAGER.selected_tile:
+				Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
 				
+			else:
+				Scripts.SELECTION_MANAGER.select_tile(mouse_pos)
+		
 		if Input.is_action_just_released(&"_input_mouse_right"):
 			print("Right Mouse click detected")
 		if Input.is_action_just_released(&"_input_mouse_middle"):

@@ -7,11 +7,11 @@
 [ext_resource type="Script" uid="uid://dfcemd6356nld" path="res://chess_systems/chess_camera/main.gd" id="5_5bm2p"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
 [ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="7_whis5"]
-[ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://chess_scenes/ingame_ui/main.tscn" id="8_0p6xv"]
+[ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://chess_ui/ingame_ui/main.tscn" id="8_0p6xv"]
 [ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="9_5rdu2"]
-[ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://chess_scenes/esc_menu/main.tscn" id="9_x6nru"]
-[ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://chess_scenes/lose_menu/main.tscn" id="10_ix53w"]
-[ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/background/temp_background.jpg" id="10_o15j2"]
+[ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://chess_ui/esc_menu/main.tscn" id="9_x6nru"]
+[ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://chess_ui/lose_menu/main.tscn" id="10_ix53w"]
+[ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
 [ext_resource type="Shader" uid="uid://bbnauwv33v8pk" path="res://assets/shaders/background.gdshader" id="13_43pjp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
@@ -46,19 +46,6 @@ shader_parameter/pixel_filter = 745.0
 shader_parameter/is_rotating = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ix53w"]
-shader = ExtResource("9_5rdu2")
-shader_parameter/see_uv = true
-shader_parameter/spin_rotation_speed = 2.0
-shader_parameter/move_speed = 7.0
-shader_parameter/offset = Vector2(0, 0)
-shader_parameter/colour_1 = Color(0.871, 0.267, 0.231, 1)
-shader_parameter/colour_2 = Color(0, 0.42, 0.706, 1)
-shader_parameter/colour_3 = Color(0.086, 0.137, 0.145, 1)
-shader_parameter/contrast = 3.5
-shader_parameter/lighting = 0.4
-shader_parameter/spin_amount = 0.25
-shader_parameter/pixel_filter = 745.0
-shader_parameter/is_rotating = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_43pjp"]
 shader = ExtResource("9_5rdu2")
@@ -75,14 +62,16 @@ shader_parameter/spin_amount = 0.25
 shader_parameter/pixel_filter = 745.0
 shader_parameter/is_rotating = false
 
+[sub_resource type="CanvasTexture" id="CanvasTexture_5bm2p"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5bm2p"]
 shader = ExtResource("13_43pjp")
-shader_parameter/circle_radius = 0.510000024225
+shader_parameter/circle_radius = 0.5
+shader_parameter/repeat_amount = 10.0
+shader_parameter/zoom = 10.0
 shader_parameter/color_1 = Color(1, 0, 0, 1)
 shader_parameter/color_2 = Color(0, 1, 0, 1)
 shader_parameter/color_3 = Color(0, 0, 1, 1)
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_ix53w"]
 
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
@@ -118,6 +107,10 @@ texture = ExtResource("7_whis5")
 [node name="Foreground" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=786620078]
 
 [node name="IngameUI" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
+offset_left = -45.0
+offset_top = -17.0
+offset_right = -45.0
+offset_bottom = -17.0
 
 [node name="VhsFilter" type="TextureRect" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=2109015937]
 visible = false
@@ -156,32 +149,28 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("10_o15j2")
 
-[node name="BackgroundParallax" type="Parallax2D" parent="ChessWorld2D/ChessCamera/Background" unique_id=2101069892]
+[node name="BackgroundParallax" type="Parallax2D" parent="ChessWorld2D" unique_id=2101069892]
 z_index = -1
 material = SubResource("ShaderMaterial_ix53w")
 scale = Vector2(1.5, 1.5)
 repeat_size = Vector2(1920, 1080)
 follow_viewport = false
 
-[node name="BackgroundShader" type="Sprite2D" parent="ChessWorld2D/ChessCamera/Background/BackgroundParallax" unique_id=36885580]
-visible = false
+[node name="BackgroundShader" type="Sprite2D" parent="ChessWorld2D/BackgroundParallax" unique_id=36885580]
 material = SubResource("ShaderMaterial_43pjp")
+scale = Vector2(1920, 1080)
+texture = SubResource("CanvasTexture_5bm2p")
 centered = false
 
-[node name="TextureRect" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background/BackgroundParallax" unique_id=1456044447]
+[node name="TextureRect" type="TextureRect" parent="ChessWorld2D/BackgroundParallax" unique_id=1456044447]
+visible = false
 material = SubResource("ShaderMaterial_5bm2p")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 26.0
 offset_right = 1920.0
-offset_bottom = 1080.0
+offset_bottom = 1106.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("7_whis5")
-
-[node name="TextureRect2" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background/BackgroundParallax" unique_id=1848397648]
-visible = false
-material = SubResource("ShaderMaterial_5bm2p")
-offset_right = 1920.0
-offset_bottom = 1080.0
-texture = SubResource("CanvasTexture_ix53w")

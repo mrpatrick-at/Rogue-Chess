@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://bgxr68chixp88"]
+
+[ext_resource type="Script" uid="uid://bccoyxxjh2ui6" path="res://chess_ui/lose_menu/main.gd" id="1_2a0fe"]
+[ext_resource type="LabelSettings" uid="uid://ck60ea7gdtef7" path="res://assets/themes/menu/text_ui_settings.tres" id="1_nfpch"]
+[ext_resource type="StyleBox" uid="uid://bukayp0talqv6" path="res://assets/themes/menu/style_box_flat_gray.tres" id="2_soikl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d5rf6"]
+bg_color = Color(0.18, 0.18, 0.18, 0.5019608)
+border_width_left = 10
+border_width_top = 5
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.18039216, 0.18039216, 0.18039216, 1)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_top = 20.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fny4v"]
+
+[node name="Control" type="Control" unique_id=1007814565]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2a0fe")
+
+[node name="TopUI" type="CenterContainer" parent="." unique_id=693206669]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="TopUI" unique_id=64978644]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_d5rf6")
+
+[node name="BoxContainer" type="BoxContainer" parent="TopUI/PanelContainer" unique_id=174069713]
+material = SubResource("CanvasItemMaterial_fny4v")
+layout_mode = 2
+
+[node name="TurnAmount" type="MarginContainer" parent="TopUI/PanelContainer/BoxContainer" unique_id=1973751945]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="PanelContainer" type="PanelContainer" parent="TopUI/PanelContainer/BoxContainer/TurnAmount" unique_id=1268693151]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_soikl")
+
+[node name="BoxContainer" type="BoxContainer" parent="TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer" unique_id=293818319]
+layout_mode = 2
+
+[node name="Text" type="Label" parent="TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer" unique_id=2012224454]
+layout_mode = 2
+text = "Turn Amount = "
+label_settings = ExtResource("1_nfpch")
+
+[node name="Value" type="Label" parent="TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer" unique_id=1825435652]
+custom_minimum_size = Vector2(37, 0)
+layout_mode = 2
+text = "00"
+label_settings = ExtResource("1_nfpch")
+
+[node name="ColorMove" type="MarginContainer" parent="TopUI/PanelContainer/BoxContainer" unique_id=456146990]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="PanelContainer" type="PanelContainer" parent="TopUI/PanelContainer/BoxContainer/ColorMove" unique_id=152272876]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_soikl")
+
+[node name="BoxContainer" type="BoxContainer" parent="TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer" unique_id=386598223]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer" unique_id=342649693]
+custom_minimum_size = Vector2(102, 0)
+layout_mode = 2
+label_settings = ExtResource("1_nfpch")
+
+[node name="Text" type="Label" parent="TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer" unique_id=1354797242]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = " Turn"
+label_settings = ExtResource("1_nfpch")
+
+[node name="FiftyMoveRule" type="MarginContainer" parent="TopUI/PanelContainer/BoxContainer" unique_id=660362797]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="PanelContainer" type="PanelContainer" parent="TopUI/PanelContainer/BoxContainer/FiftyMoveRule" unique_id=973621116]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_soikl")
+
+[node name="BoxContainer" type="BoxContainer" parent="TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer" unique_id=715201486]
+layout_mode = 2
+
+[node name="Text" type="Label" parent="TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer" unique_id=2018121360]
+layout_mode = 2
+text = "Fifty Move Rule = "
+label_settings = ExtResource("1_nfpch")
+
+[node name="Value" type="Label" parent="TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer" unique_id=803515977]
+clip_contents = true
+layout_mode = 2
+text = "00"
+label_settings = ExtResource("1_nfpch")

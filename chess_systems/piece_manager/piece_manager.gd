@@ -27,6 +27,8 @@ func _ready() -> void:
 		var piece_info:Vector2i = _calculate_piece(coords)
 		_create_piece(coords,piece_info,i)
 	
+	# Initially Load In all Moves
+	Scripts.PIECE_MOVE.get_all_moves()
 
 func _physics_process(_delta:float) -> void:
 	pass
@@ -60,6 +62,29 @@ static func clear_piece_data(coords:Vector2i,value_to_clear:int) -> void: # 1. c
 		
 	#print("CLEAR_PIECE_DATA- ",coords," don't exist")
 	return
+
+static func is_in_check() -> bool: # Returns True if Piece on check_pos is in check
+	if !Scripts.PIECE_MOVE.king_checked_from.is_empty():
+		return true
+	return false
+
+static func is_empty(asked_coords:Vector2i) -> bool: # Checks if Tile is Empty, duh
+	if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.NONE:
+		return true
+	return false
+
+static func is_enemy(asked_coords:Vector2i) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
+	if Scripts.DATABASE.color_turn == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+		if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
+			return true
+	elif Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+		return true
+	return false
+
+
+
+
+
 
 ## private methods
 
@@ -163,39 +188,39 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 	
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
 		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/pieces/white/w_pawn.png")
+			sprite = load("res://assets/images/pieces/white/w_pawn.png")
 		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/pieces/black/b_pawn.png")
+			sprite = load("res://assets/images/pieces/black/b_pawn.png")
 		Scripts.DATABASE.PIECE_DICTIONARY[i][Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES] = Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.FALSE
 	
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.ROOK:
 		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/pieces/white/w_rook.png")
+			sprite = load("res://assets/images/pieces/white/w_rook.png")
 		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/pieces/black/b_rook.png")
+			sprite = load("res://assets/images/pieces/black/b_rook.png")
 		
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.KNIGHT:
 		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/pieces/white/w_knight.png")
+			sprite = load("res://assets/images/pieces/white/w_knight.png")
 		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/pieces/black/b_knight.png")
+			sprite = load("res://assets/images/pieces/black/b_knight.png")
 		
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.BISHOP:
 		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/pieces/white/w_bishop.png")
+			sprite = load("res://assets/images/pieces/white/w_bishop.png")
 		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/pieces/black/b_bishop.png")
+			sprite = load("res://assets/images/pieces/black/b_bishop.png")
 		
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.QUEEN:
 		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/pieces/white/w_queen.png")
+			sprite = load("res://assets/images/pieces/white/w_queen.png")
 		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/pieces/black/b_queen.png")
+			sprite = load("res://assets/images/pieces/black/b_queen.png")
 		
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.KING:
 		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/pieces/white/w_king.png")
+			sprite = load("res://assets/images/pieces/white/w_king.png")
 		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/pieces/black/b_king.png")
+			sprite = load("res://assets/images/pieces/black/b_king.png")
 	
 	piece_sprite.texture = sprite

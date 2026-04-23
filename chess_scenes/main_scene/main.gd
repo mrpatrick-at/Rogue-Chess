@@ -43,7 +43,6 @@ static func clear_data() -> void:
 	
 	Scripts.DATABASE.PIECE_DICTIONARY.clear()
 	
-	Scripts.PIECE_MOVE.got_all_moves = false
 	Scripts.PIECE_MOVE.king_pos = Scripts.PIECE_MOVE.white_king_pos
 	
 	Scripts.SELECTION_MANAGER.selected_tile = false
