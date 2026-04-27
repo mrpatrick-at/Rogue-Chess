@@ -78,7 +78,7 @@ static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves 
 		if Scripts.PIECE_CHECK.king_in_check:
 			if move_coords in Scripts.PIECE_CHECK.king_between_coords:
 				_valid_moves.append(move_coords)
-				continue
+			continue
 		
 		# If Move will cause check: dont allow move
 		if Scripts.PIECE_CHECK.king_in_potential_check:
@@ -86,10 +86,9 @@ static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves 
 				_valid_moves = []
 				continue
 		
-		# else
 		_valid_moves = _moves
 	
-	#print("GET_MOVES- these da piece: ",current_coords," these da movez: ",_valid_moves)
+	print("GET_MOVES- these da piece: ",current_coords," these da movez: ",_valid_moves)
 	return _valid_moves
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement

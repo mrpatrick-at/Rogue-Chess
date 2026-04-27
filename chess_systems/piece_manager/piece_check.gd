@@ -22,6 +22,7 @@ static var king_potential_between_coords:Array = []
 ## public methods
 
 static func update_check_vars(king_pos:Vector2i) -> void: # Updates this Scripts Vars
+	print_rich("[color=Turquoise]UPDATE_CHECK_VARS-[/color] Called")
 	# Clear and Update Check Arrays
 	king_check_coords.clear()
 	king_potential_check_coords.clear()
@@ -50,6 +51,7 @@ static func update_check_vars(king_pos:Vector2i) -> void: # Updates this Scripts
 	
 
 static func get_check_coords(check_pos:Vector2i,potential_check:bool) -> Array: # Returns Array of all Pieces Checking the Piece on check_pos
+	print_rich("[color=Turquoise]GET_CHECK_COORDS-[/color] Called")
 	var _tmp_check_coords:Array = []
 	
 	var pawn_direction:int
