@@ -11,24 +11,7 @@ static var blank_sprite:Sprite2D
 ## built-in override methods
 
 func _ready() -> void:
-	var i:int = 0
-	
-	# Add Blank Node for Empty Squares
-	blank_node = Node2D.new()
-	blank_node.name = "PieceNone"
-	add_child(blank_node)
-	blank_sprite = Sprite2D.new()
-	blank_sprite.name = "SpriteNone"
-	blank_node.add_child(blank_sprite)
-	
-	for coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY.keys():
-		i += 1
-		y_sort_enabled = true
-		var piece_info:Vector2i = _calculate_piece(coords)
-		_create_piece(coords,piece_info,i)
-	
-	# Initially Load In all Moves
-	Scripts.PIECE_MOVE.get_all_moves()
+	build_pieces()
 
 ## public methods
 
@@ -76,7 +59,38 @@ static func is_enemy(asked_coords:Vector2i) -> bool: # Checks if piece on piece_
 
 ## private methods
 
-static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Tiles should have Pieces
+func build_pieces() -> void:
+	var time_before:float = Time.get_ticks_usec()
+	print_rich("[color=Turquoise]BUILD_PIECES-[/color] Started Building Pieces at: [color=gold]%sms[/color]"
+	%[time_before/1000])
+	
+	# Add Blank Node for Empty Squares
+	blank_node = Node2D.new()
+	blank_node.name = "PieceNone"
+	add_child(blank_node)
+	blank_sprite = Sprite2D.new()
+	blank_sprite.name = "SpriteNone"
+	blank_node.add_child(blank_sprite)
+	
+	var i:int = 0
+	
+	for coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY.keys():
+		var piece_info:Array = _calculate_piece(coords)
+		if piece_info[0] == Scripts.CONSTANTS.PIECE_TYPE.NONE:
+			_create_blank(coords,piece_info)
+			continue
+		
+		i += 1
+		y_sort_enabled = true
+		_create_piece(coords,piece_info,i)
+	
+	print_rich("[color=Turquoise]BUILD_PIECES-[/color] Finished Creating Pieces in: [color=gold]%sms[/color]"
+	%[Scripts.DEBUG_MANAGER.end_timer(time_before)])
+	
+	# Initially Load In all Moves
+	Scripts.PIECE_MOVE.get_all_moves()
+
+static func _calculate_piece(coords:Vector2i) -> Array: # Calculates which Tiles should have Pieces
 	var piece:int = Scripts.CONSTANTS.PIECE_TYPE.NONE
 	var color:int = Scripts.CONSTANTS.PIECE_COLOR._0
 	
@@ -138,30 +152,25 @@ static func _calculate_piece(coords:Vector2i) -> Vector2i: # Calculates which Ti
 			Scripts.PIECE_MOVE.black_king_pos = Vector2i(coords.x,coords.y)
 			print("Black King spawned at: ",coords,"!")
 	
-	var piece_info:Vector2i = Vector2i(piece,color)
+	var piece_info:Array = [piece,color]
 	
 	return piece_info
 
-func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks at DataBase then creates Node2D's that contain the Piece Sprites
-	var piece:int = piece_info.x 
-	var color:int = piece_info.y
+func _create_piece(coords:Vector2i,piece_info:Array,i:int) -> void: # Looks at DataBase then creates Node2D's that contain the Piece Sprites
+	var piece:int = piece_info[0]
+	var color:int = piece_info[1]
+	
 	var piece_object:Node2D
 	var piece_sprite:Sprite2D
 	
-	if piece == Scripts.CONSTANTS.PIECE_TYPE.NONE:
-		piece_object = blank_node
-		piece_sprite = blank_sprite
-		i = 0
-	
-	else:
-		piece_object = Node2D.new()
-		add_child(piece_object)
-		piece_sprite = Sprite2D.new()
-		piece_object.add_child(piece_sprite)
-		var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(coords)
-		piece_object.global_position = translated_coords
-		piece_object.scale = Vector2i(8,8)
-		piece_object.move_local_y(-96)
+	piece_object = Node2D.new()
+	add_child(piece_object)
+	piece_sprite = Sprite2D.new()
+	piece_object.add_child(piece_sprite)
+	var translated_coords:Vector2 = Scripts.BOARD_MANAGER.get_mouse_from_tile(coords)
+	piece_object.global_position = translated_coords
+	piece_object.scale = Vector2i(8,8)
+	piece_object.move_local_y(-96)
 	
 	Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"] = i
 	Scripts.DATABASE.PIECE_DICTIONARY.set(i,{ # Remember values with "" in here are not done yet and need to be set to an Int thru consts file
@@ -172,43 +181,49 @@ func _create_piece(coords:Vector2i,piece_info:Vector2i,i:int) -> void: # Looks a
 		Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED:0,
 		})
 	
-	var sprite:CompressedTexture2D
+	var color_string:String = " "
 	
+	if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
+		color_string = "white"
+	else:
+		color_string = "black"
+	
+	var piece_string:String = " "
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
-		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/images/pieces/white/w_pawn.png")
-		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/images/pieces/black/b_pawn.png")
+		piece_string = "pawn"
 		Scripts.DATABASE.PIECE_DICTIONARY[i][Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES] = Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.FALSE
 	
 	if piece == Scripts.CONSTANTS.PIECE_TYPE.ROOK:
-		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/images/pieces/white/w_rook.png")
-		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/images/pieces/black/b_rook.png")
-		
-	if piece == Scripts.CONSTANTS.PIECE_TYPE.KNIGHT:
-		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/images/pieces/white/w_knight.png")
-		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/images/pieces/black/b_knight.png")
-		
-	if piece == Scripts.CONSTANTS.PIECE_TYPE.BISHOP:
-		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/images/pieces/white/w_bishop.png")
-		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/images/pieces/black/b_bishop.png")
-		
-	if piece == Scripts.CONSTANTS.PIECE_TYPE.QUEEN:
-		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/images/pieces/white/w_queen.png")
-		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/images/pieces/black/b_queen.png")
-		
-	if piece == Scripts.CONSTANTS.PIECE_TYPE.KING:
-		if color == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
-			sprite = load("res://assets/images/pieces/white/w_king.png")
-		if color == Scripts.CONSTANTS.PIECE_COLOR.BLACK:
-			sprite = load("res://assets/images/pieces/black/b_king.png")
+		piece_string = "rook"
 	
-	piece_sprite.texture = sprite
+	if piece == Scripts.CONSTANTS.PIECE_TYPE.KNIGHT:
+		piece_string = "knight"
+	
+	if piece == Scripts.CONSTANTS.PIECE_TYPE.BISHOP:
+		piece_string = "bishop"
+	
+	if piece == Scripts.CONSTANTS.PIECE_TYPE.QUEEN:
+		piece_string = "queen"
+	
+	if piece == Scripts.CONSTANTS.PIECE_TYPE.KING:
+		piece_string = "king"
+	
+	piece_sprite.texture = load("res://assets/images/pieces/%s/%s.png"%[color_string,piece_string])
+
+static func _create_blank(coords:Vector2i,piece_info:Array) -> void:
+	var piece:int = piece_info[0]
+	var color:int = piece_info[1]
+	
+	var piece_object:Node2D = blank_node
+	var piece_sprite:Sprite2D = blank_sprite
+	
+	var i:int = 0
+	
+	Scripts.DATABASE.TILE_DICTIONARY[coords]["piece"] = i
+	Scripts.DATABASE.PIECE_DICTIONARY.set(i,{ # Remember values with "" in here are not done yet and need to be set to an Int thru consts file
+		Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE:piece,
+		Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR:color,
+		Scripts.CONSTANTS.PIECE_LIST.PIECE_OBJ:piece_object,
+		Scripts.CONSTANTS.PIECE_LIST.PIECE_SPRITE:piece_sprite,
+		Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED:0,
+		})

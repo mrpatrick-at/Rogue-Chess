@@ -17,6 +17,7 @@ const PIECE_ANIMATE = preload("res://chess_systems/piece_manager/piece_animate.g
 const DATABASE:= preload("res://chess_systems/database/database.gd")
 const CONSTANTS:= preload("res://chess_systems/database/constants.gd")
 
+const DEBUG_MANAGER:= preload("res://chess_systems/debug/debug_manager.gd")
 ## exports
 ## public vars
 static var color_turn:int = Scripts.CONSTANTS.PIECE_COLOR.WHITE

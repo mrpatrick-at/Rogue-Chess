@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ci1887fyu2gmc"
-path="res://.godot/imported/b_pawn.png-5b13f9c507f2f724ed7b14302b61952a.ctex"
+uid="uid://dybhpersvr52"
+path="res://.godot/imported/queen.png-72cf7515abd7ff762048111e47b86587.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/pieces/black/b_pawn.png"
-dest_files=["res://.godot/imported/b_pawn.png-5b13f9c507f2f724ed7b14302b61952a.ctex"]
+source_file="res://assets/images/pieces/white/queen.png"
+dest_files=["res://.godot/imported/queen.png-72cf7515abd7ff762048111e47b86587.ctex"]
 
 [params]
 

@@ -16,24 +16,28 @@ static var tilemap_board:TileMapLayer
 ## built-in override methods
 
 func _ready() -> void: # Runs on Startup
-	_create_tilemap_layers()
 	build_board()
-	_center_tilemap()
-	pass
 
 func _physics_process(_delta:float) -> void: # Runs Every Tick
 	pass
 ## public methods
 
-static func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before
+func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before
+	var time_before:float = Time.get_ticks_usec()
+	print_rich("[color=Turquoise]BUILD_BOARD-[/color] Started Building Board at: [color=gold]%sms[/color]"
+	%[time_before/1000])
+	_create_tilemap_layers()
 	for x in range(1,x_range):
 		for y in range(1,y_range):
 			var coords:Vector2i = Vector2i(x,y)
 			if coords not in Scripts.DATABASE.TILE_DICTIONARY:
 				_calculate_tile_color(coords)
 				_create_board_cells(coords)
+	_center_tilemap()
 	
-	print("Created Board of size: ",tilemap_board.get_used_rect(),"!") # TODO: Make it Error if Board size does not equal expected size
+	print_rich("[color=Turquoise]BUILD_BOARD-[/color] Created Board of size: [color=gold]%s[/color] in: [color=gold]%sms[/color]"
+	%[tilemap_board.get_used_rect(), Scripts.DEBUG_MANAGER.end_timer(time_before)])
+	
 
 static func is_valid_position(_asked_coords:Vector2i) -> bool:
 	if _asked_coords.x >= 1 and _asked_coords.x < 9 and _asked_coords.y >= 1 and _asked_coords.y < 9:
@@ -149,7 +153,7 @@ static func _calculate_tile_color(coords:Vector2i) -> void: # Assing A Value to 
 		colour_of_tile = "White"
 		
 	Scripts.DATABASE.TOTAL_TILES = Scripts.DATABASE.TILE_BLACK + Scripts.DATABASE.TILE_WHITE # Total Ints (Should be 64 for Chess board)
-	print(colour_of_tile," Tile Found at: ",coords," ; Now there is ",Scripts.DATABASE.TOTAL_TILES,"/64 Total Tiles!")
+	#print(colour_of_tile," Tile Found at: ",coords," ; Now there is ",Scripts.DATABASE.TOTAL_TILES,"/64 Total Tiles!")
 	return
 
 static func _create_board_cells(coords:Vector2i) -> void: # Create Board Cells Based on the Colour Value

@@ -20,6 +20,8 @@ static var all_valid_moves:Dictionary = {}
 ## public methods
 
 static func get_all_moves() -> void: # Ran After A Move is Made. TODO: Make Pieces not Move if Moving will put King under Check.
+	var time_before:float = Time.get_ticks_usec()
+	
 	var _all_moves:Dictionary = {}
 	# Clear Old Data
 	
@@ -40,6 +42,8 @@ static func get_all_moves() -> void: # Ran After A Move is Made. TODO: Make Piec
 		var valid_moves:Array = _all_moves[piece_coords]
 		Scripts.PIECE_MANAGER.clear_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY)
 		Scripts.PIECE_MANAGER.set_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY,valid_moves)
+	
+	print("GET_ALL_MOVES- Time to get Moves: ",Scripts.DEBUG_MANAGER.end_timer(time_before),"ms")
 
 static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves for the Requested Piece
 	var _moves:Array = []
