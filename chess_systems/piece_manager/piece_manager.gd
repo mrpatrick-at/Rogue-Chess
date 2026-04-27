@@ -30,9 +30,6 @@ func _ready() -> void:
 	# Initially Load In all Moves
 	Scripts.PIECE_MOVE.get_all_moves()
 
-func _physics_process(_delta:float) -> void:
-	pass
-
 ## public methods
 
 static func get_piece_data(coords:Vector2i,value_to_get:int) -> Variant: # 1. coords 2. value to get

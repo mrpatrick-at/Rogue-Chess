@@ -67,12 +67,20 @@ static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves 
 				_valid_moves.append(move_coords)
 			continue
 		
-		# If in check allow only moves that will end check
+		# If in check: only allow moves that will end check
 		if Scripts.PIECE_CHECK.king_in_check:
 			if move_coords in Scripts.PIECE_CHECK.king_between_coords:
 				_valid_moves.append(move_coords)
-		else:
-			_valid_moves = _moves
+				continue
+		
+		# If Move will cause check: dont allow move
+		if Scripts.PIECE_CHECK.king_in_potential_check:
+			if current_coords in Scripts.PIECE_CHECK.king_potential_between_coords:
+				_valid_moves = []
+				continue
+		
+		# else
+		_valid_moves = _moves
 	
 	print("GET_MOVES- these da piece: ",current_coords," these da movez: ",_valid_moves)
 	return _valid_moves
@@ -161,7 +169,7 @@ static func _post_move() -> void: # Stuff to Do After Move was Called
 		Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.BLACK
 	else:
 		Scripts.DATABASE.color_turn = Scripts.CONSTANTS.PIECE_COLOR.WHITE
-		
+	
 	# Increment Turn Amount
 	Scripts.DATABASE.turn_amount += 1
 	print("MAKE_MOVE- TURN AMOUNT: ",Scripts.DATABASE.turn_amount)
