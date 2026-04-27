@@ -109,11 +109,11 @@ static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array
 				Scripts.PIECE_MANAGER.set_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES,Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.TRUE)
 			# Apply En Passant Rules
 			if asked_coords.y != current_coords.y:
-				if Scripts.DATABASE.TILE_DICTIONARY[asked_coords]["piece"] == 0:
+				if Scripts.DATABASE.TILE_DICTIONARY[asked_coords][Scripts.CONSTANTS.BOARD_LIST.PIECE] == 0:
 					var en_passant_coords:Vector2i = Vector2i(current_coords.x,asked_coords.y)
 					print("MAKE_MOVE- en_passant_coords: ",en_passant_coords)
 					_capture_piece(en_passant_coords)
-					Scripts.DATABASE.TILE_DICTIONARY[en_passant_coords]["piece"] = 0
+					Scripts.DATABASE.TILE_DICTIONARY[en_passant_coords][Scripts.CONSTANTS.BOARD_LIST.PIECE] = 0
 		
 		# If Moved Piece is King
 		if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.KING:
@@ -141,13 +141,13 @@ static func _move_piece(current_coords:Vector2i,asked_coords:Vector2i) -> void: 
 	if Scripts.PIECE_MANAGER.is_enemy(asked_coords): # Add advanced logic for capturing here later if needed
 		_capture_piece(asked_coords)
 	
-	var piece:int = Scripts.DATABASE.TILE_DICTIONARY[current_coords]["piece"]
+	var piece:int = Scripts.DATABASE.TILE_DICTIONARY[current_coords][Scripts.CONSTANTS.BOARD_LIST.PIECE]
 	
 	# Remove Old Data
-	Scripts.DATABASE.TILE_DICTIONARY[current_coords]["piece"] = 0
+	Scripts.DATABASE.TILE_DICTIONARY[current_coords][Scripts.CONSTANTS.BOARD_LIST.PIECE] = 0
 	
 	# Write New Data
-	Scripts.DATABASE.TILE_DICTIONARY[asked_coords]["piece"] = piece
+	Scripts.DATABASE.TILE_DICTIONARY[asked_coords][Scripts.CONSTANTS.BOARD_LIST.PIECE] = piece
 	var times_moved:int = Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED)
 	times_moved += 1
 	Scripts.PIECE_MANAGER.set_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED,times_moved)
