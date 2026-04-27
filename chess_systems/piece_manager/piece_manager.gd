@@ -61,7 +61,7 @@ static func is_enemy(asked_coords:Vector2i) -> bool: # Checks if piece on piece_
 
 func build_pieces() -> void:
 	var time_before:float = Time.get_ticks_usec()
-	print_rich("[color=Turquoise]BUILD_PIECES-[/color] Started Building Pieces at: [color=gold]%sms[/color]"
+	print_rich("[color=Springgreen]BUILD_PIECES-[/color] Started Building Pieces at: [color=gold]%sms[/color]"
 	%[time_before/1000])
 	
 	# Add Blank Node for Empty Squares
@@ -80,7 +80,7 @@ func build_pieces() -> void:
 		y_sort_enabled = true
 		_create_piece(coords,piece_info,i)
 	
-	print_rich("[color=Turquoise]BUILD_PIECES-[/color] Finished Creating Pieces in: [color=gold]%sms[/color]"
+	print_rich("[color=Springgreen]BUILD_PIECES-[/color] Finished Creating Pieces in: [color=gold]%sms[/color]"
 	%[Scripts.DEBUG_MANAGER.end_timer(time_before)])
 	
 	# Initially Load In all Moves

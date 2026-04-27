@@ -35,7 +35,6 @@ static func _mouse_buttons() -> void:
 		
 		if Input.is_action_just_released(&"_input_mouse_left"):
 			# Allow Piece Movement
-			print("Right Mouse click detected")
 			if Scripts.SELECTION_MANAGER.selected_tile:
 				Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
 				

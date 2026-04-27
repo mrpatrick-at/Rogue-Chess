@@ -24,7 +24,7 @@ func _physics_process(_delta:float) -> void: # Runs Every Tick
 
 func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 before
 	var time_before:float = Time.get_ticks_usec()
-	print_rich("[color=Turquoise]BUILD_BOARD-[/color] Started Building Board at: [color=gold]%sms[/color]"
+	print_rich("[color=Springgreen]BUILD_BOARD-[/color] Started Building Board at: [color=gold]%sms[/color]"
 	%[time_before/1000])
 	_create_tilemap_layers()
 	for x in range(1,x_range):
@@ -35,7 +35,7 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 				_create_board_cells(coords)
 	_center_tilemap()
 	
-	print_rich("[color=Turquoise]BUILD_BOARD-[/color] Created Board of size: [color=gold]%s[/color] in: [color=gold]%sms[/color]"
+	print_rich("[color=Springgreen]BUILD_BOARD-[/color] Created Board of size: [color=gold]%s[/color] in: [color=gold]%sms[/color]"
 	%[tilemap_board.get_used_rect(), Scripts.DEBUG_MANAGER.end_timer(time_before)])
 	
 
@@ -113,7 +113,7 @@ func _create_tilemap_layers(tile_set:TileSet = preload("res://assets/images/boar
 	tilemap_board.physics_quadrant_size = quadrant_size
 	tilemap_board.tile_set = tile_set
 	
-	print("tileset id count: ",tile_set.get_source_count())
+	print_rich("[color=Turquoise]CREATE_TILESET_LAYERS-[/color] Tileset ID Count: [color=gold]%s[/color]"%tile_set.get_source_count())
 
 static func _calculate_tile_color(coords:Vector2i) -> void: # Assing A Value to Each Tile used for Colouring
 	var int_x:int = 0 # Check if x is odd or even
@@ -166,4 +166,4 @@ func _center_tilemap() -> void: # Rotates and Centers ALL Tilemaps
 	rotation_degrees = -90
 	global_position.x = ((x_range * 128.0) / 2.0 ) *-1
 	global_position.y = ((y_range * 128.0) / 2.0 ) *1
-	print("Tile Map Centered to: ",position.x," , ",position.y,"!")
+	print_rich("[color=Turquoise]CENTER_TILEMAP-[/color] Tile Map Centered to: [color=gold]%s[/color]"%position)

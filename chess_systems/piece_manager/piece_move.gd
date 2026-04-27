@@ -21,6 +21,8 @@ static var all_valid_moves:Dictionary = {}
 
 static func get_all_moves() -> void: # Ran After A Move is Made. TODO: Make Pieces not Move if Moving will put King under Check.
 	var time_before:float = Time.get_ticks_usec()
+	print_rich("[color=Springgreen]GET_ALL_MOVES-[/color] Started Getting Moves at: [color=gold]%sms[/color]"
+	%[time_before/1000])
 	
 	var _all_moves:Dictionary = {}
 	# Clear Old Data
@@ -43,7 +45,8 @@ static func get_all_moves() -> void: # Ran After A Move is Made. TODO: Make Piec
 		Scripts.PIECE_MANAGER.clear_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY)
 		Scripts.PIECE_MANAGER.set_piece_data(piece_coords,Scripts.CONSTANTS.PIECE_LIST.MOVE_ARRAY,valid_moves)
 	
-	print("GET_ALL_MOVES- Time to get Moves: ",Scripts.DEBUG_MANAGER.end_timer(time_before),"ms")
+	print_rich("[color=Springgreen]GET_ALL_MOVES-[/color] Taken Time to Get Moves: [color=gold]%sms[/color]"
+	%Scripts.DEBUG_MANAGER.end_timer(time_before),)
 
 static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves for the Requested Piece
 	var _moves:Array = []
@@ -86,7 +89,7 @@ static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves 
 		# else
 		_valid_moves = _moves
 	
-	print("GET_MOVES- these da piece: ",current_coords," these da movez: ",_valid_moves)
+	#print("GET_MOVES- these da piece: ",current_coords," these da movez: ",_valid_moves)
 	return _valid_moves
 
 static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array) -> void: # Calls all funcs used for movement
@@ -129,7 +132,7 @@ static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array
 		_post_move()
 	
 	else:
-		print("MAKE_MOVE- COORDS NOT IN _MOVES!")
+		print_rich("[color=Turquoise]MAKE_MOVE-[/color] COORDS NOT IN _MOVES!")
 	
 	return
 
