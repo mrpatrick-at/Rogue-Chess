@@ -63,11 +63,6 @@ static func clear_piece_data(coords:Vector2i,value_to_clear:int) -> void: # 1. c
 	#print("CLEAR_PIECE_DATA- ",coords," don't exist")
 	return
 
-static func is_in_check() -> bool: # Returns True if Piece on check_pos is in check
-	if !Scripts.PIECE_MOVE.king_checked_from.is_empty():
-		return true
-	return false
-
 static func is_empty(asked_coords:Vector2i) -> bool: # Checks if Tile is Empty, duh
 	if Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.NONE:
 		return true
@@ -80,10 +75,6 @@ static func is_enemy(asked_coords:Vector2i) -> bool: # Checks if piece on piece_
 	elif Scripts.PIECE_MANAGER.get_piece_data(asked_coords,Scripts.CONSTANTS.PIECE_LIST.PIECE_COLOR) == Scripts.CONSTANTS.PIECE_COLOR.WHITE:
 		return true
 	return false
-
-
-
-
 
 
 ## private methods

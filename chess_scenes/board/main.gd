@@ -56,6 +56,40 @@ static func get_mouse_from_tile(coords:Vector2i) -> Vector2: # Translates Coords
 	var translated_coords:Vector2 = tilemap_board.to_global(tilemap_board.map_to_local(coords))
 	return translated_coords
 
+static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns starting_pos + Array of all Positions between the two Points
+	var value_x:int
+	var value_y:int
+	
+	if starting_pos.x < target_pos.x:
+		value_x = 1
+	elif starting_pos.x == target_pos.x:
+		value_x = 0
+	else:
+		value_x = -1
+		
+	if starting_pos.y < target_pos.y:
+		value_y = 1
+	elif starting_pos.y == target_pos.y:
+		value_y = 0
+	else:
+		value_y = -1
+	
+	#print("GET_TILES_BETWEEN_POINTS- step values: ",Vector2i(value_x,value_y))
+	var step:Vector2i = Vector2i(starting_pos)
+	var _steps:Array = []
+	
+	while step != target_pos:
+		_steps.append(step)
+		if step.x != target_pos.x:
+			step.x += value_x
+		if step.y != target_pos.y:
+			step.y += value_y
+		#print("GET_TILES_BETWEEN_POINTS- steps +1")
+		
+	#print("GET_TILES_BETWEEN_POINTS- steps: ",_steps)
+	
+	return _steps
+
 ## private methods
 
 func _create_tilemap_layers(tile_set:TileSet = preload("res://assets/images/board/tile_set.tres")) -> void:

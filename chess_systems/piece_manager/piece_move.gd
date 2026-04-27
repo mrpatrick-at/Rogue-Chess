@@ -11,9 +11,7 @@ static var white_king_pos:Vector2i = Vector2i(0,0)
 static var black_king_pos:Vector2i = Vector2i(0,0)
 
 static var king_pos:Vector2i = Vector2i(0,0)
-static var king_checked_from:Array = []
 
-static var between_moves:Array = []
 static var all_valid_moves:Dictionary = {}
 ## private vars
 ## onready vars
@@ -21,21 +19,9 @@ static var all_valid_moves:Dictionary = {}
 ## built-in override methods
 ## public methods
 
-static func get_all_moves() -> void: # Ran After A Move is Made. TODO: Make Pieces not Move if Moving will put King under Check. Use: get_tiles_between_points
+static func get_all_moves() -> void: # Ran After A Move is Made. TODO: Make Pieces not Move if Moving will put King under Check.
 	var _all_moves:Dictionary = {}
 	# Clear Old Data
-	king_checked_from.clear()
-	
-	
-	
-	
-	king_checked_from = Scripts.PIECE_CHECK.get_check_coords(king_pos)
-	if Scripts.PIECE_MANAGER.is_in_check():
-		print("GET_ALL_MOVES- Pieces Checking King: ",king_checked_from)
-		between_moves.clear()
-		# Get Moves that will stop check
-		for checking_piece:Vector2i in king_checked_from:
-			between_moves.append_array(get_tiles_between_points(checking_piece,king_pos))
 	
 	# Get Moves of all Pieces
 	for piece_coords:Vector2i in Scripts.DATABASE.TILE_DICTIONARY:
@@ -73,16 +59,17 @@ static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves 
 		Scripts.CONSTANTS.PIECE_TYPE.KING:
 			_moves = _get_king_moves(current_coords)
 	
-	# Only Write Valid Moves that will Stop Check
 	var _valid_moves:Array = []
 	for move_coords:Vector2i in _moves:
+		# Dont Allow King to Move to Tiles that will put him in Check
 		if piece_type == Scripts.CONSTANTS.PIECE_TYPE.KING:
-			if Scripts.PIECE_CHECK.get_check_coords(move_coords).is_empty():
+			if Scripts.PIECE_CHECK.get_check_coords(move_coords,true).is_empty():
 				_valid_moves.append(move_coords)
 			continue
 		
-		if Scripts.PIECE_MANAGER.is_in_check():
-			if move_coords in between_moves:
+		# If in check allow only moves that will end check
+		if Scripts.PIECE_CHECK.king_in_check:
+			if move_coords in Scripts.PIECE_CHECK.king_between_coords:
 				_valid_moves.append(move_coords)
 		else:
 			_valid_moves = _moves
@@ -133,40 +120,6 @@ static func make_move(current_coords:Vector2i,asked_coords:Vector2i,_moves:Array
 		print("MAKE_MOVE- COORDS NOT IN _MOVES!")
 	
 	return
-
-static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns starting_pos + Array of all Positions between the two Points
-	var value_x:int
-	var value_y:int
-	
-	if starting_pos.x < target_pos.x:
-		value_x = 1
-	elif starting_pos.x == target_pos.x:
-		value_x = 0
-	else:
-		value_x = -1
-		
-	if starting_pos.y < target_pos.y:
-		value_y = 1
-	elif starting_pos.y == target_pos.y:
-		value_y = 0
-	else:
-		value_y = -1
-	
-	#print("GET_TILES_BETWEEN_POINTS- step values: ",Vector2i(value_x,value_y))
-	var step:Vector2i = Vector2i(starting_pos)
-	var _steps:Array = []
-	
-	while step != target_pos:
-		_steps.append(step)
-		if step.x != target_pos.x:
-			step.x += value_x
-		if step.y != target_pos.y:
-			step.y += value_y
-		#print("GET_TILES_BETWEEN_POINTS- steps +1")
-		
-	#print("GET_TILES_BETWEEN_POINTS- steps: ",_steps)
-	
-	return _steps
 
 ## private methods
 
@@ -219,6 +172,7 @@ static func _post_move() -> void: # Stuff to Do After Move was Called
 	else:
 		king_pos = black_king_pos
 	
+	Scripts.PIECE_CHECK.update_check_vars(king_pos)
 	get_all_moves()
 
 static func _capture_piece(asked_coords:Vector2i) -> void: # Captures The Piece on the Given Tile
