@@ -16,8 +16,15 @@ func _ready() -> void:
 	pass 
 
 func _process(_delta: float) -> void:
+	update_menu_status()
+	
 	if Scripts.DATABASE.is_lost:
+		if Scripts.DATABASE.menu_is_open == true:
+			toggle_esc_menu()
+			update_menu_status()
+		
 		open_lose_menu()
+	
 	else:
 		if Input.is_action_just_pressed(&"_input_esc"):
 			toggle_esc_menu()
@@ -49,12 +56,16 @@ static func clear_data() -> void:
 	
 	Scripts.PIECE_ANIMATE.moved.clear()
 
-func toggle_esc_menu() -> void:
+func update_menu_status() -> void:
 	if esc_menu.is_visible_in_tree():
-		esc_menu.hide()
+		Scripts.DATABASE.menu_is_open = true
+	else:
 		Scripts.DATABASE.menu_is_open = false
+
+func toggle_esc_menu() -> void:
+	if Scripts.DATABASE.menu_is_open == true:
+		esc_menu.hide()
 	else:
 		esc_menu.show()
-		Scripts.DATABASE.menu_is_open = true
 
 ## private methods
