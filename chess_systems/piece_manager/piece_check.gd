@@ -13,10 +13,7 @@ static var king_in_check:bool = false
 static var king_in_potential_check:bool = false
 
 # Tiles between all Pieces checking King and King Itself
-static var king_between_coords:Array = [] # Coords Between King and all Pieces Checking him
-static var king_potential_between_coords:Array = []
-
-static var king_potential_between_coords_pieces_between:Dictionary = {}
+static var king_between_coords:Dictionary = {} # Coords Between King and all Pieces Checking him
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -29,32 +26,33 @@ static func update_check_vars(king_pos:Vector2i) -> void: # Updates this Scripts
 	king_check_coords.clear()
 	king_potential_check_coords.clear()
 	
-	king_check_coords = get_check_coords(king_pos,false)
-	print("UPDATE_CHECK_VARS- Pieces Checking King: ",king_check_coords)
+	king_check_coords = get_check_coords(king_pos,true)
+	print_rich("[color=Turquoise]UPDATE_CHECK_VARS-[/color] Pieces Checking King: ",king_check_coords)
 	
-	king_potential_check_coords = get_check_coords(king_pos,true)
-	print("UPDATE_CHECK_VARS- Pieces Potentially Checking King: ",king_potential_check_coords)
+	king_potential_check_coords = get_check_coords(king_pos,false)
+	print_rich("[color=Turquoise]UPDATE_CHECK_VARS-[/color] Pieces Potentially Checking King: ",king_potential_check_coords)
 	
 	# Clear and Update Check bools and Between Coords
 	king_in_check = false
 	king_in_potential_check = false
 	king_between_coords.clear()
-	king_potential_between_coords.clear()
 	
 	if !king_check_coords.is_empty():
 		king_in_check = true
-		for checking_piece:Vector2i in king_check_coords:
-			
-			king_between_coords.append_array(Scripts.BOARD_MANAGER.get_tiles_between_points(checking_piece,king_pos,true))
 	
 	if !king_potential_check_coords.is_empty():
 		king_in_potential_check = true
 		for potential_checking_piece:Vector2i in king_potential_check_coords:
 			
-			king_potential_between_coords.append_array(Scripts.BOARD_MANAGER.get_tiles_between_points(potential_checking_piece,king_pos,true))
-	
+			var between_info:Array = Scripts.BOARD_MANAGER.get_tiles_between_points(potential_checking_piece,king_pos)
+			
+			king_between_coords[potential_checking_piece] = {
+					"tiles" = between_info[0],
+					"pieces" = between_info[1]
+			}
+		print("Pieces between check",king_between_coords)
 
-static func get_check_coords(check_pos:Vector2i,potential_check:bool) -> Array: # Returns Array of all Pieces Checking the Piece on check_pos
+static func get_check_coords(check_pos:Vector2i,from_opponent_color:bool) -> Array: # Returns Array of all Pieces Checking the Piece on check_pos
 	print_rich("[color=Turquoise]GET_CHECK_COORDS-[/color] Called")
 	var _tmp_check_coords:Array = []
 	
@@ -82,7 +80,7 @@ static func get_check_coords(check_pos:Vector2i,potential_check:bool) -> Array: 
 				#print("IS_IN_CHECK- knight_check")
 				_tmp_check_coords.append(pos)
 	
-	for pos:Vector2i in Scripts.PIECE_MOVE._get_rook_moves(check_pos,potential_check):
+	for pos:Vector2i in Scripts.PIECE_MOVE._get_rook_moves(check_pos,from_opponent_color):
 		if Scripts.PIECE_MANAGER.is_enemy(pos):
 			var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
 			if piece == Scripts.CONSTANTS.PIECE_TYPE.ROOK:
@@ -92,7 +90,7 @@ static func get_check_coords(check_pos:Vector2i,potential_check:bool) -> Array: 
 				#print("IS_IN_CHECK- queen_check")
 				_tmp_check_coords.append(pos)
 	
-	for pos:Vector2i in Scripts.PIECE_MOVE._get_bishop_moves(check_pos,potential_check):
+	for pos:Vector2i in Scripts.PIECE_MOVE._get_bishop_moves(check_pos,from_opponent_color):
 		if Scripts.PIECE_MANAGER.is_enemy(pos):
 			var piece:int = Scripts.PIECE_MANAGER.get_piece_data(pos,Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE)
 			if piece == Scripts.CONSTANTS.PIECE_TYPE.BISHOP:

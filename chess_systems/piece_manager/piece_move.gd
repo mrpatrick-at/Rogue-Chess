@@ -76,15 +76,25 @@ static func get_moves(current_coords:Vector2i) -> Array: # Gets All Valid Moves 
 		
 		# If in check: only allow moves that will end check
 		if Scripts.PIECE_CHECK.king_in_check:
-			if move_coords in Scripts.PIECE_CHECK.king_between_coords:
-				_valid_moves.append(move_coords)
+			for checking_piece:Vector2i in Scripts.PIECE_CHECK.king_between_coords:
+				if move_coords in Scripts.PIECE_CHECK.king_between_coords[checking_piece]["tiles"]:
+					_valid_moves.append(move_coords)
 			continue
 		
-		# If Move will cause check: dont allow move
+		# Check if Piece Move will cause Check
+		var piece_pinned:bool = false
 		if Scripts.PIECE_CHECK.king_in_potential_check:
-			if current_coords in Scripts.PIECE_CHECK.king_potential_between_coords:
-				_valid_moves = []
-				continue
+			
+			for checking_piece:Vector2i in Scripts.PIECE_CHECK.king_between_coords:
+				
+				if (current_coords in Scripts.PIECE_CHECK.king_between_coords[checking_piece]["pieces"] and
+				Scripts.PIECE_CHECK.king_between_coords[checking_piece]["pieces"].size() <= 1):
+					piece_pinned = true
+		# Clear Movement if Move will cause Check
+		if piece_pinned:
+			print("in check")
+			_valid_moves = []
+			continue
 		
 		_valid_moves = _moves
 	
