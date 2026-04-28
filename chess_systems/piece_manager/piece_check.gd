@@ -5,7 +5,7 @@ extends RefCounted
 ## public vars
 # "potential" here means: If you ignore your own pieces
 # Coords of All Pieces checking King
-static var king_check_coords:Array = []
+static var king_check_coords:Array = [] # Coords of all Pieces Checking King
 static var king_potential_check_coords:Array = []
 
 # If King is checked
@@ -13,8 +13,10 @@ static var king_in_check:bool = false
 static var king_in_potential_check:bool = false
 
 # Tiles between all Pieces checking King and King Itself
-static var king_between_coords:Array = []
+static var king_between_coords:Array = [] # Coords Between King and all Pieces Checking him
 static var king_potential_between_coords:Array = []
+
+static var king_potential_between_coords_pieces_between:Dictionary = {}
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -27,10 +29,10 @@ static func update_check_vars(king_pos:Vector2i) -> void: # Updates this Scripts
 	king_check_coords.clear()
 	king_potential_check_coords.clear()
 	
-	king_check_coords = get_check_coords(king_pos,true)
+	king_check_coords = get_check_coords(king_pos,false)
 	print("UPDATE_CHECK_VARS- Pieces Checking King: ",king_check_coords)
 	
-	king_potential_check_coords = get_check_coords(king_pos,false)
+	king_potential_check_coords = get_check_coords(king_pos,true)
 	print("UPDATE_CHECK_VARS- Pieces Potentially Checking King: ",king_potential_check_coords)
 	
 	# Clear and Update Check bools and Between Coords
@@ -42,12 +44,14 @@ static func update_check_vars(king_pos:Vector2i) -> void: # Updates this Scripts
 	if !king_check_coords.is_empty():
 		king_in_check = true
 		for checking_piece:Vector2i in king_check_coords:
-			king_between_coords.append_array(Scripts.BOARD_MANAGER.get_tiles_between_points(checking_piece,king_pos))
+			
+			king_between_coords.append_array(Scripts.BOARD_MANAGER.get_tiles_between_points(checking_piece,king_pos,true))
 	
 	if !king_potential_check_coords.is_empty():
 		king_in_potential_check = true
-		for checking_piece:Vector2i in king_potential_check_coords:
-			king_potential_between_coords.append_array(Scripts.BOARD_MANAGER.get_tiles_between_points(checking_piece,king_pos))
+		for potential_checking_piece:Vector2i in king_potential_check_coords:
+			
+			king_potential_between_coords.append_array(Scripts.BOARD_MANAGER.get_tiles_between_points(potential_checking_piece,king_pos,true))
 	
 
 static func get_check_coords(check_pos:Vector2i,potential_check:bool) -> Array: # Returns Array of all Pieces Checking the Piece on check_pos

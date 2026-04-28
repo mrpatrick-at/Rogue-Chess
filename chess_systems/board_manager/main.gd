@@ -60,7 +60,7 @@ static func get_mouse_from_tile(coords:Vector2i) -> Vector2: # Translates Coords
 	var translated_coords:Vector2 = tilemap_board.to_global(tilemap_board.map_to_local(coords))
 	return translated_coords
 
-static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) -> Array: # Returns starting_pos + Array of all Positions between the two Points
+static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i,getting_check:bool) -> Array: # Returns starting_pos + Array of all Positions between the two Points
 	var value_x:int
 	var value_y:int
 	
@@ -81,16 +81,24 @@ static func get_tiles_between_points(starting_pos:Vector2i,target_pos:Vector2i) 
 	#print("GET_TILES_BETWEEN_POINTS- step values: ",Vector2i(value_x,value_y))
 	var step:Vector2i = Vector2i(starting_pos)
 	var _steps:Array = []
+	var pieces_between:Array = []
 	
 	while step != target_pos:
 		_steps.append(step)
+		
 		if step.x != target_pos.x:
 			step.x += value_x
 		if step.y != target_pos.y:
 			step.y += value_y
-		#print("GET_TILES_BETWEEN_POINTS- steps +1")
 		
-	#print("GET_TILES_BETWEEN_POINTS- steps: ",_steps)
+		if getting_check and !Scripts.PIECE_MANAGER.is_empty(step) and step != target_pos:
+			pieces_between.append(step)
+			print("GET_TILES_BETWEEN_POINTS- Piece Found at",step)
+	
+	Scripts.PIECE_CHECK.king_potential_between_coords_pieces_between[starting_pos] = pieces_between
+	print("Piece between potential check",Scripts.PIECE_CHECK.king_potential_between_coords_pieces_between)
+	#print("GET_TILES_BETWEEN_POINTS- Amount of Pieces Between King and Checking Piece: %s"
+	#%piece_amount)
 	
 	return _steps
 
