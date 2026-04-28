@@ -1,14 +1,13 @@
-extends Control
+extends CanvasLayer
 ## enums
 ## consts
 ## exports
 ## public vars
 ## private vars
 ## onready vars
-@onready var turn_amount_label: Label = $TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer/Value
-@onready var color_move_label: Label = $TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer/Value
-@onready var fifty_move_rule_label: Label = $TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer/Value
-
+@onready var turn_amount_label: Label = $Control/TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer/TurnAmountLabel
+@onready var color_move_label: Label = $Control/TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer/ColorMoveLabel
+@onready var fifty_move_rule_label: Label = $Control/TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer/FiftyMoveRuleLabel
 # obj_ for node refrences1 test
 ## built-in override methods
 

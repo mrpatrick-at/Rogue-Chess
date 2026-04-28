@@ -78,7 +78,7 @@ script = ExtResource("1_2w4vt")
 
 [node name="ChessWorld2D" type="Node2D" parent="." unique_id=390371608]
 
-[node name="ChessBoard" type="Node2D" parent="ChessWorld2D" unique_id=1866213894]
+[node name="BoardManager" type="Node2D" parent="ChessWorld2D" unique_id=1866213894]
 script = ExtResource("2_43pjp")
 
 [node name="PieceManager" type="Node2D" parent="ChessWorld2D" unique_id=1419934510]
@@ -106,15 +106,9 @@ scale = Vector2(10, 10)
 texture = ExtResource("7_whis5")
 
 [node name="Foreground" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=786620078]
-
-[node name="IngameUI" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
-offset_left = -45.0
-offset_top = -17.0
-offset_right = -45.0
-offset_bottom = -17.0
+layer = 2
 
 [node name="VhsFilter" type="TextureRect" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=2109015937]
-visible = false
 z_index = -1
 material = SubResource("ShaderMaterial_efxa6")
 anchors_preset = 15
@@ -133,6 +127,8 @@ visible = false
 
 [node name="LoseMenu" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=1947740458 instance=ExtResource("10_ix53w")]
 visible = false
+
+[node name="IngameUI" parent="ChessWorld2D/ChessCamera" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
 
 [node name="Background" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=764705812]
 layer = -1

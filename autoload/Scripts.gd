@@ -20,14 +20,9 @@ const CONSTANTS:= preload("res://chess_systems/database/constants.gd")
 const DEBUG_MANAGER:= preload("res://chess_systems/debug/debug_manager.gd")
 ## exports
 ## public vars
-static var color_turn:int = Scripts.CONSTANTS.PIECE_COLOR.WHITE
-static var turn_amount:int = 0
-static var fifty_move_rule:int = 0
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
-func _ready() -> void:
-	pass
 ## public methods
 ## private methods
