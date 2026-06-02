@@ -24,9 +24,6 @@ func _init(coord: Vector2i, piece_type: int, piece_color: int, piece_info: Array
 	move_to(coord)
 	
 	self.scale = Vector2i(8,8)
-	self.move_local_x(64)
-	self.move_local_y(-32)
-	self.z_index = -coord.y + 1
 
 ## public methods
 
@@ -37,9 +34,11 @@ func get_moves() -> PackedVector2Array:
 
 func move_to(coord: Vector2i) -> void:
 	var translated_coords: Vector2
-	translated_coords.x = coord.x * Consts.tile_size
-	translated_coords.y = -coord.y * Consts.tile_size
+	translated_coords.x = coord.x * Consts.tile_size + 64
+	translated_coords.y = -coord.y * Consts.tile_size - 32
 	self.global_position = translated_coords
+	
+	self.z_index = -coord.y + 1
 	pass
 
 ## private methods
