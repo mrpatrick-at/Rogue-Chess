@@ -3,9 +3,8 @@ extends Node
 ## consts
 ## exports
 ## public vars
-static var mouse_pos:Vector2
-static var grid_info: Array
-static var camera: Camera2D
+var mouse_position: Vector2 = Vector2.ZERO
+var camera: Camera2D
 var board: Board
 var tile_buffer: Array = []
 ## private vars
@@ -30,21 +29,23 @@ func _process(_delta: float) -> void:
 		var tile: Tile = tile_info[1]
 		tile_buffer.append(tile)
 		tile.hightlight()
-		print(tile)
+		#print(tile)
 	
 	for tile: Tile in tile_buffer:
 		if tile == tile_info[1]:
 			continue
 		tile.unhighlight()
 		tile_buffer.erase(tile)
-	
-	grid_info = []
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouse:
+		_mouse_buttons(event)
 
 ## public methods
 
 ## private methods
 
-func get_mouse_collision_pos(mouse_position:Vector2 = camera.get_global_mouse_position()) -> Array: # Query Cam and Return Result
+func get_mouse_collision_pos() -> Array: # Query Cam and Return Result
 	var tile_info: Array = []
 	tile_info.resize(2)
 	var coord: Vector2i = board.get_coord(mouse_position)
@@ -55,31 +56,17 @@ func get_mouse_collision_pos(mouse_position:Vector2 = camera.get_global_mouse_po
 	tile_info[1] = tile
 	return tile_info
 
-#static func _mouse_buttons() -> void:
-	## Reset Stuff
-	#Scripts.SELECTION_MANAGER.reset_highlight()
-	#Scripts.PIECE_ANIMATE.reset_animation()
-		#
-	#if !Scripts.DATABASE.menu_is_open:
-		#if InputEventMouse:
-			## Highlight Tiles and Pieces on Hover
-			#mouse_pos = Scripts.BOARD_MANAGER.get_tile_from_mouse()
-			#Scripts.SELECTION_MANAGER.highlight_tile(mouse_pos)
-			#Scripts.PIECE_ANIMATE.hightlight_piece(mouse_pos)
-		#
-		#if Input.is_action_just_released(&"_input_mouse_left"):
-			## Allow Piece Movement
-			#if Scripts.SELECTION_MANAGER.selected_tile:
-				#Scripts.SELECTION_MANAGER.select_destination_tile(mouse_pos)
-				#
-			#else:
-				#Scripts.SELECTION_MANAGER.select_tile(mouse_pos)
-		#
-		#if Input.is_action_just_released(&"_input_mouse_right"):
-			#print("Right Mouse click detected")
-		#if Input.is_action_just_released(&"_input_mouse_middle"):
-			#print("Middle Mouse click detected")
-#
+func _mouse_buttons(event:InputEventMouse) -> void:
+	mouse_position = camera.get_global_mouse_position()
+	
+	if event is InputEventMouseButton:
+		if event.is_action_pressed(&"_input_mouse_left"):
+			print("Left Mouse click detected")
+		if event.is_action_pressed(&"_input_mouse_right"):
+			print("Right Mouse click detected")
+		if event.is_action_pressed(&"_input_mouse_middle"):
+			print("Middle Mouse click detected")
+
 #static func _camera_movement(delta:float) -> void:
 	## Camera Movement
 	#var direction:Vector2 = Vector2.ZERO

@@ -24,8 +24,6 @@ func _init(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
 	self.name = "Tile, %s"%[coord]
 	
 	size = tile_size
-	if is_tile_black:
-		color = Color(0.0, 0.0, 0.0, 1.0)
 	
 	pos.x = coord.x * size
 	pos.y = -coord.y * size
@@ -33,7 +31,10 @@ func _init(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
 	
 	self.material = ShaderMaterial.new()
 	self.material.shader = shader_res
-	#self.material.set_shader_parameter("highlight_color", highlight_color)
+	if is_tile_black:
+		color = Color(0.0, 0.0, 0.0, 1.0)
+	
+	self.material.set_shader_parameter("tile_color", color)
 	_generate_mesh()
 	
 	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
@@ -45,6 +46,7 @@ func hightlight() -> void:
 
 func unhighlight() -> void:
 	self.material.set_shader_parameter("highlight_color", Color(0.0, 0.0, 0.0, 0.0))
+
 ## private methods
 func _generate_mesh() -> void:
 	var vertices: PackedVector2Array = [
@@ -59,18 +61,10 @@ func _generate_mesh() -> void:
 		0, 2, 3,
 	]
 	
-	var colors: PackedColorArray = [
-		color,
-		color,
-		color,
-		color 
-	]
-	
 	var mesh_array:Array = []
 	mesh_array.resize(Mesh.ARRAY_MAX)
 	mesh_array[Mesh.ARRAY_VERTEX] = vertices
 	mesh_array[Mesh.ARRAY_INDEX] = tile_indices
-	mesh_array[Mesh.ARRAY_COLOR] = colors
 	#mesh_array[Mesh.ARRAY_TEX_UV] = uvs
 	
 	var tile_mesh: ArrayMesh = ArrayMesh.new()
