@@ -24,7 +24,9 @@ func _ready() -> void:
 	#_mouse_buttons()
 
 func _process(_delta: float) -> void:
-	print(get_mouse_collision_pos())
+	var tile_info: Array = get_mouse_collision_pos()
+	if tile_info[1] is Tile:
+		print(tile_info[1])
 	#if !collision_ray.is_empty():
 		#if collision_ray.collider == MeshInstance2D:
 			#grid_info = get_grid_info(collision_ray)
@@ -36,25 +38,17 @@ func _process(_delta: float) -> void:
 
 ## private methods
 
-func get_mouse_collision_pos(mouse_position:Vector2 = camera.get_global_mouse_position()) -> Vector2i: # Query Cam and Return Result
-	var coord:Vector2i = board.get_coord_from_pos(board.to_local(mouse_position))
-	
-	return coord
+func get_mouse_collision_pos(mouse_position:Vector2 = camera.get_global_mouse_position()) -> Array: # Query Cam and Return Result
+	var tile_info: Array = []
+	tile_info.resize(2)
+	var coord: Vector2i = board.get_coord(mouse_position)
+	var tile: Tile
+	if board.is_on_board(coord):
+		tile = board.get_tile(coord)
+	tile_info[0] = coord
+	tile_info[1] = tile
+	return tile_info
 
-func get_grid_info(collision_ray:Dictionary) -> Array:
-	var collision_pos:= Vector3(snappedf(collision_ray.position.x,0.01),snappedf(collision_ray.position.y,0.01),snappedf(collision_ray.position.z,0.01))
-	var adjusted_pos:Vector3 = Vector3(collision_pos.x,collision_pos.y - 0.01,collision_pos.z)
-	
-	var mesh_instance:MeshInstance3D = collision_ray.collider
-	
-	var map_pos:Vector3 = mesh_instance.to_local(collision_pos)
-	
-	#var map_pos:Vector3i = gridmap.local_to_map(gridmap.to_local(adjusted_pos))
-	#
-	#var cell_item:int = gridmap.get_cell_item(map_pos)
-	
-	return [collision_pos,map_pos]
-#
 #static func _mouse_buttons() -> void:
 	## Reset Stuff
 	#Scripts.SELECTION_MANAGER.reset_highlight()

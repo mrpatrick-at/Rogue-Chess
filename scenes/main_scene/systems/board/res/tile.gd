@@ -4,12 +4,10 @@ class_name Tile
 ## consts
 ## exports
 ## public vars
+var coord: Vector2i = Vector2i.ZERO
 var size: int = 0
 var color:Color = Color(1.0, 1.0, 1.0, 1.0)
-var coord: Vector2i = Vector2i.ZERO
 var pos: Vector2i = Vector2i.ZERO
-
-var vertex_list: PackedVector2Array = []
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -24,14 +22,17 @@ func _process(_delta: float) -> void:
 ## public methods
 
 func setup(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
+	coord = tile_coord
+	self.name = "Tile, %s"%[coord]
+	
 	size = tile_size
 	if is_tile_black:
 		color = Color(0.0, 0.0, 0.0, 1.0)
-		
-	coord = tile_coord
+	
 	pos.x = coord.x * size
 	pos.y = -coord.y * size
 	position = pos
+	
 	_generate_mesh()
 
 ## private methods

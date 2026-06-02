@@ -65,12 +65,20 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
 	print_rich("[color=Springgreen]BUILD_BOARD-[/color] Created Board of size: [color=gold]%s[/color] in: [color=gold]%sms[/color]" %[board_size, ending_time])
 
-func get_coord_from_pos(mouse_pos: Vector2) -> Vector2i:
+func get_coord(mouse_pos: Vector2) -> Vector2i:
 	var local_mouse_pos: Vector2i = to_local(mouse_pos)
 	var coord:Vector2i
 	coord.x = local_mouse_pos.x >> 7
 	coord.y = -(local_mouse_pos.y >> 7) # Minus here cuz Godot is stupid ass monkey shit and has y axis inverted for some reason
 	return coord
+
+func is_on_board(coord: Vector2i) -> bool:
+	if coord.x in range(board_size) and coord.y in range(board_size):
+		return true
+	return false
+
+func get_tile(coord: Vector2i) -> Tile:
+	return tiles[coord.x * board_size + coord.y]
 
 ## private methods
 
