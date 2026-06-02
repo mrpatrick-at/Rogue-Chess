@@ -9,7 +9,6 @@ extends RefCounted
 ## public vars
 ## private vars
 ## onready vars
-# obj_ for node refrences
 ## built-in override methods
 
 func _ready() -> void:

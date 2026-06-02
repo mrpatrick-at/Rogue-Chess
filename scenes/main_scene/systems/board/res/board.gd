@@ -126,25 +126,14 @@ func _calc_piece(coords:Vector2i) -> int:
 	
 	return PIECE.NONE # Emergency Stop
 
-func _create_piece(coord:Vector2i, piece:int) -> void:
+func _create_piece(coord: Vector2i, piece_int: int) -> void:
 	var color_string: String = "WHITE"
-	var piece_lookup: int = piece
-	if piece > PIECE.size() - 1:
+	var piece_lookup: int = piece_int
+	if piece_int > PIECE.size() - 1:
 		color_string = "BLACK"
 		piece_lookup += -PIECE.size() + 1
 	
 	var piece_string: String = PIECE.keys()[piece_lookup]
-	var piece_texture: CompressedTexture2D = load("res://assets/images/pieces/%s/%s.png"%[color_string, piece_string])
 	
-	var piece_sprite:Sprite2D = Sprite2D.new()
-	pieces_obj.add_child(piece_sprite)
-	piece_sprite.texture = piece_texture
-	var translated_coords:Vector2
-	translated_coords.x = coord.x * tile_size
-	translated_coords.y = -coord.y * tile_size
-	
-	piece_sprite.global_position = translated_coords
-	piece_sprite.scale = Vector2i(8,8)
-	piece_sprite.move_local_x(64)
-	piece_sprite.move_local_y(-32)
-	piece_sprite.z_index = -coord.y + 1
+	var piece: Piece = Piece.new(coord ,piece_int, tile_size, [color_string, piece_string])
+	pieces_obj.add_child(piece)

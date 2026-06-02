@@ -10,11 +10,8 @@ var size: int = 0
 var color: Color = Color(1.0, 1.0, 1.0, 1.0)
 var highlight_color: Color = Color(0.0, 0.0, 1.0, 0.392)
 var pos: Vector2i = Vector2i.ZERO
-#var mat: ShaderMaterial
-#var shader:Shader
 ## private vars
 ## onready vars
-# obj_ for node refrences
 ## built-in override methods
 
 func _init(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
