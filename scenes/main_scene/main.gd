@@ -13,7 +13,7 @@ extends Node
 ## built-in override methods
 
 func _ready() -> void:
-	pass 
+	pass
 
 func _process(_delta: float) -> void:
 	update_menu_status()

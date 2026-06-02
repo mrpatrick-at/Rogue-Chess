@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://qfk2ipuga0om"]
 
-[ext_resource type="Script" uid="uid://cw31amb7fur4t" path="res://chess_ui/esc_menu/main.gd" id="1_3xua7"]
+[ext_resource type="Script" uid="uid://cw31amb7fur4t" path="res://ui/esc_menu/main.gd" id="1_3xua7"]
 [ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="2_icw3k"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="3_7077p"]
 [ext_resource type="Theme" uid="uid://cdmybg8xr06i6" path="res://assets/themes/button/button_text.tres" id="4_6pbu2"]

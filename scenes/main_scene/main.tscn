@@ -1,16 +1,13 @@
 [gd_scene format=3 uid="uid://bxmeugje5h5ew"]
 
-[ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://chess_scenes/main_scene/main.gd" id="1_2w4vt"]
-[ext_resource type="Script" uid="uid://ci7yr8f2qu242" path="res://chess_systems/board_manager/main.gd" id="2_43pjp"]
-[ext_resource type="Script" uid="uid://vt73rdb76emb" path="res://chess_systems/piece_manager/piece_manager.gd" id="3_ix53w"]
-[ext_resource type="Script" uid="uid://cc4t54f7tvv6f" path="res://chess_systems/chess_player/main.gd" id="4_43pjp"]
-[ext_resource type="Script" uid="uid://dfcemd6356nld" path="res://chess_systems/chess_camera/main.gd" id="5_5bm2p"]
+[ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://scenes/main_scene/main.gd" id="1_2w4vt"]
+[ext_resource type="Script" uid="uid://d1q80fi7atrmw" path="res://scenes/main_scene/systems/board/main.gd" id="2_43pjp"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
 [ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="7_whis5"]
-[ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://chess_ui/ingame_ui/main.tscn" id="8_0p6xv"]
+[ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="8_0p6xv"]
 [ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="9_5rdu2"]
-[ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://chess_ui/esc_menu/main.tscn" id="9_x6nru"]
-[ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://chess_ui/lose_menu/main.tscn" id="10_ix53w"]
+[ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://ui/esc_menu/main.tscn" id="9_x6nru"]
+[ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://ui/lose_menu/main.tscn" id="10_ix53w"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
 [ext_resource type="Shader" uid="uid://bbnauwv33v8pk" path="res://assets/shaders/background.gdshader" id="13_43pjp"]
 
@@ -82,16 +79,12 @@ script = ExtResource("1_2w4vt")
 script = ExtResource("2_43pjp")
 
 [node name="PieceManager" type="Node2D" parent="ChessWorld2D" unique_id=1419934510]
-script = ExtResource("3_ix53w")
 
 [node name="ChessPlayer" type="Node2D" parent="ChessWorld2D" unique_id=1884565549]
-script = ExtResource("4_43pjp")
 
 [node name="ChessCamera" type="Node2D" parent="ChessWorld2D" unique_id=699846906]
-script = ExtResource("5_5bm2p")
 
 [node name="Camera2D" type="Camera2D" parent="ChessWorld2D/ChessCamera" unique_id=661107056]
-zoom = Vector2(0.5, 0.5)
 limit_left = -19200
 limit_top = -10800
 limit_right = 19200
@@ -107,6 +100,7 @@ texture = ExtResource("7_whis5")
 
 [node name="Foreground" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=786620078]
 layer = 2
+visible = false
 
 [node name="VhsFilter" type="TextureRect" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=2109015937]
 z_index = -1
@@ -129,9 +123,11 @@ visible = false
 visible = false
 
 [node name="IngameUI" parent="ChessWorld2D/ChessCamera" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
+visible = false
 
 [node name="Background" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=764705812]
 layer = -1
+visible = false
 
 [node name="BackgroundImage" type="TextureRect" parent="ChessWorld2D/ChessCamera/Background" unique_id=1815771888]
 visible = false
@@ -147,6 +143,7 @@ grow_vertical = 2
 texture = ExtResource("10_o15j2")
 
 [node name="BackgroundParallax" type="Parallax2D" parent="ChessWorld2D" unique_id=2101069892]
+visible = false
 z_index = -1
 material = SubResource("ShaderMaterial_ix53w")
 scale = Vector2(1.5, 1.5)
@@ -154,6 +151,7 @@ repeat_size = Vector2(1920, 1080)
 follow_viewport = false
 
 [node name="BackgroundShader" type="Sprite2D" parent="ChessWorld2D/BackgroundParallax" unique_id=36885580]
+visible = false
 material = SubResource("ShaderMaterial_43pjp")
 scale = Vector2(1920, 1080)
 texture = SubResource("CanvasTexture_5bm2p")
