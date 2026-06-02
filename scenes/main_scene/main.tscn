@@ -85,6 +85,7 @@ script = ExtResource("2_43pjp")
 [node name="ChessCamera" type="Node2D" parent="ChessWorld2D" unique_id=699846906]
 
 [node name="Camera2D" type="Camera2D" parent="ChessWorld2D/ChessCamera" unique_id=661107056]
+zoom = Vector2(0.5, 0.5)
 limit_left = -19200
 limit_top = -10800
 limit_right = 19200

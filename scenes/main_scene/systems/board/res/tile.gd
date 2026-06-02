@@ -66,4 +66,3 @@ func _generate_mesh() -> void:
 	var tile_mesh: ArrayMesh = ArrayMesh.new()
 	tile_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_array)
 	self.mesh = tile_mesh
-	pass
