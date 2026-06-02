@@ -142,7 +142,7 @@ func _calc_piece(coords: Vector2i) -> int:
 	return Consts.PIECE.NONE # Emergency Stop
 
 func _create_piece(coord: Vector2i, piece_int: int) -> Piece:
-	var piece_color:int = 0
+	var piece_color:int = Consts.COLOR.WHITE
 	var color_string: String = "WHITE"
 	var piece_lookup: int = piece_int
 	if piece_int > Consts.PIECE.size() - 1:
