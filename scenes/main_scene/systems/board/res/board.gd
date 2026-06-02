@@ -86,9 +86,8 @@ func _create_tile(coord: Vector2i) -> void:
 	tiles.resize(board_size * board_size)
 	var is_tile_black:bool = _get_tile_color(coord)
 	
-	var tile: Tile = Tile.new()
+	var tile: Tile = Tile.new(coord, tile_size, is_tile_black)
 	tiles_obj.add_child(tile)
-	tile.setup(coord, tile_size, is_tile_black)
 	tile.z_index = -board_size
 	tiles[coord.x * board_size + coord.y] = tile
 

@@ -13,8 +13,6 @@ const PLAYER:= preload("res://scenes/main_scene/systems/player/main.gd")
 #const PIECE_MOVE = preload("res://scenes/main_scene/systems/piece_manager/piece_move.gd")
 #const PIECE_CHECK = preload("res://scenes/main_scene/systems/piece_manager/piece_check.gd")
 #const PIECE_ANIMATE = preload("res://scenes/main_scene/systems/piece_manager/piece_animate.gd")
-
-#const DEBUG_MANAGER:= preload("res://scenes/main_scene/systems/debug/debug_manager.gd")
 ### exports
 ## public vars
 ## private vars

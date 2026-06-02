@@ -2,26 +2,24 @@ extends MeshInstance2D
 class_name Tile
 ## enums
 ## consts
+const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/tile_highlight.gdshader")
 ## exports
 ## public vars
 var coord: Vector2i = Vector2i.ZERO
 var size: int = 0
-var color:Color = Color(1.0, 1.0, 1.0, 1.0)
+var color: Color = Color(1.0, 1.0, 1.0, 1.0)
+var highlight_color: Color = Color(0.0, 0.0, 1.0, 0.392)
 var pos: Vector2i = Vector2i.ZERO
+#var mat: ShaderMaterial
+#var shader:Shader
 ## private vars
 ## onready vars
 # obj_ for node refrences
 ## built-in override methods
 
-func _ready() -> void:
-	pass 
-
-func _process(_delta: float) -> void:
-	pass
-
-## public methods
-
-func setup(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
+func _init(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
+	var starting_time: float = Time.get_ticks_usec()
+	print_rich("[color=Orange]BUILD_BOARD-[/color] Started Building Tile %s"%tile_coord)
 	coord = tile_coord
 	self.name = "Tile, %s"%[coord]
 	
@@ -33,8 +31,20 @@ func setup(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
 	pos.y = -coord.y * size
 	position = pos
 	
+	self.material = ShaderMaterial.new()
+	self.material.shader = shader_res
+	#self.material.set_shader_parameter("highlight_color", highlight_color)
 	_generate_mesh()
+	
+	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
+	print_rich("[color=Orange]BUILD_BOARD-[/color] Created Tile in: [color=gold]%sms[/color]"%ending_time)
 
+## public methods
+func hightlight() -> void:
+	self.material.set_shader_parameter("highlight_color", highlight_color)
+
+func unhighlight() -> void:
+	self.material.set_shader_parameter("highlight_color", Color(0.0, 0.0, 0.0, 0.0))
 ## private methods
 func _generate_mesh() -> void:
 	var vertices: PackedVector2Array = [

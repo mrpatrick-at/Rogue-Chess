@@ -7,6 +7,7 @@ static var mouse_pos:Vector2
 static var grid_info: Array
 static var camera: Camera2D
 var board: Board
+var tile_buffer: Array = []
 ## private vars
 ## onready vars
 # obj_ for node refrences
@@ -26,11 +27,16 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	var tile_info: Array = get_mouse_collision_pos()
 	if tile_info[1] is Tile:
-		print(tile_info[1])
-	#if !collision_ray.is_empty():
-		#if collision_ray.collider == MeshInstance2D:
-			#grid_info = get_grid_info(collision_ray)
-			#return
+		var tile: Tile = tile_info[1]
+		tile_buffer.append(tile)
+		tile.hightlight()
+		print(tile)
+	
+	for tile: Tile in tile_buffer:
+		if tile == tile_info[1]:
+			continue
+		tile.unhighlight()
+		tile_buffer.erase(tile)
 	
 	grid_info = []
 
