@@ -45,6 +45,12 @@ func get_moves() -> PackedVector2Array:
 func move_to(target_coord: Vector2i, is_init:bool) -> void:
 	moves = get_moves()
 	if moves.has(target_coord) or is_init:
+		if board.pieces.has(target_coord):
+			var target_piece: Piece = board.pieces[target_coord]
+			board.pieces_obj.remove_child(target_piece)
+			target_piece.queue_free()
+			board.pieces.erase(target_coord)
+			
 		var translated_coords: Vector2
 		translated_coords.x = target_coord.x * Consts.tile_size + 64
 		translated_coords.y = -target_coord.y * Consts.tile_size - 32
@@ -81,12 +87,16 @@ func _get_pawn_moves() -> PackedVector2Array:
 		piece_moves.append(pos)
 	
 	# Piece Capturing
-	var capture_squares: Array = [Vector2i(1,direction_int),Vector2i(-1,direction_int)]
+	var capture_squares: Array = [Vector2i(-1,direction_int),Vector2i(1,direction_int)]
 	for vec2i:Vector2i in capture_squares:
 		var pos:Vector2i = coord + vec2i
-		if board.is_valid_coord(pos):
-			if board.is_enemy(pos, 0):
-				moves.append(pos)
+		if !board.is_valid_coord(pos):
+			continue
+		if board.is_empty(pos):
+			continue
+		if !board.is_enemy(pos, color):
+			continue
+		piece_moves.append(pos)
 		# En Passant Rules
 		#var pos_passant:Vector2i = Vector2i(current_coords.x,pos.y)
 		#if board.is_valid_position(pos_passant):
@@ -96,7 +106,7 @@ func _get_pawn_moves() -> PackedVector2Array:
 					#if passant_piece.move_amount == 1:
 						#if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.TRUE:
 							#_moves.append(pos)
-	
+	print(piece_moves)
 	return piece_moves
 
 #static func _get_knight_moves(current_coords:Vector2i) -> Array: # TODO: Prob can Make this a little bit better !!!

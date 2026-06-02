@@ -76,14 +76,15 @@ func is_empty(asked_coords: Vector2i) -> bool:
 		return false
 	return true
 
-func is_enemy(asked_coords :Vector2i, turn_color: int) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
+func is_enemy(asked_coords :Vector2i, piece_color: int) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
 	if !is_empty(asked_coords):
 		var piece: Piece = pieces[asked_coords]
-		if piece.type == turn_color:
-			return true
-	return false
+		if piece.color == piece_color:
+			return false
+	return true
 
 func highlight_tiles(tiles_to_highlight: PackedVector2Array) -> void:
+	print(tiles_to_highlight)
 	for tile_coord: Vector2i in tiles_to_highlight:
 		var tile: Tile = get_tile(tile_coord)
 		tile.hightlight()
