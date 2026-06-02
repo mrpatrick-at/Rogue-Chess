@@ -4,6 +4,7 @@ extends Node2D
 ## exports
 ## public vars
 static var board: Board
+static var grid_info: Array = []
 ## private vars
 ## onready vars
 # obj_ for node refrences

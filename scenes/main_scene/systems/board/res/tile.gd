@@ -36,12 +36,11 @@ func setup(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
 
 ## private methods
 func _generate_mesh() -> void:
-	var offset:int = size >> 1
 	var vertices: PackedVector2Array = [
-			Vector2i(-offset ,-offset),
-			Vector2i(offset, -offset),
-			Vector2i(offset, offset),
-			Vector2i(-offset, offset),
+			Vector2i(0 ,0),
+			Vector2i(size ,0),
+			Vector2i(size ,size),
+			Vector2i(0 ,size),
 	]
 	
 	var tile_indices: PackedInt32Array = [

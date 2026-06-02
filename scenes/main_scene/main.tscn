@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://scenes/main_scene/main.gd" id="1_2w4vt"]
 [ext_resource type="Script" uid="uid://d1q80fi7atrmw" path="res://scenes/main_scene/systems/board/main.gd" id="2_43pjp"]
+[ext_resource type="Script" uid="uid://cc4t54f7tvv6f" path="res://scenes/main_scene/systems/player/main.gd" id="3_g0xvp"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
 [ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="7_whis5"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="8_0p6xv"]
@@ -81,6 +82,7 @@ script = ExtResource("2_43pjp")
 [node name="PieceManager" type="Node2D" parent="ChessWorld2D" unique_id=1419934510]
 
 [node name="ChessPlayer" type="Node2D" parent="ChessWorld2D" unique_id=1884565549]
+script = ExtResource("3_g0xvp")
 
 [node name="ChessCamera" type="Node2D" parent="ChessWorld2D" unique_id=699846906]
 
@@ -119,12 +121,15 @@ texture = SubResource("CanvasTexture_43pjp")
 
 [node name="EscMenu" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=5292294 instance=ExtResource("9_x6nru")]
 visible = false
+script = null
 
 [node name="LoseMenu" parent="ChessWorld2D/ChessCamera/Foreground" unique_id=1947740458 instance=ExtResource("10_ix53w")]
 visible = false
+script = null
 
 [node name="IngameUI" parent="ChessWorld2D/ChessCamera" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
 visible = false
+script = null
 
 [node name="Background" type="CanvasLayer" parent="ChessWorld2D/ChessCamera" unique_id=764705812]
 layer = -1
