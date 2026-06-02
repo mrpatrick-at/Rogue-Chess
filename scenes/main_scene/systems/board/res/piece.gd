@@ -5,13 +5,16 @@ class_name Piece
 const path: String = "res://assets/images/pieces/%s/%s.png"
 ## exports
 ## public vars
-var piece_type: int = 0
+var type: int = 0
+var color: int = 0
+var move_amount: int = 0
 ## private vars
 ## onready vars
 ## built-in override methods
 
-func _init(coord: Vector2i, piece_int: int, tile_size: int, piece_info: Array) -> void:
-	piece_type = piece_int
+func _init(coord: Vector2i, piece_type: int, piece_color: int, tile_size: int, piece_info: Array) -> void:
+	type = piece_type
+	color = piece_color
 	
 	self.name = "%s, %s"%piece_info
 	
@@ -29,5 +32,10 @@ func _init(coord: Vector2i, piece_int: int, tile_size: int, piece_info: Array) -
 	self.z_index = -coord.y + 1
 
 ## public methods
+
+func get_moves() -> PackedVector2Array:
+	var moves: PackedVector2Array = []
+	
+	return moves
 
 ## private methods

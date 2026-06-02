@@ -6,25 +6,26 @@ extends Node
 var mouse_position: Vector2 = Vector2.ZERO
 var camera: Camera2D
 var board: Board
+var piece_manager: PieceManager
+var tile_info: Array = []
 var tile_buffer: Array = []
+
+var selected_tile: bool = false
 ## private vars
 ## onready vars
-# obj_ for node refrences
 ## built-in override methods
 
 func _ready() -> void:
 	camera = get_viewport().get_camera_2d()
 	board = Scripts.BOARD_MANAGER.board
-	pass 
-
-#func _physics_process(delta: float) -> void:
-	#
-	#_camera_movement(delta)
-	#_camera_zoom(delta)
-	#_mouse_buttons()
+	piece_manager = Scripts.BOARD_MANAGER.piece_manager
 
 func _process(_delta: float) -> void:
-	var tile_info: Array = get_mouse_collision_pos()
+	tile_info = get_mouse_collision_pos()
+	
+	if selected_tile:
+		return
+	
 	if tile_info[1] is Tile:
 		var tile: Tile = tile_info[1]
 		tile_buffer.append(tile)
@@ -46,24 +47,34 @@ func _unhandled_input(event: InputEvent) -> void:
 ## private methods
 
 func get_mouse_collision_pos() -> Array: # Query Cam and Return Result
-	var tile_info: Array = []
-	tile_info.resize(2)
+	var tile_data: Array = []
+	tile_data.resize(2)
 	var coord: Vector2i = board.get_coord(mouse_position)
 	var tile: Tile
-	if board.is_on_board(coord):
+	if board.is_valid_coord(coord):
 		tile = board.get_tile(coord)
-	tile_info[0] = coord
-	tile_info[1] = tile
-	return tile_info
+	tile_data[0] = coord
+	tile_data[1] = tile
+	return tile_data
 
 func _mouse_buttons(event:InputEventMouse) -> void:
 	mouse_position = camera.get_global_mouse_position()
 	
 	if event is InputEventMouseButton:
 		if event.is_action_pressed(&"_input_mouse_left"):
-			print("Left Mouse click detected")
+			if tile_info[1] is Tile:
+				if selected_tile == false:
+					print(piece_manager.get_piece_moves(tile_info[0]))
+					selected_tile = true
+					print("Tile selected")
+				else:
+					selected_tile = false
+					print("Tile unselected")
+	
 		if event.is_action_pressed(&"_input_mouse_right"):
-			print("Right Mouse click detected")
+			if tile_info[1] is Tile:
+				print(tile_info[1])
+	
 		if event.is_action_pressed(&"_input_mouse_middle"):
 			print("Middle Mouse click detected")
 

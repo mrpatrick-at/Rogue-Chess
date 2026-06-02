@@ -4,6 +4,7 @@ extends Node2D
 ## exports
 ## public vars
 static var board: Board
+static var piece_manager: PieceManager
 static var grid_info: Array = []
 ## private vars
 ## onready vars
@@ -13,6 +14,8 @@ static var grid_info: Array = []
 func _ready() -> void:
 	board = Board.new()
 	add_child(board)
+	piece_manager = PieceManager.new()
+	add_child(piece_manager)
 	
 	
 	pass 

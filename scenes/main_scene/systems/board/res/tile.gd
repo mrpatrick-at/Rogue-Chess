@@ -2,7 +2,7 @@ extends MeshInstance2D
 class_name Tile
 ## enums
 ## consts
-const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/tile_highlight.gdshader")
+const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/tile_shader.gdshader")
 ## exports
 ## public vars
 var coord: Vector2i = Vector2i.ZERO

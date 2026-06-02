@@ -22,7 +22,7 @@ const BACK_ROW = [
 ## exports
 ## public vars
 var tiles: Array = []
-var pieces: PackedByteArray = []
+var pieces: Dictionary = {}
 var tiles_obj: Node2D
 var pieces_obj: Node2D
 ## private vars
@@ -50,16 +50,15 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 	add_child(pieces_obj)
 	
 	tiles.resize(board_size * board_size)
-	pieces.resize(board_size * board_size)
 	
 	for x in board_size:
 		for y in board_size:
 			var coord: Vector2i = Vector2i(x, y)
 			_create_tile(coord)
-			var piece: int = _calc_piece(coord)
-			if piece != PIECE.NONE:
-				_create_piece(coord, piece)
-				pieces[coord.x * board_size + coord.y] = piece
+			var piece_int: int = _calc_piece(coord)
+			if piece_int != PIECE.NONE:
+				var piece: Piece = _create_piece(coord, piece_int)
+				pieces[coord] = piece
 	
 	print(pieces)
 	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
@@ -67,12 +66,12 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 
 func get_coord(mouse_pos: Vector2) -> Vector2i:
 	var local_mouse_pos: Vector2i = to_local(mouse_pos)
-	var coord:Vector2i
+	var coord: Vector2i
 	coord.x = local_mouse_pos.x >> 7
 	coord.y = -(local_mouse_pos.y >> 7) # Minus here cuz Godot is stupid ass monkey shit and has y axis inverted for some reason
 	return coord
 
-func is_on_board(coord: Vector2i) -> bool:
+func is_valid_coord(coord: Vector2i) -> bool:
 	if coord.x in range(board_size) and coord.y in range(board_size):
 		return true
 	return false
@@ -80,11 +79,22 @@ func is_on_board(coord: Vector2i) -> bool:
 func get_tile(coord: Vector2i) -> Tile:
 	return tiles[coord.x * board_size + coord.y]
 
+func is_empty(asked_coords: Vector2i) -> bool:
+	if pieces.has(asked_coords):
+		return true
+	return false
+
+func is_enemy(asked_coords :Vector2i, turn_color: int) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
+	var piece: Piece = pieces[asked_coords]
+	if piece.type == turn_color:
+		return true
+	return false
+
 ## private methods
 
 func _create_tile(coord: Vector2i) -> void:
 	tiles.resize(board_size * board_size)
-	var is_tile_black:bool = _get_tile_color(coord)
+	var is_tile_black: bool = _get_tile_color(coord)
 	
 	var tile: Tile = Tile.new(coord, tile_size, is_tile_black)
 	tiles_obj.add_child(tile)
@@ -106,7 +116,7 @@ func _get_tile_color(coord: Vector2i) -> bool: # Returns false if White and True
 		is_tile_black = true
 	return is_tile_black
 
-func _calc_piece(coords:Vector2i) -> int:
+func _calc_piece(coords: Vector2i) -> int:
 	if coords.y > 1 and coords.y < 6:
 		return PIECE.NONE
 	
@@ -126,14 +136,18 @@ func _calc_piece(coords:Vector2i) -> int:
 	
 	return PIECE.NONE # Emergency Stop
 
-func _create_piece(coord: Vector2i, piece_int: int) -> void:
+func _create_piece(coord: Vector2i, piece_int: int) -> Piece:
+	var piece_color:int = 0
 	var color_string: String = "WHITE"
 	var piece_lookup: int = piece_int
 	if piece_int > PIECE.size() - 1:
+		piece_color = 1
 		color_string = "BLACK"
 		piece_lookup += -PIECE.size() + 1
 	
 	var piece_string: String = PIECE.keys()[piece_lookup]
 	
-	var piece: Piece = Piece.new(coord ,piece_int, tile_size, [color_string, piece_string])
+	var piece: Piece = Piece.new(coord ,piece_int ,piece_color ,tile_size, [color_string, piece_string])
 	pieces_obj.add_child(piece)
+	
+	return piece
