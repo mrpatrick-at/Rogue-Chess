@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d2i6u1kqi8q02"
-path="res://.godot/imported/bishop.png-bf24668582107aee097975300e2dff6f.ctex"
+uid="uid://c1gtlelcpjdh5"
+path="res://.godot/imported/QUEEN.png-61a8d475c66a0ca73a9e6eb4131d039b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/pieces/white/bishop.png"
-dest_files=["res://.godot/imported/bishop.png-bf24668582107aee097975300e2dff6f.ctex"]
+source_file="res://assets/images/pieces/BLACK/QUEEN.png"
+dest_files=["res://.godot/imported/QUEEN.png-61a8d475c66a0ca73a9e6eb4131d039b.ctex"]
 
 [params]
 

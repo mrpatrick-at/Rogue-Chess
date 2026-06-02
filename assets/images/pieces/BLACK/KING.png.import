@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cqot425do27jf"
-path="res://.godot/imported/king.png-423971e6e653dc2b76d0df7c1842c55e.ctex"
+path="res://.godot/imported/KING.png-374b546a7ba9feab1ddb2a05136ae220.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/pieces/black/king.png"
-dest_files=["res://.godot/imported/king.png-423971e6e653dc2b76d0df7c1842c55e.ctex"]
+source_file="res://assets/images/pieces/BLACK/KING.png"
+dest_files=["res://.godot/imported/KING.png-374b546a7ba9feab1ddb2a05136ae220.ctex"]
 
 [params]
 
