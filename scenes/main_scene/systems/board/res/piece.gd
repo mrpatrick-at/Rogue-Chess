@@ -12,6 +12,9 @@ var coord: Vector2i = Vector2i.ZERO
 var moves: PackedVector2Array = []
 var board: Board
 ## private vars
+static var _knight_directions:Array = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
+static var _rook_directions:Array = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
+static var _bishop_directions:Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 ## onready vars
 ## built-in override methods
 
@@ -36,10 +39,11 @@ func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info:
 func get_moves() -> PackedVector2Array:
 	var piece_moves: PackedVector2Array = []
 	
-	piece_moves = _get_pawn_moves(coord, color)
+	piece_moves = _get_pawn_moves()
 	return piece_moves
 
 func move_to(target_coord: Vector2i, is_init:bool) -> void:
+	moves = get_moves()
 	if moves.has(target_coord) or is_init:
 		var translated_coords: Vector2
 		translated_coords.x = target_coord.x * Consts.tile_size + 64
@@ -50,17 +54,12 @@ func move_to(target_coord: Vector2i, is_init:bool) -> void:
 		
 		coord = target_coord
 		self.z_index = -target_coord.y + 1
-		
-		moves = get_moves()
 
 ## private methods
 
-func _get_pawn_moves(asked_coords:Vector2i, color:int) -> PackedVector2Array:
+func _get_pawn_moves() -> PackedVector2Array:
 	var piece_moves: PackedVector2Array = []
 	var move_range: int = 1
-	#var capture_squares: Array = [Vector2i(1,1),Vector2i(1,-1)]
-	#if color == Consts.COLOR.BLACK:
-		#capture_squares = [Vector2i(-1,-1),Vector2i(-1,1)]
 	
 	var direction_int: int = 1
 	if color == Consts.COLOR.BLACK:
@@ -71,7 +70,7 @@ func _get_pawn_moves(asked_coords:Vector2i, color:int) -> PackedVector2Array:
 	
 	# Main Movement
 	for i:int in move_range:
-		var pos:Vector2i = asked_coords
+		var pos:Vector2i = coord
 		pos.y += (i + 1) * direction_int
 		if !board.is_valid_coord(pos):
 			break
@@ -82,11 +81,12 @@ func _get_pawn_moves(asked_coords:Vector2i, color:int) -> PackedVector2Array:
 		piece_moves.append(pos)
 	
 	# Piece Capturing
-	#for i:Vector2i in capture_squares:
-		#var pos:Vector2i = asked_coords + i
-		#if board.is_valid_coord(pos):
-			#if board.is_enemy(pos, 0):
-				#moves.append(pos)
+	var capture_squares: Array = [Vector2i(1,direction_int),Vector2i(-1,direction_int)]
+	for vec2i:Vector2i in capture_squares:
+		var pos:Vector2i = coord + vec2i
+		if board.is_valid_coord(pos):
+			if board.is_enemy(pos, 0):
+				moves.append(pos)
 		# En Passant Rules
 		#var pos_passant:Vector2i = Vector2i(current_coords.x,pos.y)
 		#if board.is_valid_position(pos_passant):

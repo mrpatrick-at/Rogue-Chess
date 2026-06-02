@@ -6,7 +6,6 @@ extends Node
 var mouse_position: Vector2 = Vector2.ZERO
 var camera: Camera2D
 var board: Board
-var piece_manager: PieceManager
 var tile_info: Array = []
 var tile_buffer: Array = []
 
@@ -19,7 +18,6 @@ var selected_piece: Piece
 func _ready() -> void:
 	camera = get_viewport().get_camera_2d()
 	board = Scripts.BOARD_MANAGER.board
-	piece_manager = Scripts.BOARD_MANAGER.piece_manager
 
 func _process(_delta: float) -> void:
 	tile_info = get_mouse_collision_pos()
@@ -68,7 +66,7 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 				if selected_tile == false:
 					if board.pieces.has(coord):
 						selected_piece = board.pieces[coord]
-						board.highlight_tiles(piece_manager.get_piece_moves(tile_info[0]))
+						board.highlight_tiles(selected_piece.get_moves())
 						selected_tile = true
 						print("Tile selected")
 				else:
