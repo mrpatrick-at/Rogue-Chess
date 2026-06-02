@@ -2,22 +2,13 @@
 extends Node2D
 class_name Board
 ## enums
-enum PIECE {
-	NONE,
-	PAWN,
-	ROOK,
-	KNIGHT,
-	BISHOP,
-	QUEEN,
-	KING,
-}
 ## consts
 const tile_size:int = 128
 const board_size:int = 8
 
 const BACK_ROW = [
-	PIECE.ROOK, PIECE.KNIGHT, PIECE.BISHOP, PIECE.QUEEN, 
-	PIECE.KING, PIECE.BISHOP, PIECE.KNIGHT, PIECE.ROOK
+	Consts.PIECE.ROOK, Consts.PIECE.KNIGHT, Consts.PIECE.BISHOP, Consts.PIECE.QUEEN, 
+	Consts.PIECE.KING, Consts.PIECE.BISHOP, Consts.PIECE.KNIGHT, Consts.PIECE.ROOK
 ]
 ## exports
 ## public vars
@@ -25,6 +16,7 @@ var tiles: Array = []
 var pieces: Dictionary = {}
 var tiles_obj: Node2D
 var pieces_obj: Node2D
+var highlighted_tiles: PackedVector2Array = []
 ## private vars
 ## onready vars
 
@@ -56,7 +48,7 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 			var coord: Vector2i = Vector2i(x, y)
 			_create_tile(coord)
 			var piece_int: int = _calc_piece(coord)
-			if piece_int != PIECE.NONE:
+			if piece_int != Consts.PIECE.NONE:
 				var piece: Piece = _create_piece(coord, piece_int)
 				pieces[coord] = piece
 	
@@ -81,14 +73,27 @@ func get_tile(coord: Vector2i) -> Tile:
 
 func is_empty(asked_coords: Vector2i) -> bool:
 	if pieces.has(asked_coords):
-		return true
-	return false
+		return false
+	return true
 
 func is_enemy(asked_coords :Vector2i, turn_color: int) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
 	var piece: Piece = pieces[asked_coords]
 	if piece.type == turn_color:
 		return true
 	return false
+
+func highlight_tiles(tiles_to_highlight: PackedVector2Array) -> void:
+	for tile_coord: Vector2i in tiles_to_highlight:
+		var tile: Tile = get_tile(tile_coord)
+		tile.hightlight()
+		highlighted_tiles.append(tile_coord)
+
+func unhighlight_tiles() -> void:
+	for tile_coord: Vector2i in highlighted_tiles:
+		print("unhighlightin tile: ",tile_coord)
+		var tile: Tile = get_tile(tile_coord)
+		tile.unhighlight()
+		highlighted_tiles.erase(tile_coord)
 
 ## private methods
 
@@ -118,36 +123,36 @@ func _get_tile_color(coord: Vector2i) -> bool: # Returns false if White and True
 
 func _calc_piece(coords: Vector2i) -> int:
 	if coords.y > 1 and coords.y < 6:
-		return PIECE.NONE
+		return Consts.PIECE.NONE
 	
 	# White Pawns
 	if coords.y == 1:
-		return PIECE.PAWN
+		return Consts.PIECE.PAWN
 	# Black Pawns
 	if coords.y == 6:
-		return PIECE.PAWN + (PIECE.size() - 1)
+		return Consts.PIECE.PAWN + (Consts.PIECE.size() - 1)
 	
 	# White Pieces
 	if coords.y == 0:
 		return BACK_ROW[coords.x]
 	# Black Pieces
 	if coords.y == 7:
-		return BACK_ROW[coords.x] + (PIECE.size() - 1)
+		return BACK_ROW[coords.x] + (Consts.PIECE.size() - 1)
 	
-	return PIECE.NONE # Emergency Stop
+	return Consts.PIECE.NONE # Emergency Stop
 
 func _create_piece(coord: Vector2i, piece_int: int) -> Piece:
 	var piece_color:int = 0
 	var color_string: String = "WHITE"
 	var piece_lookup: int = piece_int
-	if piece_int > PIECE.size() - 1:
-		piece_color = 1
+	if piece_int > Consts.PIECE.size() - 1:
+		piece_color = Consts.COLOR.BLACK
 		color_string = "BLACK"
-		piece_lookup += -PIECE.size() + 1
+		piece_lookup += -Consts.PIECE.size() + 1
 	
-	var piece_string: String = PIECE.keys()[piece_lookup]
+	var piece_string: String = Consts.PIECE.keys()[piece_lookup]
 	
-	var piece: Piece = Piece.new(coord ,piece_int ,piece_color ,tile_size, [color_string, piece_string])
+	var piece: Piece = Piece.new(coord, piece_int, piece_color, [color_string, piece_string])
 	pieces_obj.add_child(piece)
 	
 	return piece

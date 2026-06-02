@@ -1,15 +1,6 @@
 extends Node2D
 class_name  PieceManager
 ## enums
-enum PIECE {
-	NONE,
-	PAWN,
-	ROOK,
-	KNIGHT,
-	BISHOP,
-	QUEEN,
-	KING,
-}
 ## consts
 ## exports
 ## public vars
@@ -29,7 +20,7 @@ func _ready() -> void:
 func get_piece_moves(coords: Vector2i) -> PackedVector2Array:
 	var moves: PackedVector2Array = []
 	if board.pieces.has(coords):
-		if board.pieces[coords].type == PIECE.PAWN:
+		if board.pieces[coords].type == Consts.PIECE.PAWN:
 			moves = _get_pawn_moves(coords)
 	
 	return moves
@@ -42,23 +33,23 @@ func calc_moves() -> Dictionary:
 func _get_pawn_moves(asked_coords:Vector2i) -> PackedVector2Array:
 	var piece: Piece = board.pieces[asked_coords]
 	var moves: Array = []
-	var move_range: int = 0
+	var move_range: int = 1
 	var is_black: bool = false
 	var capture_squares: Array = [Vector2i(1,1),Vector2i(1,-1)]
-	if piece.color == 1:
+	if piece.color == Consts.COLOR.BLACK:
 		capture_squares = [Vector2i(-1,-1),Vector2i(-1,1)]
 	
 	if piece.move_amount == 0:
 		move_range = 2
-	else:
-		move_range = 1
 	
 	# Main Movement
 	for i:int in move_range:
 		var pos:Vector2i = asked_coords
-		pos.x += i
+		pos.y += i + 1
 		if board.is_valid_coord(pos):
+			print("is valid: ", pos)
 			if board.is_empty(pos):
+				print("is empty appending: ", pos)
 				moves.append(pos)
 	
 	# Piece Capturing

@@ -65,10 +65,12 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 			if tile_info[1] is Tile:
 				if selected_tile == false:
 					print(piece_manager.get_piece_moves(tile_info[0]))
+					board.highlight_tiles(piece_manager.get_piece_moves(tile_info[0]))
 					selected_tile = true
 					print("Tile selected")
 				else:
 					selected_tile = false
+					board.unhighlight_tiles()
 					print("Tile unselected")
 	
 		if event.is_action_pressed(&"_input_mouse_right"):

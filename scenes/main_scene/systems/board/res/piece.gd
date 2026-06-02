@@ -12,7 +12,7 @@ var move_amount: int = 0
 ## onready vars
 ## built-in override methods
 
-func _init(coord: Vector2i, piece_type: int, piece_color: int, tile_size: int, piece_info: Array) -> void:
+func _init(coord: Vector2i, piece_type: int, piece_color: int, piece_info: Array) -> void:
 	type = piece_type
 	color = piece_color
 	
@@ -21,11 +21,8 @@ func _init(coord: Vector2i, piece_type: int, piece_color: int, tile_size: int, p
 	var piece_texture: CompressedTexture2D = load(path%piece_info)
 	
 	self.texture = piece_texture
-	var translated_coords:Vector2
-	translated_coords.x = coord.x * tile_size
-	translated_coords.y = -coord.y * tile_size
+	move_to(coord)
 	
-	self.global_position = translated_coords
 	self.scale = Vector2i(8,8)
 	self.move_local_x(64)
 	self.move_local_y(-32)
@@ -37,5 +34,12 @@ func get_moves() -> PackedVector2Array:
 	var moves: PackedVector2Array = []
 	
 	return moves
+
+func move_to(coord: Vector2i) -> void:
+	var translated_coords: Vector2
+	translated_coords.x = coord.x * Consts.tile_size
+	translated_coords.y = -coord.y * Consts.tile_size
+	self.global_position = translated_coords
+	pass
 
 ## private methods
