@@ -75,6 +75,16 @@ func move_to(target_coord: Vector2i) -> void:
 			var piece: Piece = board.pieces[pos_passant]
 			piece.take_piece()
 		
+		# Castling
+		if self.type == Consts.PIECE.KING and abs(target_coord.x - coord.x) > 1:
+			var rook_coord: Vector2i = Vector2i(0, coord.y)
+			var rook_destination: Vector2i = Vector2i(3,coord.y)
+			if coord.x < target_coord.x:
+				rook_coord = Vector2i(7, coord.y)
+				rook_destination = Vector2i(5, coord.y)
+			var piece: Piece = board.pieces[rook_coord]
+			piece.move_to(rook_destination)
+		
 		var translated_coords: Vector2
 		translated_coords.x = target_coord.x * Consts.tile_size + 64
 		translated_coords.y = -target_coord.y * Consts.tile_size - 32
@@ -212,13 +222,29 @@ func _get_king_moves() -> Array: # TODO: Wow I just discovered how absolutely sh
 				if board.is_enemy(pos, color):
 					piece_moves.append(pos)
 	
-	
 	# Castling
-	#if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED) == 0:
-		#if Scripts.PIECE_MANAGER.get_piece_data(Vector2i(current_coords.x,current_coords.y + 3),Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.ROOK:
-			#if Scripts.PIECE_MANAGER.get_piece_data(Vector2i(current_coords.x,current_coords.y + 3),Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED) == 0:
-				#if Scripts.PIECE_MANAGER.is_empty(Vector2i(current_coords.x,current_coords.y + 1)):
-					#if Scripts.PIECE_MANAGER.is_empty(Vector2i(current_coords.x,current_coords.y + 2)):
-						#piece_moves.append(Vector2i(current_coords.x,current_coords.y + 2))
+	if move_amount == 0:
+		var rook_coords: PackedVector2Array = [Vector2i(0, coord.y), Vector2i(7, coord.y)]
+		for rook_coord: Vector2i in rook_coords:
+			if board.is_empty(rook_coord):
+				continue
+			
+			var piece: Piece = board.pieces[rook_coord]
+			if piece.move_amount != 0:
+				continue
+			
+			var between_coords: PackedVector2Array = [Vector2i(1, coord.y), Vector2i(2, coord.y), Vector2i(3, coord.y)]
+			if rook_coord.x > coord.x:
+				between_coords = [Vector2i(5, coord.y), Vector2i(6, coord.y)]
+			
+			var can_castle: bool = true
+			for between_coord in between_coords:
+				if board.is_empty(between_coord):
+					continue
+				can_castle = false
+				break
+			
+			if can_castle:
+				piece_moves.append(between_coords[1])
 	
 	return piece_moves
