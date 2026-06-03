@@ -52,7 +52,6 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 				var piece: Piece = _create_piece(coord, piece_int)
 				pieces[coord] = piece
 	
-	print(pieces)
 	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
 	print_rich("[color=Springgreen]BUILD_BOARD-[/color] Created Board of size: [color=gold]%s[/color] in: [color=gold]%sms[/color]" %[board_size, ending_time])
 
@@ -76,7 +75,7 @@ func is_empty(asked_coords: Vector2i) -> bool:
 		return false
 	return true
 
-func is_enemy(asked_coords :Vector2i, piece_color: int) -> bool: # Checks if piece on piece_coords is diffrent team than piece on asked_coords
+func is_enemy(asked_coords: Vector2i, piece_color: int) -> bool:
 	if !is_empty(asked_coords):
 		var piece: Piece = pieces[asked_coords]
 		if piece.color == piece_color:
@@ -85,7 +84,7 @@ func is_enemy(asked_coords :Vector2i, piece_color: int) -> bool: # Checks if pie
 
 func highlight_tiles(tiles_to_highlight: PackedVector2Array) -> void:
 	for tile_coord: Vector2i in tiles_to_highlight:
-		print("BOARD- Highlighting Tile: ",tile_coord)
+		#print("BOARD- Highlighting Tile: ",tile_coord)
 		var tile: Tile = get_tile(tile_coord)
 		tile.hightlight()
 	
@@ -93,7 +92,7 @@ func highlight_tiles(tiles_to_highlight: PackedVector2Array) -> void:
 
 func unhighlight_tiles(tiles_to_unhighlight: PackedVector2Array) -> void:
 	for tile_coord: Vector2i in tiles_to_unhighlight:
-		print("BOARD- Unhighlighting Tile: ",tile_coord)
+		#print("BOARD- Unhighlighting Tile: ",tile_coord)
 		var tile: Tile = get_tile(tile_coord)
 		tile.unhighlight()
 	
@@ -101,7 +100,7 @@ func unhighlight_tiles(tiles_to_unhighlight: PackedVector2Array) -> void:
 		highlighted_tiles.erase(tile_coord)
 
 func unhighlight_all_tiles() -> void:
-	print("BOARD- Unhighligting all Tiles")
+	#print("BOARD- Unhighligting all Tiles")
 	unhighlight_tiles(highlighted_tiles)
 
 ## private methods
@@ -161,7 +160,7 @@ func _create_piece(coord: Vector2i, piece_int: int) -> Piece:
 	
 	var piece_string: String = Consts.PIECE.keys()[piece_lookup]
 	
-	var piece: Piece = Piece.new(coord, piece_int, piece_color, [color_string, piece_string])
+	var piece: Piece = Piece.new(coord, piece_lookup, piece_color, [color_string, piece_string])
 	pieces_obj.add_child(piece)
 	
 	return piece

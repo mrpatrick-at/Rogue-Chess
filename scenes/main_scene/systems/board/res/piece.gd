@@ -3,25 +3,25 @@ class_name Piece
 ## enums
 ## consts
 const path: String = "res://assets/images/pieces/%s/%s.png"
+const _knight_directions: PackedVector2Array = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
+const _rook_directions: PackedVector2Array = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
+const _bishop_directions: PackedVector2Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 ## exports
 ## public vars
+var coord: Vector2i = Vector2i.ZERO
 var type: int = 0
 var color: int = 0
 var move_amount: int = 0
-var coord: Vector2i = Vector2i.ZERO
 var moves: PackedVector2Array = []
 var board: Board
 ## private vars
-static var _knight_directions:Array = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
-static var _rook_directions:Array = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
-static var _bishop_directions:Array = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 ## onready vars
 ## built-in override methods
 
 func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info: Array) -> void:
+	coord = piece_coord
 	type = piece_type
 	color = piece_color
-	coord = piece_coord
 	board = Scripts.BOARD_MANAGER.board
 	
 	self.name = "%s, %s"%piece_info
@@ -39,7 +39,7 @@ func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info:
 func get_moves() -> PackedVector2Array:
 	var piece_moves: PackedVector2Array = []
 	
-	match abs(type): # Checks which Piece, then gets Moves
+	match type: # Checks which Piece, then gets Moves
 		Consts.PIECE.PAWN:
 			piece_moves = _get_pawn_moves()
 		Consts.PIECE.ROOK:
@@ -88,15 +88,14 @@ func _get_pawn_moves() -> PackedVector2Array:
 		move_range = 2
 	
 	# Main Movement
-	for i:int in move_range:
-		var pos:Vector2i = coord
+	for i: int in move_range:
+		var pos: Vector2i = coord
 		pos.y += (i + 1) * direction_int
 		if !board.is_valid_coord(pos):
 			break
 		if !board.is_empty(pos):
 			break
 		
-		print("is empty appending: ", pos)
 		piece_moves.append(pos)
 	
 	# Piece Capturing
@@ -119,7 +118,6 @@ func _get_pawn_moves() -> PackedVector2Array:
 					#if passant_piece.move_amount == 1:
 						#if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.TRUE:
 							#_moves.append(pos)
-	print(piece_moves)
 	return piece_moves
 
 func _get_rook_moves() -> Array:
