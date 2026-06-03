@@ -39,7 +39,20 @@ func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info:
 func get_moves() -> PackedVector2Array:
 	var piece_moves: PackedVector2Array = []
 	
-	piece_moves = _get_pawn_moves()
+	match abs(type): # Checks which Piece, then gets Moves
+		Consts.PIECE.PAWN:
+			piece_moves = _get_pawn_moves()
+		Consts.PIECE.ROOK:
+			piece_moves = _get_rook_moves()
+		Consts.PIECE.KNIGHT:
+			piece_moves = _get_knight_moves()
+		Consts.PIECE.BISHOP:
+			piece_moves = _get_bishop_moves()
+		Consts.PIECE.QUEEN:
+			piece_moves = _get_rook_moves() + _get_bishop_moves()
+		Consts.PIECE.KING:
+			piece_moves = _get_king_moves()
+	
 	return piece_moves
 
 func move_to(target_coord: Vector2i, is_init:bool) -> void:
@@ -87,7 +100,7 @@ func _get_pawn_moves() -> PackedVector2Array:
 		piece_moves.append(pos)
 	
 	# Piece Capturing
-	var capture_squares: Array = [Vector2i(-1,direction_int),Vector2i(1,direction_int)]
+	var capture_squares: PackedVector2Array = [Vector2i(-1,direction_int),Vector2i(1,direction_int)]
 	for vec2i:Vector2i in capture_squares:
 		var pos:Vector2i = coord + vec2i
 		if !board.is_valid_coord(pos):
@@ -109,82 +122,83 @@ func _get_pawn_moves() -> PackedVector2Array:
 	print(piece_moves)
 	return piece_moves
 
-#static func _get_knight_moves(current_coords:Vector2i) -> Array: # TODO: Prob can Make this a little bit better !!!
-	#var _moves:Array = []
-	#
-	#for i:Vector2i in _knight_directions:
-		#var pos:Vector2i = current_coords
-		#pos += i
-		#if Scripts.BOARD_MANAGER.is_valid_position(pos):
-			#if Scripts.PIECE_MANAGER.is_empty(pos):
-				#_moves.append(pos)
-			#elif Scripts.PIECE_MANAGER.is_enemy(pos):
-				#_moves.append(pos)
-	#
-	#return _moves
-#
-#static func _get_rook_moves(current_coords:Vector2i,getting_moves:bool) -> Array:
-	#var _moves:Array = []
-	#
-	#for i:Vector2i in rook_directions:
-		#var pos:Vector2i = current_coords
-		#pos += i
-		#
-		#while Scripts.BOARD_MANAGER.is_valid_position(pos):
-			#if Scripts.PIECE_MANAGER.is_empty(pos):
-				#_moves.append(pos)
-			#elif Scripts.PIECE_MANAGER.is_enemy(pos):
-				#_moves.append(pos)
-				#break
-			#elif getting_moves:
-				#break
-			#
-			#pos +=i
-	#
-	#return _moves
-#
-#static func _get_bishop_moves(current_coords:Vector2i,getting_moves:bool) -> Array:
-	#var _moves:Array = []
-	#
-	#for i:Vector2i in bishop_directions:
-		#var pos:Vector2i = current_coords
-		#pos += i
-		#
-		#while Scripts.BOARD_MANAGER.is_valid_position(pos):
-			#if Scripts.PIECE_MANAGER.is_empty(pos):
-				#_moves.append(pos)
-			#elif Scripts.PIECE_MANAGER.is_enemy(pos):
-				#_moves.append(pos)
-				#break
-			#elif getting_moves:
-				#break
-			#
-			#pos +=i
-	#
-	#return _moves
-#
-#static func _get_king_moves(current_coords:Vector2i) -> Array: # TODO: Wow I just discovered how absolutely shit the Castling Code is. FIX IN FUTURE!!!!
-	#var _moves:Array = []
-	#
-	#for x in range(-1,2):
-		#for y in range(-1,2):
-			#var pos:Vector2i = current_coords
-			#pos.x += x
-			#pos.y += y
-			#
-			#if Scripts.BOARD_MANAGER.is_valid_position(pos):
-				#if Scripts.PIECE_MANAGER.is_empty(pos):
-					#_moves.append(pos)
-				#elif Scripts.PIECE_MANAGER.is_enemy(pos):
-					#_moves.append(pos)
-	#
-	#
-	## Castling
+func _get_rook_moves() -> Array:
+	var piece_moves:Array = []
+	
+	for direction: Vector2i in _rook_directions:
+		var pos: Vector2i = coord + direction
+		
+		while board.is_valid_coord(pos):
+			
+			if board.is_empty(pos):
+				piece_moves.append(pos)
+				pos += direction
+				continue
+			
+			if board.is_enemy(pos, color):
+				piece_moves.append(pos)
+			
+			break
+	
+	return piece_moves
+
+func _get_knight_moves() -> PackedVector2Array: # TODO: Prob can Make this a little bit better !!!
+	var piece_moves: PackedVector2Array = []
+	
+	for direction: Vector2i in _knight_directions:
+		var pos:Vector2i = coord + direction
+		
+		if board.is_valid_coord(pos):
+			
+			if board.is_empty(pos) or board.is_enemy(pos, color):
+				piece_moves.append(pos)
+	
+	return piece_moves
+
+func _get_bishop_moves() -> Array:
+	var piece_moves:Array = []
+	
+	for direction: Vector2i in _bishop_directions:
+		var pos: Vector2i = coord + direction
+		
+		while board.is_valid_coord(pos):
+			
+			if board.is_empty(pos):
+				piece_moves.append(pos)
+				pos += direction
+				continue
+			
+			if board.is_enemy(pos, color):
+				piece_moves.append(pos)
+			
+			break
+	
+	return piece_moves
+
+func _get_king_moves() -> Array: # TODO: Wow I just discovered how absolutely shit the Castling Code is. FIX IN FUTURE!!!!
+	var piece_moves:Array = []
+	
+	for x in 3:
+		for y in 3:
+			var pos:Vector2i = coord
+			pos.x += x - 1
+			pos.y += y - 1
+			
+			if board.is_valid_coord(pos):
+				if board.is_empty(pos):
+					piece_moves.append(pos)
+					continue
+				
+				if board.is_enemy(pos, color):
+					piece_moves.append(pos)
+	
+	
+	# Castling
 	#if Scripts.PIECE_MANAGER.get_piece_data(current_coords,Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED) == 0:
 		#if Scripts.PIECE_MANAGER.get_piece_data(Vector2i(current_coords.x,current_coords.y + 3),Scripts.CONSTANTS.PIECE_LIST.PIECE_TYPE) == Scripts.CONSTANTS.PIECE_TYPE.ROOK:
 			#if Scripts.PIECE_MANAGER.get_piece_data(Vector2i(current_coords.x,current_coords.y + 3),Scripts.CONSTANTS.PIECE_LIST.TIMES_MOVED) == 0:
 				#if Scripts.PIECE_MANAGER.is_empty(Vector2i(current_coords.x,current_coords.y + 1)):
 					#if Scripts.PIECE_MANAGER.is_empty(Vector2i(current_coords.x,current_coords.y + 2)):
-						#_moves.append(Vector2i(current_coords.x,current_coords.y + 2))
-	#
-	#return _moves
+						#piece_moves.append(Vector2i(current_coords.x,current_coords.y + 2))
+	
+	return piece_moves
