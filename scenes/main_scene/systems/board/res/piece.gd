@@ -29,7 +29,14 @@ func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info:
 	var piece_texture: CompressedTexture2D = load(path%piece_info)
 	
 	self.texture = piece_texture
-	move_to(coord, true)
+	
+	var translated_coords: Vector2
+	translated_coords.x = coord.x * Consts.tile_size + 64
+	translated_coords.y = -coord.y * Consts.tile_size - 32
+	self.global_position = translated_coords
+	board.pieces[coord] = self
+	self.z_index = -coord.y + 1
+	
 	moves = get_moves()
 	
 	self.scale = Vector2i(8,8)
@@ -55,15 +62,19 @@ func get_moves() -> PackedVector2Array:
 	
 	return piece_moves
 
-func move_to(target_coord: Vector2i, is_init:bool) -> void:
+func move_to(target_coord: Vector2i) -> void:
 	moves = get_moves()
-	if moves.has(target_coord) or is_init:
+	if moves.has(target_coord):
 		if board.pieces.has(target_coord):
-			var target_piece: Piece = board.pieces[target_coord]
-			board.pieces_obj.remove_child(target_piece)
-			target_piece.queue_free()
-			board.pieces.erase(target_coord)
-			
+			var piece: Piece = board.pieces[target_coord]
+			piece.take_piece()
+		
+		# En Passant
+		if self.type == Consts.PIECE.PAWN and target_coord.x != coord.x and !board.pieces.has(target_coord):
+			var pos_passant: Vector2i = Vector2i(target_coord.x, coord.y)
+			var piece: Piece = board.pieces[pos_passant]
+			piece.take_piece()
+		
 		var translated_coords: Vector2
 		translated_coords.x = target_coord.x * Consts.tile_size + 64
 		translated_coords.y = -target_coord.y * Consts.tile_size - 32
@@ -73,6 +84,13 @@ func move_to(target_coord: Vector2i, is_init:bool) -> void:
 		
 		coord = target_coord
 		self.z_index = -target_coord.y + 1
+		
+		move_amount += 1
+
+func take_piece() -> void:
+	board.pieces.erase(self)
+	board.pieces_obj.remove_child(self)
+	self.queue_free()
 
 ## private methods
 
@@ -99,25 +117,29 @@ func _get_pawn_moves() -> PackedVector2Array:
 		piece_moves.append(pos)
 	
 	# Piece Capturing
-	var capture_squares: PackedVector2Array = [Vector2i(-1,direction_int),Vector2i(1,direction_int)]
-	for vec2i:Vector2i in capture_squares:
-		var pos:Vector2i = coord + vec2i
+	var direction_y: int = coord.y + direction_int
+	var capture_squares: PackedVector2Array = [Vector2i(coord.x - 1, direction_y),Vector2i(coord.x + 1, direction_y)]
+	for pos:Vector2i in capture_squares:
 		if !board.is_valid_coord(pos):
 			continue
 		if board.is_empty(pos):
+			# En Passant Rules
+			var pos_passant: Vector2i = Vector2i(pos.x, coord.y)
+			if board.pieces.has(pos_passant):
+				var piece: Piece = board.pieces[pos_passant]
+				if board.is_enemy(pos_passant, color) and piece.move_amount == 1 and piece.type == Consts.PIECE.PAWN:
+					piece_moves.append(pos)
 			continue
 		if !board.is_enemy(pos, color):
 			continue
 		piece_moves.append(pos)
 		# En Passant Rules
-		#var pos_passant:Vector2i = Vector2i(current_coords.x,pos.y)
-		#if board.is_valid_position(pos_passant):
-			#if board.is_enemy(pos_passant, 0):
-				#var passant_piece: Piece = board.pieces[pos_passant]
-				#if passant_piece.type == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
-					#if passant_piece.move_amount == 1:
-						#if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.TRUE:
-							#_moves.append(pos)
+		#var pos_passant: Vector2i = Vector2i(pos.y, coord.y)
+		#var passant_piece: Piece = board.pieces[pos_passant]
+		#if passant_piece.type == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
+			#if passant_piece.move_amount == 1:
+				#if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.TRUE:
+					#piece_moves.append(pos)
 	return piece_moves
 
 func _get_rook_moves() -> Array:
