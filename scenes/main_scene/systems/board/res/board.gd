@@ -84,18 +84,25 @@ func is_enemy(asked_coords :Vector2i, piece_color: int) -> bool: # Checks if pie
 	return true
 
 func highlight_tiles(tiles_to_highlight: PackedVector2Array) -> void:
-	print(tiles_to_highlight)
 	for tile_coord: Vector2i in tiles_to_highlight:
+		print("BOARD- Highlighting Tile: ",tile_coord)
 		var tile: Tile = get_tile(tile_coord)
 		tile.hightlight()
-		highlighted_tiles.append(tile_coord)
+	
+	highlighted_tiles.append_array(tiles_to_highlight)
 
-func unhighlight_tiles() -> void:
-	for tile_coord: Vector2i in highlighted_tiles:
-		print("unhighlightin tile: ",tile_coord)
+func unhighlight_tiles(tiles_to_unhighlight: PackedVector2Array) -> void:
+	for tile_coord: Vector2i in tiles_to_unhighlight:
+		print("BOARD- Unhighlighting Tile: ",tile_coord)
 		var tile: Tile = get_tile(tile_coord)
 		tile.unhighlight()
+	
+	for tile_coord: Vector2i in tiles_to_unhighlight:
 		highlighted_tiles.erase(tile_coord)
+
+func unhighlight_all_tiles() -> void:
+	print("BOARD- Unhighligting all Tiles")
+	unhighlight_tiles(highlighted_tiles)
 
 ## private methods
 

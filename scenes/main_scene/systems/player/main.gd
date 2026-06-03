@@ -72,7 +72,7 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 				else:
 					selected_tile = false
 					selected_piece.move_to(coord, false)
-					board.unhighlight_tiles()
+					board.unhighlight_all_tiles()
 					print("Tile unselected")
 	
 		if event.is_action_pressed(&"_input_mouse_right"):
