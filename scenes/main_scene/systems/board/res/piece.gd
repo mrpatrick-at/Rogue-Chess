@@ -1,7 +1,8 @@
-extends Sprite2D
+extends MeshInstance2D
 class_name Piece
 ## enums
 ## consts
+const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/piece_shader.gdshader")
 const path: String = "res://assets/images/pieces/%s/%s.png"
 const _knight_directions: PackedVector2Array = [Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)]
 const _rook_directions: PackedVector2Array = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
@@ -27,16 +28,18 @@ func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info:
 	self.name = "%s, %s"%piece_info
 	
 	var piece_texture: CompressedTexture2D = load(path%piece_info)
+	var quadmesh: QuadMesh = QuadMesh.new()
+	quadmesh.size = Vector2(16,32)
 	
+	self.mesh = quadmesh
 	self.texture = piece_texture
 	
-	var translated_coords: Vector2
-	translated_coords.x = coord.x * Consts.tile_size + 64
-	translated_coords.y = -coord.y * Consts.tile_size - 32
-	self.global_position = translated_coords
 	board.pieces[coord] = self
 	self.z_index = -coord.y + 1
 	
+	self.material = ShaderMaterial.new()
+	self.material.shader = shader_res
+	self.material.set_shader_parameter("coord", coord)
 	moves = get_moves()
 	
 	self.scale = Vector2i(8,8)
@@ -85,14 +88,11 @@ func move_to(target_coord: Vector2i) -> void:
 			var piece: Piece = board.pieces[rook_coord]
 			piece.move_to(rook_destination)
 		
-		var translated_coords: Vector2
-		translated_coords.x = target_coord.x * Consts.tile_size + 64
-		translated_coords.y = -target_coord.y * Consts.tile_size - 32
-		self.global_position = translated_coords
 		board.pieces.erase(coord)
 		board.pieces[target_coord] = self
 		
 		coord = target_coord
+		self.material.set_shader_parameter("coord", coord)
 		self.z_index = -target_coord.y + 1
 		
 		move_amount += 1
@@ -101,6 +101,12 @@ func take_piece() -> void:
 	board.pieces.erase(self)
 	board.pieces_obj.remove_child(self)
 	self.queue_free()
+
+func highlight() -> void:
+	print("Highlighted Piece at: ", coord)
+
+func unhighlight() -> void:
+	print("Unhighlighted Piece at: ", coord)
 
 ## private methods
 

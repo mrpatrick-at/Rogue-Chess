@@ -6,8 +6,8 @@ extends Node
 var mouse_position: Vector2 = Vector2.ZERO
 var camera: Camera2D
 var board: Board
-var tile_info: Array = []
-var tile_buffer: Array = []
+var tile_below_mouse: Tile
+var highlighted_tiles: Array = []
 
 var selected_tile: bool = false
 var selected_piece: Piece
@@ -20,22 +20,31 @@ func _ready() -> void:
 	board = Scripts.BOARD_MANAGER.board
 
 func _process(_delta: float) -> void:
-	tile_info = get_mouse_collision_pos()
+	tile_below_mouse = get_mouse_collision_pos()
 	
 	if selected_tile:
 		return
 	
-	if tile_info[1] is Tile:
-		var tile: Tile = tile_info[1]
-		tile_buffer.append(tile)
-		tile.hightlight()
-		#print(tile)
+	if tile_below_mouse is Tile:
+		highlighted_tiles.append(tile_below_mouse)
+		tile_below_mouse.hightlight()
+		var tile_coord: Vector2i = tile_below_mouse.coord
+		if !board.is_empty(tile_coord):
+			var piece: Piece = board.pieces[tile_coord]
+			piece.highlight()
 	
-	for tile: Tile in tile_buffer:
-		if tile == tile_info[1]:
+	for tile: Tile in highlighted_tiles:
+		if tile == tile_below_mouse:
 			continue
 		tile.unhighlight()
-		tile_buffer.erase(tile)
+		var tile_coord: Vector2i = tile.coord
+		if !board.is_empty(tile.coord):
+			var piece: Piece = board.pieces[tile_coord]
+			piece.unhighlight()
+		
+		highlighted_tiles.erase(tile)
+	
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouse:
@@ -45,24 +54,21 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## private methods
 
-func get_mouse_collision_pos() -> Array: # Query Cam and Return Result
-	var tile_data: Array = []
-	tile_data.resize(2)
-	var coord: Vector2i = board.get_coord(mouse_position)
+func get_mouse_collision_pos() -> Tile: # Query Cam and Return Result
 	var tile: Tile
+	var coord: Vector2i = board.get_coord(mouse_position)
 	if board.is_valid_coord(coord):
 		tile = board.get_tile(coord)
-	tile_data[0] = coord
-	tile_data[1] = tile
-	return tile_data
+	
+	return tile
 
 func _mouse_buttons(event:InputEventMouse) -> void:
 	mouse_position = camera.get_global_mouse_position()
 	
 	if event is InputEventMouseButton:
 		if event.is_action_pressed(&"_input_mouse_left"):
-			if tile_info[1] is Tile:
-				var coord:Vector2i = tile_info[0]
+			if tile_below_mouse is Tile:
+				var coord: Vector2i = tile_below_mouse.coord
 				if selected_tile == false:
 					if board.pieces.has(coord):
 						selected_piece = board.pieces[coord]
@@ -76,8 +82,10 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 					print("Tile unselected")
 	
 		if event.is_action_pressed(&"_input_mouse_right"):
-			if tile_info[1] is Tile:
-				print(tile_info[1])
+			if tile_below_mouse is Tile:
+				print("Tile: ",tile_below_mouse.coord)
+			else:
+				print("Selection not in Board")
 	
 		if event.is_action_pressed(&"_input_mouse_middle"):
 			print("Middle Mouse click detected")
