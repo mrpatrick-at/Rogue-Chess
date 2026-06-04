@@ -1,11 +1,10 @@
-@tool
 extends ColorRect
 class_name Board
 ## enums
 ## consts
 const tile_size: int = 128
 const board_size: int = 8
-const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/test_board_shader.gdshader")
+const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/board_shader.gdshader")
 
 const BACK_ROW = [
 	Consts.PIECE.ROOK, Consts.PIECE.KNIGHT, Consts.PIECE.BISHOP, Consts.PIECE.QUEEN, 
@@ -34,7 +33,6 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 	self.name = "Board"
 	
 	tiles.resize(board_size * board_size)
-	self.set_anchors_preset(Control.PRESET_CENTER)
 	self.size = Vector2(board_size * tile_size, board_size * tile_size)
 	self.material = ShaderMaterial.new()
 	self.material.shader = shader_res
