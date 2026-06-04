@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://ui/esc_menu/main.tscn" id="9_x6nru"]
 [ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://ui/lose_menu/main.tscn" id="10_ix53w"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
+[ext_resource type="Shader" uid="uid://dutrkpk5bv0qu" path="res://scenes/main_scene/systems/board/shaders/piece_shader.gdshader" id="11_loo4n"]
 [ext_resource type="Shader" uid="uid://c0q74rp2ahinc" path="res://scenes/main_scene/systems/board/shaders/board_shader.gdshader" id="12_loo4n"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
@@ -52,6 +53,11 @@ shader_parameter/move_color = Color(0.2, 1, 0.2, 0.4)
 shader_parameter/capture_color = Color(0.5, 0.1, 0, 0.4)
 shader_parameter/check_color = Color(0.9, 0, 0, 0.4)
 shader_parameter/tile_states = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h5lh5"]
+shader = ExtResource("11_loo4n")
+shader_parameter/coord = Vector2(0, 0)
+shader_parameter/y_offset = 0.0
 
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
@@ -118,7 +124,6 @@ visible = false
 script = null
 
 [node name="IngameUI" parent="ChessWorld2D/Player" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
-visible = false
 script = null
 
 [node name="Background" type="CanvasLayer" parent="ChessWorld2D/Player" unique_id=764705812]
@@ -138,9 +143,16 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("10_o15j2")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=2038663416]
+[node name="ShaderPrecompiler" type="Node2D" parent="ChessWorld2D" unique_id=257119363]
+visible = false
+
+[node name="BoardShader" type="ColorRect" parent="ChessWorld2D/ShaderPrecompiler" unique_id=2038663416]
 visible = false
 material = SubResource("ShaderMaterial_5e1wh")
 custom_minimum_size = Vector2(1024, 1024)
 offset_right = 1024.0
 offset_bottom = 1024.0
+
+[node name="PieceShader" type="MeshInstance2D" parent="ChessWorld2D/ShaderPrecompiler" unique_id=891350435]
+visible = false
+material = SubResource("ShaderMaterial_h5lh5")

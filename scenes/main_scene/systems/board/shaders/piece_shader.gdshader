@@ -1,18 +1,17 @@
 shader_type canvas_item;
 
-uniform ivec2 coord = ivec2(0,0);
-uniform int y_offset = 0;
+uniform vec2 coord = vec2(0,0);
+uniform float y_offset = 0;
 
 void vertex() {
-	ivec2 grid_pos;
-	grid_pos.x = coord.x << 4 + 8;
-	grid_pos.y = -coord.y << 4 - 4 - y_offset;
-	VERTEX = vec2(grid_pos) + VERTEX;
+	vec2 grid_pos = vec2(
+		(coord.x * 16.0) + 8.0,
+		(-coord.y * 16.0) - 4.0 - y_offset
+	);
+	VERTEX += grid_pos;
+	UV.y = 1.0 - UV.y;
 }
 
 void fragment() {
-	vec2 flipped_uv = vec2(UV.x, 1.0 - UV.y);
-	vec4 base_color = texture(TEXTURE, flipped_uv);
-	
-	COLOR = base_color;
+	COLOR = texture(TEXTURE, UV);
 }

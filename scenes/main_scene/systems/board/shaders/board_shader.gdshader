@@ -14,13 +14,12 @@ uniform int tile_states[64];
 //}
 
 void fragment() {
-	vec2 mult_pos = UV * 8.0;
-	ivec2 grid_pos = ivec2(mult_pos); // pos of tile on grid
+	vec2 grid_pos = floor(UV * 8.0); // pos of tile on grid
 	
-	bool is_black = (grid_pos.x + grid_pos.y) % 2 == 1; // if remainder of both numbers added aint 1 it aint black
+	bool is_black = mod(grid_pos.x + grid_pos.y, 2.0) == 1.0; // if remainder of both numbers added aint 1 it aint black
 	vec4 final_color = is_black ? black_tile_color : white_tile_color;
 	
-	int array_index = int(grid_pos.x + grid_pos.y << 8);
+	int array_index = int(grid_pos.y * 8.0 + grid_pos.x);
 	int current_state = tile_states[array_index];
 	
 	vec4 overlay = vec4(0.0);
