@@ -13,6 +13,13 @@ enum COLOR {
 	WHITE,
 	BLACK
 }
+enum HIGHLIGHT {
+	NONE,
+	HOVER,
+	VALID,
+	CAPTURE,
+	CHECK
+}
 ## consts
 const tile_size:int = 128
 ## exports

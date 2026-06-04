@@ -3,10 +3,9 @@ extends Node
 ## consts
 ## exports
 ## public vars
-var mouse_position: Vector2 = Vector2.ZERO
 var camera: Camera2D
 var board: Board
-var tile_below_mouse: Tile
+var tile_below_mouse: Vector2i
 var highlighted_tiles: Array = []
 
 var selected_tile: bool = false
@@ -20,33 +19,30 @@ func _ready() -> void:
 	board = Scripts.BOARD_MANAGER.board
 
 func _process(_delta: float) -> void:
-	tile_below_mouse = get_mouse_collision_pos()
-	
+
+	tile_below_mouse = board.get_coord()
 	if selected_tile:
 		return
-	
-	if tile_below_mouse is Tile:
-		highlighted_tiles.append(tile_below_mouse)
-		tile_below_mouse.hightlight()
-		var tile_coord: Vector2i = tile_below_mouse.coord
-		if !board.is_empty(tile_coord):
-			var piece: Piece = board.pieces[tile_coord]
-			piece.highlight()
-	
-	for tile: Tile in highlighted_tiles:
-		if tile == tile_below_mouse:
-			continue
-		tile.unhighlight()
-		var tile_coord: Vector2i = tile.coord
-		if !board.is_empty(tile.coord):
-			var piece: Piece = board.pieces[tile_coord]
-			piece.unhighlight()
 		
-		highlighted_tiles.erase(tile)
+	if board.is_valid_coord(tile_below_mouse):
+		var coord:Vector2i = tile_below_mouse
+		
+		board.highlight_tile(coord, Consts.HIGHLIGHT.HOVER)
+		highlighted_tiles.append(coord)
+	
+	for tile: Vector2i in highlighted_tiles:
+		var coord:Vector2i = tile_below_mouse
+		if tile == coord:
+			continue
+		board.unhighlight_tile(tile)
+		var array_index: int = board.get_tiles_array_index(tile)
+		if board.tiles[array_index] == 0:
+			highlighted_tiles.erase(tile)
+			
 	
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		_mouse_buttons(event)
 
@@ -54,36 +50,37 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## private methods
 
-func get_mouse_collision_pos() -> Tile: # Query Cam and Return Result
-	var tile: Tile
-	var coord: Vector2i = board.get_coord(mouse_position)
-	if board.is_valid_coord(coord):
-		tile = board.get_tile(coord)
-	
-	return tile
+#func get_mouse_collision_pos() -> ColorRect: # Query Cam and Return Result
+	#var tile: ColorRect
+	#var coord: Vector2i = board.get_coord(mouse_position)
+	#if board.is_valid_coord(coord):
+		#tile = board.get_tile(coord)
+	#
+	#return tile
 
 func _mouse_buttons(event:InputEventMouse) -> void:
-	mouse_position = camera.get_global_mouse_position()
-	
 	if event is InputEventMouseButton:
 		if event.is_action_pressed(&"_input_mouse_left"):
-			if tile_below_mouse is Tile:
-				var coord: Vector2i = tile_below_mouse.coord
+			var coord: Vector2i = tile_below_mouse
+			print(coord)
+			if board.is_valid_coord(coord):
 				if selected_tile == false:
 					if board.pieces.has(coord):
 						selected_piece = board.pieces[coord]
-						board.highlight_tiles(selected_piece.get_moves())
+						var piece_moves: PackedVector2Array = selected_piece.get_moves()
+						board.highlight_tiles(piece_moves, Consts.HIGHLIGHT.VALID)
+						highlighted_tiles.append_array(piece_moves)
 						selected_tile = true
 						print("Tile selected")
 				else:
 					selected_tile = false
 					selected_piece.move_to(coord)
-					board.unhighlight_all_tiles()
 					print("Tile unselected")
-	
+		
 		if event.is_action_pressed(&"_input_mouse_right"):
-			if tile_below_mouse is Tile:
-				print("Tile: ",tile_below_mouse.coord)
+			print(tile_below_mouse)
+			if board.is_valid_coord(tile_below_mouse):
+				print("Tile: ",tile_below_mouse)
 			else:
 				print("Selection not in Board")
 	

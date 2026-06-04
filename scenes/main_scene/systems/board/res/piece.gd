@@ -35,11 +35,12 @@ func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info:
 	self.texture = piece_texture
 	
 	board.pieces[coord] = self
-	self.z_index = -coord.y + 1
+	self.z_index = -coord.y + 7
 	
 	self.material = ShaderMaterial.new()
 	self.material.shader = shader_res
-	self.material.set_shader_parameter("coord", coord)
+	var pos_coord: Vector2i = Vector2i(coord.x, coord.y - 7)
+	self.material.set_shader_parameter("coord", pos_coord)
 	moves = get_moves()
 	
 	self.scale = Vector2i(8,8)
@@ -92,14 +93,15 @@ func move_to(target_coord: Vector2i) -> void:
 		board.pieces[target_coord] = self
 		
 		coord = target_coord
-		self.material.set_shader_parameter("coord", coord)
-		self.z_index = -target_coord.y + 1
+		var pos_coord: Vector2i = Vector2i(coord.x, coord.y - 7)
+		self.material.set_shader_parameter("coord", pos_coord)
+		self.z_index = -coord.y + 7
 		
 		move_amount += 1
 
 func take_piece() -> void:
 	board.pieces.erase(self)
-	board.pieces_obj.remove_child(self)
+	board.remove_child(self)
 	self.queue_free()
 
 func highlight() -> void:
