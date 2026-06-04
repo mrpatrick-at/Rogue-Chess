@@ -37,6 +37,9 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 	self.material = ShaderMaterial.new()
 	self.material.shader = shader_res
 	
+	var ending_time2:float = (Time.get_ticks_usec() - starting_time) / 1000
+	print_rich("[color=Springgreen]BUILD_BOARD-[/color] Created Board Shader in: [color=gold]%sms[/color]" %[ending_time2])
+	
 	for x in board_size:
 		for y in board_size:
 			var coord: Vector2i = Vector2i(x, y)
@@ -75,7 +78,7 @@ func is_enemy(asked_coords: Vector2i, piece_color: int) -> bool:
 
 func get_tiles_array_index(tile_coord: Vector2i) -> int:
 	var inverted_y: int = 7 - tile_coord.y
-	var array_index: int = (inverted_y * 8) + tile_coord.x
+	var array_index: int = (inverted_y << 3) + tile_coord.x
 	return array_index
 
 func highlight_tile(tile_coord: Vector2i, highlight_type: int) -> void:

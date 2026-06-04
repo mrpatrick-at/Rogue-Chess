@@ -75,7 +75,6 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 					print("Tile unselected")
 		
 		if event.is_action_pressed(&"_input_mouse_right"):
-			print(tile_below_mouse)
 			if board.is_valid_coord(tile_below_mouse):
 				print("Tile: ",tile_below_mouse)
 			else:

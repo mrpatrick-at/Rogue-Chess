@@ -20,6 +20,8 @@ var board: Board
 ## built-in override methods
 
 func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info: Array) -> void:
+	var starting_time: float = Time.get_ticks_usec()
+	print_rich("[color=Orange]Piece-[/color] Started Building Board")
 	coord = piece_coord
 	type = piece_type
 	color = piece_color
@@ -44,6 +46,9 @@ func _init(piece_coord: Vector2i, piece_type: int, piece_color: int, piece_info:
 	moves = get_moves()
 	
 	self.scale = Vector2i(8,8)
+	
+	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
+	print_rich("[color=Orange]PIECE-[/color] Created at: [color=gold]%s[/color] in: [color=gold]%sms[/color]" %[coord, ending_time])
 
 ## public methods
 

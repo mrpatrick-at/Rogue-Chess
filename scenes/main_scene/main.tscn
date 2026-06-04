@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://ui/esc_menu/main.tscn" id="9_x6nru"]
 [ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://ui/lose_menu/main.tscn" id="10_ix53w"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
+[ext_resource type="Shader" uid="uid://c0q74rp2ahinc" path="res://scenes/main_scene/systems/board/shaders/board_shader.gdshader" id="12_loo4n"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
 shader = ExtResource("6_nr3ba")
@@ -42,6 +43,16 @@ shader_parameter/spin_amount = 0.25
 shader_parameter/pixel_filter = 745.0
 shader_parameter/is_rotating = false
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5e1wh"]
+shader = ExtResource("12_loo4n")
+shader_parameter/white_tile_color = Color(1, 1, 1, 1)
+shader_parameter/black_tile_color = Color(0, 0, 0, 1)
+shader_parameter/hover_color = Color(0, 0, 1, 0.4)
+shader_parameter/move_color = Color(0.2, 1, 0.2, 0.4)
+shader_parameter/capture_color = Color(0.5, 0.1, 0, 0.4)
+shader_parameter/check_color = Color(0.9, 0, 0, 0.4)
+shader_parameter/tile_states = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
 
@@ -59,6 +70,8 @@ offset_bottom = 512.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_43pjp")
+
+[node name="ChessPlayer" type="Node2D" parent="ChessWorld2D" unique_id=1884565549]
 
 [node name="Player" type="Node2D" parent="ChessWorld2D" unique_id=699846906]
 script = ExtResource("3_g0xvp")
@@ -124,3 +137,10 @@ offset_bottom = 1080.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("10_o15j2")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=2038663416]
+visible = false
+material = SubResource("ShaderMaterial_5e1wh")
+custom_minimum_size = Vector2(1024, 1024)
+offset_right = 1024.0
+offset_bottom = 1024.0
