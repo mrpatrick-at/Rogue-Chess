@@ -16,7 +16,7 @@ enum COLOR {
 enum HIGHLIGHT {
 	NONE,
 	HOVER,
-	VALID,
+	MOVE,
 	CAPTURE,
 	CHECK
 }

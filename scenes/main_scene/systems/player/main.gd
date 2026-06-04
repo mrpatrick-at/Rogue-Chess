@@ -68,7 +68,12 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 					if board.pieces.has(coord):
 						selected_piece = board.pieces[coord]
 						var piece_moves: PackedVector2Array = selected_piece.get_moves()
-						board.highlight_tiles(piece_moves, Consts.HIGHLIGHT.VALID)
+						for move: Vector2i in piece_moves:
+							if board.pieces.has(move):
+								board.highlight_tile(move, Consts.HIGHLIGHT.CAPTURE)
+								continue
+							board.highlight_tile(move, Consts.HIGHLIGHT.MOVE)
+							
 						highlighted_tiles.append_array(piece_moves)
 						selected_tile = true
 						print("Tile selected")
