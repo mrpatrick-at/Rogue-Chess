@@ -3,8 +3,8 @@ uniform vec4 white_tile_color : source_color = vec4(1, 1, 1, 1.0);
 uniform vec4 black_tile_color : source_color = vec4(0, 0, 0, 1.0);
 
 uniform vec4 hover_color : source_color = vec4(0.0, 0.0, 1.0, 0.4);
-uniform vec4 valid_color : source_color = vec4(0.2, 1.0, 0.2, 0.4);
-uniform vec4 capture_color : source_color = vec4(0.5, 0.1, 0.0, 0.4);
+uniform vec4 move_color : source_color = vec4(0.2, 1.0, 0.2, 0.4);
+uniform vec4 capture_color : source_color = vec4(0.9, 0.0, 0.0, 0.4);
 uniform vec4 check_color : source_color = vec4(0.9, 0.0, 0.0, 0.4);
 
 uniform int tile_states[64];
@@ -28,7 +28,7 @@ void fragment() {
 	if (current_state == 1) {
 		overlay = hover_color; // blue for hover yehaw
 	} else if (current_state == 2) {
-		overlay = valid_color; // green for valid moves
+		overlay = move_color; // green for valid moves
 	} else if (current_state == 3) {
 		overlay = capture_color;
 	} else if (current_state == 4) {

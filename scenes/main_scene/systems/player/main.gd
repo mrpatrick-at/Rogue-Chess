@@ -50,14 +50,6 @@ func _input(event: InputEvent) -> void:
 
 ## private methods
 
-#func get_mouse_collision_pos() -> ColorRect: # Query Cam and Return Result
-	#var tile: ColorRect
-	#var coord: Vector2i = board.get_coord(mouse_position)
-	#if board.is_valid_coord(coord):
-		#tile = board.get_tile(coord)
-	#
-	#return tile
-
 func _mouse_buttons(event:InputEventMouse) -> void:
 	if event is InputEventMouseButton:
 		if event.is_action_pressed(&"_input_mouse_left"):
@@ -91,23 +83,3 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 	
 		if event.is_action_pressed(&"_input_mouse_middle"):
 			print("Middle Mouse click detected")
-
-#static func _camera_movement(delta:float) -> void:
-	## Camera Movement
-	#var direction:Vector2 = Vector2.ZERO
-	#if Input.is_action_pressed(&"_input_up") and !Input.is_action_pressed(&"_input_down"): direction.y = -1
-	#if Input.is_action_pressed(&"_input_down") and !Input.is_action_pressed(&"_input_up"): direction.y = +1 
-	#if Input.is_action_pressed(&"_input_left") and !Input.is_action_pressed(&"_input_right"): direction.x = -1 
-	#if Input.is_action_pressed(&"_input_right") and !Input.is_action_pressed(&"_input_left"): direction.x = +1
-	#if direction == Vector2.ZERO:return # No movement
-	#Scripts.CHESS_CAMERA2D.move_camera(direction,delta)
-#
-#static func _camera_zoom(delta:float) -> void:
-	## Camera Zoom
-	#var direction:float = 0
-	#if Input.is_action_just_released(&"_input_mouse_scroll_up"):
-		#direction = 1
-	#if Input.is_action_just_released(&"_input_mouse_scroll_down"):
-		#direction = -1
-	#if !direction:return
-	#Scripts.CHESS_CAMERA2D.zoom_camera(direction,delta)
