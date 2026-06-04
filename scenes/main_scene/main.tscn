@@ -71,8 +71,6 @@ shader_parameter/color_1 = Color(1, 0, 0, 1)
 shader_parameter/color_2 = Color(0, 1, 0, 1)
 shader_parameter/color_3 = Color(0, 0, 1, 1)
 
-[sub_resource type="QuadMesh" id="QuadMesh_5e1wh"]
-
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
 
@@ -175,6 +173,3 @@ offset_bottom = 1106.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("7_whis5")
-
-[node name="MeshInstance2D" type="MeshInstance2D" parent="ChessWorld2D" unique_id=1552007559]
-mesh = SubResource("QuadMesh_5e1wh")

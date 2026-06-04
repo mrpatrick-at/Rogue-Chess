@@ -1,11 +1,12 @@
 shader_type canvas_item;
 
 uniform vec2 coord = vec2(0,0);
+uniform float y_offset = 0;
 
 void vertex() {
 	vec2 grid_pos;
 	grid_pos.x = coord.x * 16. + 8.;
-	grid_pos.y = -coord.y * 16. - 4.;
+	grid_pos.y = -coord.y * 16. - 4. - y_offset;
 	VERTEX = grid_pos + VERTEX;
 }
 

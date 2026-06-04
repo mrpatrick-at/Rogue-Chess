@@ -22,16 +22,13 @@ func _init(tile_coord:Vector2i, tile_size:int, is_tile_black: bool) -> void:
 	
 	size = tile_size
 	
-	pos.x = coord.x * size
-	pos.y = -coord.y * size
-	position = pos
-	
 	self.material = ShaderMaterial.new()
 	self.material.shader = shader_res
 	if is_tile_black:
 		color = Color(0.0, 0.0, 0.0, 1.0)
 	
 	self.material.set_shader_parameter("tile_color", color)
+	self.material.set_shader_parameter("coord", coord)
 	_generate_mesh()
 	
 	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
