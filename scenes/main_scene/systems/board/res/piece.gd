@@ -111,6 +111,7 @@ func move_to(target_coord: Vector2i) -> void:
 			board.turn_color = Consts.COLOR.WHITE
 		else:
 			board.turn_color = Consts.COLOR.BLACK
+		
 
 func take_piece() -> void:
 	board.pieces.erase(self)

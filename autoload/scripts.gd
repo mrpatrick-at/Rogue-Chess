@@ -7,6 +7,8 @@ const BOARD_MANAGER:= preload("res://scenes/main_scene/systems/board/main.gd")
 
 const PLAYER:= preload("res://scenes/main_scene/systems/player/main.gd")
 
+const INGAME_UI:= preload("res://ui/ingame_ui/main.gd")
+
 #const PIECE_MANAGER:= preload("res://scenes/main_scene/systems/piece_manager/piece_manager.gd")
 #const PIECE_MOVE = preload("res://scenes/main_scene/systems/piece_manager/piece_move.gd")
 #const PIECE_CHECK = preload("res://scenes/main_scene/systems/piece_manager/piece_check.gd")

@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://bgxr68chixp88"]
 
 [ext_resource type="LabelSettings" uid="uid://ck60ea7gdtef7" path="res://assets/themes/menu/text_ui_settings.tres" id="1_nfpch"]
-[ext_resource type="Script" uid="uid://cskpf4n74la46" path="res://ui/ingame_ui/main.gd" id="1_yetk6"]
 [ext_resource type="StyleBox" uid="uid://bukayp0talqv6" path="res://assets/themes/menu/style_box_flat_gray.tres" id="2_soikl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d5rf6"]
@@ -20,103 +19,91 @@ expand_margin_top = 20.0
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fny4v"]
 
-[node name="IngameUI" type="CanvasLayer" unique_id=2039975035]
-script = ExtResource("1_yetk6")
-
-[node name="Control" type="Control" parent="." unique_id=1007814565]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="TopUI" type="CenterContainer" parent="Control" unique_id=693206669]
+[node name="IngameUI" type="CenterContainer" unique_id=693206669]
 custom_minimum_size = Vector2(0, 100)
-layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 50.0
+offset_bottom = 88.0
 grow_horizontal = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="Control/TopUI" unique_id=64978644]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=64978644]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_d5rf6")
 
-[node name="BoxContainer" type="BoxContainer" parent="Control/TopUI/PanelContainer" unique_id=174069713]
+[node name="BoxContainer" type="BoxContainer" parent="PanelContainer" unique_id=174069713]
 material = SubResource("CanvasItemMaterial_fny4v")
 layout_mode = 2
 
-[node name="TurnAmount" type="MarginContainer" parent="Control/TopUI/PanelContainer/BoxContainer" unique_id=1973751945]
+[node name="TurnAmount" type="MarginContainer" parent="PanelContainer/BoxContainer" unique_id=1973751945]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="PanelContainer" type="PanelContainer" parent="Control/TopUI/PanelContainer/BoxContainer/TurnAmount" unique_id=1268693151]
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/BoxContainer/TurnAmount" unique_id=1268693151]
 layout_mode = 2
 theme_override_styles/panel = ExtResource("2_soikl")
 
-[node name="BoxContainer" type="BoxContainer" parent="Control/TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer" unique_id=293818319]
+[node name="BoxContainer" type="BoxContainer" parent="PanelContainer/BoxContainer/TurnAmount/PanelContainer" unique_id=293818319]
 layout_mode = 2
 
-[node name="Text" type="Label" parent="Control/TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer" unique_id=2012224454]
+[node name="Text" type="Label" parent="PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer" unique_id=2012224454]
 layout_mode = 2
 text = "Turn Amount = "
 label_settings = ExtResource("1_nfpch")
 
-[node name="TurnAmountLabel" type="Label" parent="Control/TopUI/PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer" unique_id=1825435652]
+[node name="TurnAmountLabel" type="Label" parent="PanelContainer/BoxContainer/TurnAmount/PanelContainer/BoxContainer" unique_id=1825435652]
 custom_minimum_size = Vector2(37, 0)
 layout_mode = 2
 text = "00"
 label_settings = ExtResource("1_nfpch")
 
-[node name="ColorMove" type="MarginContainer" parent="Control/TopUI/PanelContainer/BoxContainer" unique_id=456146990]
+[node name="ColorMove" type="MarginContainer" parent="PanelContainer/BoxContainer" unique_id=456146990]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="PanelContainer" type="PanelContainer" parent="Control/TopUI/PanelContainer/BoxContainer/ColorMove" unique_id=152272876]
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/BoxContainer/ColorMove" unique_id=152272876]
 layout_mode = 2
 theme_override_styles/panel = ExtResource("2_soikl")
 
-[node name="BoxContainer" type="BoxContainer" parent="Control/TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer" unique_id=386598223]
+[node name="BoxContainer" type="BoxContainer" parent="PanelContainer/BoxContainer/ColorMove/PanelContainer" unique_id=386598223]
 layout_mode = 2
 
-[node name="ColorMoveLabel" type="Label" parent="Control/TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer" unique_id=342649693]
+[node name="ColorMoveLabel" type="Label" parent="PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer" unique_id=342649693]
 custom_minimum_size = Vector2(102, 0)
 layout_mode = 2
 label_settings = ExtResource("1_nfpch")
 
-[node name="Text" type="Label" parent="Control/TopUI/PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer" unique_id=1354797242]
+[node name="Text" type="Label" parent="PanelContainer/BoxContainer/ColorMove/PanelContainer/BoxContainer" unique_id=1354797242]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 text = " Turn"
 label_settings = ExtResource("1_nfpch")
 
-[node name="FiftyMoveRule" type="MarginContainer" parent="Control/TopUI/PanelContainer/BoxContainer" unique_id=660362797]
+[node name="FiftyMoveRule" type="MarginContainer" parent="PanelContainer/BoxContainer" unique_id=660362797]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="PanelContainer" type="PanelContainer" parent="Control/TopUI/PanelContainer/BoxContainer/FiftyMoveRule" unique_id=973621116]
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/BoxContainer/FiftyMoveRule" unique_id=973621116]
 layout_mode = 2
 theme_override_styles/panel = ExtResource("2_soikl")
 
-[node name="BoxContainer" type="BoxContainer" parent="Control/TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer" unique_id=715201486]
+[node name="BoxContainer" type="BoxContainer" parent="PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer" unique_id=715201486]
 layout_mode = 2
 
-[node name="Text" type="Label" parent="Control/TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer" unique_id=2018121360]
+[node name="Text" type="Label" parent="PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer" unique_id=2018121360]
 layout_mode = 2
 text = "Fifty Move Rule = "
 label_settings = ExtResource("1_nfpch")
 
-[node name="FiftyMoveRuleLabel" type="Label" parent="Control/TopUI/PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer" unique_id=803515977]
+[node name="FiftyMoveRuleLabel" type="Label" parent="PanelContainer/BoxContainer/FiftyMoveRule/PanelContainer/BoxContainer" unique_id=803515977]
 clip_contents = true
 layout_mode = 2
 text = "00"

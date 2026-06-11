@@ -4,21 +4,14 @@
 [ext_resource type="Script" uid="uid://d1q80fi7atrmw" path="res://scenes/main_scene/systems/board/main.gd" id="2_43pjp"]
 [ext_resource type="Script" uid="uid://cc4t54f7tvv6f" path="res://scenes/main_scene/systems/player/main.gd" id="3_g0xvp"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
-[ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="7_whis5"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="8_0p6xv"]
+[ext_resource type="Script" uid="uid://cskpf4n74la46" path="res://ui/ingame_ui/main.gd" id="8_loo4n"]
 [ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="9_5rdu2"]
 [ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://ui/esc_menu/main.tscn" id="9_x6nru"]
 [ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://ui/lose_menu/main.tscn" id="10_ix53w"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
 [ext_resource type="Shader" uid="uid://dutrkpk5bv0qu" path="res://scenes/main_scene/systems/board/shaders/piece_shader.gdshader" id="11_loo4n"]
 [ext_resource type="Shader" uid="uid://c0q74rp2ahinc" path="res://scenes/main_scene/systems/board/shaders/board_shader.gdshader" id="12_loo4n"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
-shader = ExtResource("6_nr3ba")
-shader_parameter/see_uv = false
-shader_parameter/cam_passthru = false
-shader_parameter/offset = 0.01
-shader_parameter/overlay_color = Color(0, 0, 0, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_efxa6"]
 shader = ExtResource("6_nr3ba")
@@ -62,9 +55,9 @@ shader_parameter/y_offset = 0.0
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
 
-[node name="ChessWorld2D" type="Node2D" parent="." unique_id=390371608]
+[node name="World" type="Node2D" parent="." unique_id=390371608]
 
-[node name="BoardManager" type="AspectRatioContainer" parent="ChessWorld2D" unique_id=581804202]
+[node name="BoardManager" type="AspectRatioContainer" parent="World" unique_id=581804202]
 custom_minimum_size = Vector2(1024, 1024)
 anchors_preset = 15
 anchor_right = 1.0
@@ -77,12 +70,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_43pjp")
 
-[node name="ChessPlayer" type="Node2D" parent="ChessWorld2D" unique_id=1884565549]
-
-[node name="Player" type="Node2D" parent="ChessWorld2D" unique_id=699846906]
+[node name="Player" type="Node2D" parent="World" unique_id=699846906]
 script = ExtResource("3_g0xvp")
 
-[node name="Camera2D" type="Camera2D" parent="ChessWorld2D/Player" unique_id=661107056]
+[node name="Camera2D" type="Camera2D" parent="World/Player" unique_id=661107056]
+visible = false
 zoom = Vector2(0.5, 0.5)
 limit_left = -19200
 limit_top = -10800
@@ -91,17 +83,11 @@ limit_bottom = 10800
 limit_smoothed = true
 position_smoothing_enabled = true
 
-[node name="Sprite2D" type="Sprite2D" parent="ChessWorld2D/Player/Camera2D" unique_id=1239550790]
-visible = false
-material = SubResource("ShaderMaterial_kek77")
-scale = Vector2(10, 10)
-texture = ExtResource("7_whis5")
-
-[node name="Foreground" type="CanvasLayer" parent="ChessWorld2D/Player" unique_id=786620078]
+[node name="Foreground" type="CanvasLayer" parent="World" unique_id=786620078]
 layer = 2
-visible = false
 
-[node name="VhsFilter" type="TextureRect" parent="ChessWorld2D/Player/Foreground" unique_id=2109015937]
+[node name="VhsFilter" type="TextureRect" parent="World/Foreground" unique_id=2109015937]
+visible = false
 z_index = -1
 material = SubResource("ShaderMaterial_efxa6")
 anchors_preset = 15
@@ -115,22 +101,22 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("CanvasTexture_43pjp")
 
-[node name="EscMenu" parent="ChessWorld2D/Player/Foreground" unique_id=5292294 instance=ExtResource("9_x6nru")]
+[node name="EscMenu" parent="World/Foreground" unique_id=5292294 instance=ExtResource("9_x6nru")]
 visible = false
 script = null
 
-[node name="LoseMenu" parent="ChessWorld2D/Player/Foreground" unique_id=1947740458 instance=ExtResource("10_ix53w")]
+[node name="LoseMenu" parent="World/Foreground" unique_id=1947740458 instance=ExtResource("10_ix53w")]
 visible = false
 script = null
 
-[node name="IngameUI" parent="ChessWorld2D/Player" unique_id=1007814565 instance=ExtResource("8_0p6xv")]
-script = null
+[node name="IngameUI" parent="World/Foreground" unique_id=693206669 instance=ExtResource("8_0p6xv")]
+script = ExtResource("8_loo4n")
 
-[node name="Background" type="CanvasLayer" parent="ChessWorld2D/Player" unique_id=764705812]
+[node name="Background" type="CanvasLayer" parent="World" unique_id=764705812]
 layer = -1
 visible = false
 
-[node name="BackgroundImage" type="TextureRect" parent="ChessWorld2D/Player/Background" unique_id=1815771888]
+[node name="BackgroundImage" type="TextureRect" parent="World/Background" unique_id=1815771888]
 visible = false
 show_behind_parent = true
 material = SubResource("ShaderMaterial_4c57u")
@@ -143,16 +129,16 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("10_o15j2")
 
-[node name="ShaderPrecompiler" type="Node2D" parent="ChessWorld2D" unique_id=257119363]
+[node name="ShaderPrecompiler" type="Node2D" parent="." unique_id=257119363]
 visible = false
 
-[node name="BoardShader" type="ColorRect" parent="ChessWorld2D/ShaderPrecompiler" unique_id=2038663416]
+[node name="BoardShader" type="ColorRect" parent="ShaderPrecompiler" unique_id=2038663416]
 visible = false
 material = SubResource("ShaderMaterial_5e1wh")
 custom_minimum_size = Vector2(1024, 1024)
 offset_right = 1024.0
 offset_bottom = 1024.0
 
-[node name="PieceShader" type="MeshInstance2D" parent="ChessWorld2D/ShaderPrecompiler" unique_id=891350435]
+[node name="PieceShader" type="MeshInstance2D" parent="ShaderPrecompiler" unique_id=891350435]
 visible = false
 material = SubResource("ShaderMaterial_h5lh5")
