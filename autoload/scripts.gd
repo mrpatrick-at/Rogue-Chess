@@ -6,7 +6,6 @@ const MAIN:= preload("res://scenes/main_scene/main.gd")
 const BOARD_MANAGER:= preload("res://scenes/main_scene/systems/board/main.gd")
 
 const PLAYER:= preload("res://scenes/main_scene/systems/player/main.gd")
-#const CHESS_CAMERA2D:= preload("res://scenes/main_scene/systems/chess_camera/main.gd")
 
 #const PIECE_MANAGER:= preload("res://scenes/main_scene/systems/piece_manager/piece_manager.gd")
 #const PIECE_MOVE = preload("res://scenes/main_scene/systems/piece_manager/piece_move.gd")

@@ -23,22 +23,26 @@ func _process(_delta: float) -> void:
 	tile_below_mouse = board.get_coord()
 	if selected_tile:
 		return
-		
+	
 	if board.is_valid_coord(tile_below_mouse):
 		var coord:Vector2i = tile_below_mouse
 		
 		board.highlight_tile(coord, Consts.HIGHLIGHT.HOVER)
 		highlighted_tiles.append(coord)
+		
+		if board.pieces.has(coord):
+			var piece: Piece = board.pieces[coord]
+			piece.highlight()
 	
 	for tile: Vector2i in highlighted_tiles:
 		var coord:Vector2i = tile_below_mouse
 		if tile == coord:
 			continue
 		board.unhighlight_tile(tile)
-		var array_index: int = board.get_tiles_array_index(tile)
-		if board.tiles[array_index] == 0:
-			highlighted_tiles.erase(tile)
-			
+		if board.pieces.has(coord):
+			var piece: Piece = board.pieces[coord]
+			piece.unhighlight()
+		highlighted_tiles.erase(tile)
 	
 
 
@@ -54,7 +58,6 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 	if event is InputEventMouseButton:
 		if event.is_action_pressed(&"_input_mouse_left"):
 			var coord: Vector2i = tile_below_mouse
-			print(coord)
 			if board.is_valid_coord(coord):
 				if selected_tile == false:
 					if board.pieces.has(coord):
@@ -68,17 +71,17 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 							
 						highlighted_tiles.append_array(piece_moves)
 						selected_tile = true
-						print("Tile selected")
+						print("PLAYER- Piece Selected")
 				else:
 					selected_tile = false
 					selected_piece.move_to(coord)
-					print("Tile unselected")
+					print("PLAYER- Piece Moved")
 		
 		if event.is_action_pressed(&"_input_mouse_right"):
 			if board.is_valid_coord(tile_below_mouse):
-				print("Tile: ",tile_below_mouse)
+				print("PLAYER- Tile: ",tile_below_mouse)
 			else:
-				print("Selection not in Board")
+				print("PLAYER- Tile not in Board")
 	
 		if event.is_action_pressed(&"_input_mouse_middle"):
-			print("Middle Mouse click detected")
+			print("PLAYER- Middle Mouse click detected")
