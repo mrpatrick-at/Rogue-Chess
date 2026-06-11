@@ -105,6 +105,12 @@ func move_to(target_coord: Vector2i) -> void:
 		self.z_index = -coord.y + 7
 		
 		move_amount += 1
+		board.turn_amount += 1
+		
+		if board.turn_amount & 1 == 0:
+			board.turn_color = Consts.COLOR.WHITE
+		else:
+			board.turn_color = Consts.COLOR.BLACK
 
 func take_piece() -> void:
 	board.pieces.erase(self)
@@ -125,6 +131,11 @@ func unhighlight() -> void:
 	animation_tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_SINE)
 	animation_tween.tween_method(_set_shader_value, y_offset, 0.0, 0.05)
 	#print("PIECE- Unhighlighted Piece at: ", coord)
+
+func reset_highlight() -> void:
+	if animation_tween:
+		animation_tween.kill()
+	_set_shader_value(0)
 
 ## private methods
 

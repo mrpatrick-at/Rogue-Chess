@@ -35,8 +35,9 @@ func _process(_delta: float) -> void:
 			
 			if board.pieces.has(coord):
 				var piece: Piece = board.pieces[coord]
-				piece.highlight()
-				highlighted_pieces.append(piece)
+				if piece.color == board.turn_color:
+					piece.highlight()
+					highlighted_pieces.append(piece)
 	
 	for tile: Vector2i in highlighted_tiles:
 		if tile == coord:
@@ -68,19 +69,22 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 				if selected_tile == false:
 					if board.pieces.has(coord):
 						selected_piece = board.pieces[coord]
-						var piece_moves: PackedVector2Array = selected_piece.get_moves()
-						for move: Vector2i in piece_moves:
-							if board.pieces.has(move):
-								board.highlight_tile(move, Consts.HIGHLIGHT.CAPTURE)
-								continue
-							board.highlight_tile(move, Consts.HIGHLIGHT.MOVE)
-							
-						highlighted_tiles.append_array(piece_moves)
-						selected_tile = true
-						print("PLAYER- Piece Selected")
+						if selected_piece.color == board.turn_color:
+							var piece_moves: PackedVector2Array = selected_piece.get_moves()
+							for move: Vector2i in piece_moves:
+								if board.pieces.has(move):
+									board.highlight_tile(move, Consts.HIGHLIGHT.CAPTURE)
+									continue
+								board.highlight_tile(move, Consts.HIGHLIGHT.MOVE)
+								
+							highlighted_tiles.append_array(piece_moves)
+							selected_tile = true
+							print("PLAYER- Piece Selected")
 				else:
 					selected_tile = false
 					selected_piece.move_to(coord)
+					selected_piece.reset_highlight()
+					highlighted_pieces.erase(selected_piece)
 					print("PLAYER- Piece Moved")
 		
 		if event.is_action_pressed(&"_input_mouse_right"):

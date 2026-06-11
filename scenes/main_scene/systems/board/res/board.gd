@@ -14,6 +14,8 @@ const BACK_ROW = [
 ## public vars
 var tiles: PackedByteArray = []
 var pieces: Dictionary = {}
+var turn_amount: int = 0
+var turn_color: int = Consts.COLOR.WHITE
 ## private vars
 ## onready vars
 
