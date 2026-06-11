@@ -7,6 +7,7 @@ var camera: Camera2D
 var board: Board
 var tile_below_mouse: Vector2i
 var highlighted_tiles: Array = []
+var highlighted_pieces: Array = []
 
 var selected_tile: bool = false
 var selected_piece: Piece
@@ -24,25 +25,30 @@ func _process(_delta: float) -> void:
 	if selected_tile:
 		return
 	
-	if board.is_valid_coord(tile_below_mouse):
-		var coord:Vector2i = tile_below_mouse
+	var coord:Vector2i = tile_below_mouse
+	if board.is_valid_coord(coord):
 		
-		board.highlight_tile(coord, Consts.HIGHLIGHT.HOVER)
-		highlighted_tiles.append(coord)
-		
-		if board.pieces.has(coord):
-			var piece: Piece = board.pieces[coord]
-			piece.highlight()
+		if !highlighted_tiles.has(coord):
+			
+			board.highlight_tile(coord, Consts.HIGHLIGHT.HOVER)
+			highlighted_tiles.append(coord)
+			
+			if board.pieces.has(coord):
+				var piece: Piece = board.pieces[coord]
+				piece.highlight()
+				highlighted_pieces.append(piece)
 	
 	for tile: Vector2i in highlighted_tiles:
-		var coord:Vector2i = tile_below_mouse
 		if tile == coord:
 			continue
 		board.unhighlight_tile(tile)
-		if board.pieces.has(coord):
-			var piece: Piece = board.pieces[coord]
-			piece.unhighlight()
 		highlighted_tiles.erase(tile)
+	
+	for piece: Piece in highlighted_pieces:
+		if piece.coord == coord:
+			continue
+		piece.unhighlight()
+		highlighted_pieces.erase(piece)
 	
 
 

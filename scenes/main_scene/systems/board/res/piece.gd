@@ -15,6 +15,8 @@ var color: int = 0
 var move_amount: int = 0
 var moves: PackedVector2Array = []
 var board: Board
+var animation_tween: Tween
+var y_offset: float = 0
 ## private vars
 ## onready vars
 ## built-in override methods
@@ -110,12 +112,25 @@ func take_piece() -> void:
 	self.queue_free()
 
 func highlight() -> void:
-	print("Highlighted Piece at: ", coord)
+	if animation_tween:
+		animation_tween.kill()
+	animation_tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_SINE)
+	animation_tween.tween_method(_set_shader_value, y_offset, 4.0, 0.07)
+	#print("PIECE- Highlighted Piece at: ", coord)
 
 func unhighlight() -> void:
-	print("Unhighlighted Piece at: ", coord)
+	await get_tree().create_timer(0.03).timeout
+	if animation_tween:
+		animation_tween.kill()
+	animation_tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_SINE)
+	animation_tween.tween_method(_set_shader_value, y_offset, 0.0, 0.05)
+	#print("PIECE- Unhighlighted Piece at: ", coord)
 
 ## private methods
+
+func _set_shader_value(value: float) -> void:
+	y_offset = value
+	self.material.set_shader_parameter("y_offset", value);
 
 func _get_pawn_moves() -> PackedVector2Array:
 	var piece_moves: PackedVector2Array = []
