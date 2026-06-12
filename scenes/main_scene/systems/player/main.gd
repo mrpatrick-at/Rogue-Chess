@@ -35,9 +35,9 @@ func _process(_delta: float) -> void:
 			
 			if board.pieces.has(coord):
 				var piece: Piece = board.pieces[coord]
-				if piece.color == board.turn_color:
-					piece.highlight()
-					highlighted_pieces.append(piece)
+				#if piece.color == board.turn_color:
+				piece.highlight()
+				highlighted_pieces.append(piece)
 	
 	for tile: Vector2i in highlighted_tiles:
 		if tile == coord:

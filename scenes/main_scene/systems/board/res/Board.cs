@@ -3,6 +3,7 @@ using Godot.Collections;
 using Godot.NativeInterop;
 using Microsoft.VisualBasic;
 using System;
+using System.Linq;
 [GlobalClass]
 public partial class Board : ColorRect
 {
@@ -55,18 +56,17 @@ private static readonly int[] B_BACK_ROW =
 // public methods
 	public void build_board(){
 		ulong starting_time = Godot.Time.GetTicksUsec();
-		GD.PrintRich("[color=Springgreen]BUILD_BOARD-[/color] Started Building Board");
+		GD.PrintRich("[color=Springgreen]BOARD-[/color] Started Building Board");
 		this.Name = "Board";
 
 		this.Size = new Vector2I(8 * 128, 8 * 128);
 		mat.Shader =  shader_res;
 		this.Material = mat;
 		float shader_ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
-		GD.PrintRich("[color=Springgreen]BUILD_BOARD-[/color] Created Board Shader in: [color=gold]",shader_ending_time,"ms[/color]");
+		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board Shader in: [color=gold]",shader_ending_time,"ms[/color]");
 
 		for(int y = 0; y < 8; y++){
 			for(int x = 0; x < 8; x++){
-				GD.Print("x: ",x,", y: ",y);
 				int piece_int = _calc_piece(x, y);
 				if(piece_int != (int)PIECE.NONE){
 					Vector2I coord = new Vector2I(x,y);
@@ -74,12 +74,12 @@ private static readonly int[] B_BACK_ROW =
 					ulong bit_mask = (ulong)1 << get_tiles_array_index(coord);
 					int piece_type = piece_int - 1;
 					bitboard[piece_type] |= bit_mask;
-					GD.Print("Piece: ", bitboard[piece_type]);
+					GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{bitboard[piece_type]}[/color]");
 				}
 			};
 		};
 		float ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
-		GD.PrintRich("[color=Springgreen]BUILD_BOARD-[/color] Created Board of size: [color=gold]8[/color] in: [color=gold]",ending_time,"ms[/color]");
+		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board of size: [color=gold]8[/color] in: [color=gold]",ending_time,"ms[/color]");
 	}
 	public Vector2I get_coord(){
 		Vector2I local_mouse_pos = (Vector2I)GetLocalMousePosition();
@@ -131,13 +131,12 @@ private static readonly int[] B_BACK_ROW =
 	
 		return B_BACK_ROW[x]; // Black Pieces
 	}
-	private Piece _create_piece(Vector2I coord, int piece_int){
+	private void _create_piece(Vector2I coord, int piece_int){
 		string piece_string = Enum.GetName(typeof(PIECE), piece_int);
-		GD.Print(piece_string);
 		Piece piece = new Piece();
 		this.AddChild(piece);
 		piece.setup(coord, piece_string);
-		return piece;
+		pieces.Add(coord, piece);
 		
 	}
 }

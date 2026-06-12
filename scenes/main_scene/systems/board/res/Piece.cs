@@ -1,5 +1,8 @@
 using Godot;
+using Godot.NativeInterop;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 [GlobalClass]
 public partial class Piece : MeshInstance2D
 {
@@ -48,8 +51,32 @@ private float y_offset;
 		this.Material = mat;
 		this.Scale = new Vector2I(8,8);
 		float ending_time = (Time.GetTicksUsec() - starting_time) / 1000f;
-		GD.PrintRich("[color=Orange]PIECE-[/color] Created at: [color=gold]{coord}[/color] in: [color=gold]{ending_time}ms[/color]");
-
+		GD.PrintRich($"[color=Orange]PIECE-[/color] Created at: [color=gold]{coord}[/color] in: [color=gold]{ending_time}ms[/color]");
+	}
+	public void highlight(){
+		if(animation_tween != null){
+			animation_tween.Kill();
+		}
+		animation_tween = CreateTween().SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Sine);
+		animation_tween.TweenMethod(Callable.From<float>((val) => _set_shader_value(val)), y_offset, 4.0, 0.07);
+	}
+	public async void unhighlight(){
+		await Task.Delay(50);
+		if(animation_tween != null){
+			animation_tween.Kill();
+		}
+		animation_tween = CreateTween().SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Sine);
+		animation_tween.TweenMethod(Callable.From<float>((val) => _set_shader_value(val)), y_offset, 0.0, 0.05);
+	}
+	public void reset_highlight(){
+		if(animation_tween != null){
+			animation_tween.Kill();
+		}
+		_set_shader_value(0);
 	}
 // private methods
+private void _set_shader_value(float value){
+	y_offset = value;
+	((ShaderMaterial)Material).SetShaderParameter("y_offset", y_offset);
+}
 }
