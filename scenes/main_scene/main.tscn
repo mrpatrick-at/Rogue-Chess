@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
 [ext_resource type="Shader" uid="uid://dutrkpk5bv0qu" path="res://scenes/main_scene/systems/board/shaders/piece_shader.gdshader" id="11_loo4n"]
 [ext_resource type="Shader" uid="uid://c0q74rp2ahinc" path="res://scenes/main_scene/systems/board/shaders/board_shader.gdshader" id="12_loo4n"]
+[ext_resource type="Script" uid="uid://0ucar3hx7v5i" path="res://scenes/main_scene/systems/board/piece_manager.cs" id="13_5e1wh"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_efxa6"]
 shader = ExtResource("6_nr3ba")
@@ -142,3 +143,8 @@ offset_bottom = 1024.0
 [node name="PieceShader" type="MeshInstance2D" parent="ShaderPrecompiler" unique_id=891350435]
 visible = false
 material = SubResource("ShaderMaterial_h5lh5")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1983182233]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("13_5e1wh")

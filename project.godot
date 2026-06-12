@@ -14,7 +14,7 @@ config/name="Rogue Chess"
 config/description="Chess that is Rogue"
 config/version="v0.2"
 run/main_scene="uid://bxmeugje5h5ew"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -31,6 +31,10 @@ gdscript/warnings/untyped_declaration=1
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="viewport"
+
+[dotnet]
+
+project/assembly_name="Rogue Chess"
 
 [input]
 

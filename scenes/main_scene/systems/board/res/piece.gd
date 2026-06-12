@@ -58,17 +58,17 @@ func get_moves() -> PackedVector2Array:
 	var piece_moves: PackedVector2Array = []
 	
 	match type: # Checks which Piece, then gets Moves
-		Consts.PIECE.PAWN:
+		Consts.PIECE.W_PAWN:
 			piece_moves = _get_pawn_moves()
-		Consts.PIECE.ROOK:
+		Consts.PIECE.W_ROOK:
 			piece_moves = _get_rook_moves()
-		Consts.PIECE.KNIGHT:
+		Consts.PIECE.W_KNIGHT:
 			piece_moves = _get_knight_moves()
-		Consts.PIECE.BISHOP:
+		Consts.PIECE.W_BISHOP:
 			piece_moves = _get_bishop_moves()
-		Consts.PIECE.QUEEN:
+		Consts.PIECE.W_QUEEN:
 			piece_moves = _get_rook_moves() + _get_bishop_moves()
-		Consts.PIECE.KING:
+		Consts.PIECE.W_KING:
 			piece_moves = _get_king_moves()
 	
 	return piece_moves
@@ -81,13 +81,13 @@ func move_to(target_coord: Vector2i) -> void:
 			piece.take_piece()
 		
 		# En Passant
-		if self.type == Consts.PIECE.PAWN and target_coord.x != coord.x and !board.pieces.has(target_coord):
+		if self.type == Consts.PIECE.W_PAWN and target_coord.x != coord.x and !board.pieces.has(target_coord):
 			var pos_passant: Vector2i = Vector2i(target_coord.x, coord.y)
 			var piece: Piece = board.pieces[pos_passant]
 			piece.take_piece()
 		
 		# Castling
-		if self.type == Consts.PIECE.KING and abs(target_coord.x - coord.x) > 1:
+		if self.type == Consts.PIECE.W_KING and abs(target_coord.x - coord.x) > 1:
 			var rook_coord: Vector2i = Vector2i(0, coord.y)
 			var rook_destination: Vector2i = Vector2i(3,coord.y)
 			if coord.x < target_coord.x:
@@ -177,19 +177,12 @@ func _get_pawn_moves() -> PackedVector2Array:
 			var pos_passant: Vector2i = Vector2i(pos.x, coord.y)
 			if board.pieces.has(pos_passant):
 				var piece: Piece = board.pieces[pos_passant]
-				if board.is_enemy(pos_passant, color) and piece.move_amount == 1 and piece.type == Consts.PIECE.PAWN:
+				if board.is_enemy(pos_passant, color) and piece.move_amount == 1 and piece.type == Consts.PIECE.W_PAWN:
 					piece_moves.append(pos)
 			continue
 		if !board.is_enemy(pos, color):
 			continue
 		piece_moves.append(pos)
-		# En Passant Rules
-		#var pos_passant: Vector2i = Vector2i(pos.y, coord.y)
-		#var passant_piece: Piece = board.pieces[pos_passant]
-		#if passant_piece.type == Scripts.CONSTANTS.PIECE_TYPE.PAWN:
-			#if passant_piece.move_amount == 1:
-				#if Scripts.PIECE_MANAGER.get_piece_data(pos_passant,Scripts.CONSTANTS.PIECE_LIST.PAWN_MOVED_TWO_TILES) == Scripts.CONSTANTS.PAWN_MOVED_TWO_TILES.TRUE:
-					#piece_moves.append(pos)
 	return piece_moves
 
 func _get_rook_moves() -> Array:

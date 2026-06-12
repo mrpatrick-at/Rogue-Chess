@@ -6,16 +6,22 @@ const tile_size: int = 128
 const board_size: int = 8
 const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/board_shader.gdshader")
 
-const BACK_ROW = [
-	Consts.PIECE.ROOK, Consts.PIECE.KNIGHT, Consts.PIECE.BISHOP, Consts.PIECE.QUEEN, 
-	Consts.PIECE.KING, Consts.PIECE.BISHOP, Consts.PIECE.KNIGHT, Consts.PIECE.ROOK
+const W_BACK_ROW = [
+	Consts.PIECE.W_ROOK, Consts.PIECE.W_KNIGHT, Consts.PIECE.W_BISHOP, Consts.PIECE.W_QUEEN, 
+	Consts.PIECE.W_KING, Consts.PIECE.W_BISHOP, Consts.PIECE.W_KNIGHT, Consts.PIECE.W_ROOK
+]
+const B_BACK_ROW = [
+	Consts.PIECE.B_ROOK, Consts.PIECE.B_KNIGHT, Consts.PIECE.B_BISHOP, Consts.PIECE.B_QUEEN, 
+	Consts.PIECE.B_KING, Consts.PIECE.B_BISHOP, Consts.PIECE.B_KNIGHT, Consts.PIECE.B_ROOK
 ]
 ## exports
 ## public vars
-var tiles: PackedByteArray = []
+var tiles_highlight: PackedByteArray = []
+var bitboards: PackedInt64Array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 var pieces: Dictionary = {}
 var turn_amount: int = 0
 var turn_color: int = Consts.COLOR.WHITE
+
 ## private vars
 ## onready vars
 
@@ -34,7 +40,8 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 	print_rich("[color=Springgreen]BUILD_BOARD-[/color] Started Building Board")
 	self.name = "Board"
 	
-	tiles.resize(board_size * board_size)
+	tiles_highlight.resize(board_size * board_size)
+	#tiles.resize(board_size * board_size)
 	self.size = Vector2(board_size * tile_size, board_size * tile_size)
 	self.material = ShaderMaterial.new()
 	self.material.shader = shader_res
@@ -45,12 +52,14 @@ func build_board() -> void: # Remember y_range needs to be +1 bc it stops 1 befo
 	for x in board_size:
 		for y in board_size:
 			var coord: Vector2i = Vector2i(x, y)
-			#_create_tile(coord)
 			var piece_int: int = _calc_piece(coord)
 			if piece_int != Consts.PIECE.NONE:
-				var piece: Piece = _create_piece(coord, piece_int)
-				pieces[coord] = piece
+				var piece_type: int = piece_int - 1
+				var bit_mask: int = (1 << get_tiles_array_index(coord))
+				bitboards[piece_type] |= bit_mask
+				print("Piece: %016X"%bitboards[piece_type])
 	
+	print("bitboard: %s"%bitboards)
 	var ending_time:float = (Time.get_ticks_usec() - starting_time) / 1000
 	print_rich("[color=Springgreen]BUILD_BOARD-[/color] Created Board of size: [color=gold]%s[/color] in: [color=gold]%sms[/color]" %[board_size, ending_time])
 
@@ -85,8 +94,8 @@ func get_tiles_array_index(tile_coord: Vector2i) -> int:
 
 func highlight_tile(tile_coord: Vector2i, highlight_type: int) -> void:
 	var array_index: int = get_tiles_array_index(tile_coord)
-	tiles[array_index] = highlight_type
-	self.material.set_shader_parameter("tile_states", tiles)
+	tiles_highlight[array_index] = highlight_type
+	self.material.set_shader_parameter("tile_states", tiles_highlight)
 
 func unhighlight_tile(tile_coord: Vector2i) -> void:
 	highlight_tile(tile_coord, Consts.HIGHLIGHT.NONE)
@@ -107,17 +116,17 @@ func _calc_piece(coords: Vector2i) -> int:
 	
 	# White Pawns
 	if coords.y == 1:
-		return Consts.PIECE.PAWN
+		return Consts.PIECE.W_PAWN
 	# Black Pawns
 	if coords.y == 6:
-		return Consts.PIECE.PAWN + (Consts.PIECE.size() - 1)
+		return Consts.PIECE.B_PAWN
 	
 	# White Pieces
 	if coords.y == 0:
-		return BACK_ROW[coords.x]
+		return W_BACK_ROW[coords.x]
 	# Black Pieces
 	if coords.y == 7:
-		return BACK_ROW[coords.x] + (Consts.PIECE.size() - 1)
+		return B_BACK_ROW[coords.x]
 	
 	return Consts.PIECE.NONE # Emergency Stop
 
