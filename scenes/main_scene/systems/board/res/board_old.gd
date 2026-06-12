@@ -1,5 +1,4 @@
 extends ColorRect
-class_name Board
 ## enums
 ## consts
 const tile_size: int = 128

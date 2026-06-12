@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bxq6sdc1earhm"
-path="res://.godot/imported/KNIGHT.png-3da40df52d7a92a60230c8eb6f30585c.ctex"
+uid="uid://ci1887fyu2gmc"
+path="res://.godot/imported/B_PAWN.png-385f4e873c0bbe5a9a4fd41952b8dc20.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/pieces/BLACK/KNIGHT.png"
-dest_files=["res://.godot/imported/KNIGHT.png-3da40df52d7a92a60230c8eb6f30585c.ctex"]
+source_file="res://assets/images/pieces/B_PAWN.png"
+dest_files=["res://.godot/imported/B_PAWN.png-385f4e873c0bbe5a9a4fd41952b8dc20.ctex"]
 
 [params]
 

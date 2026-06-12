@@ -1,5 +1,4 @@
 extends MeshInstance2D
-class_name Piece
 ## enums
 ## consts
 const shader_res: Shader = preload("res://scenes/main_scene/systems/board/shaders/piece_shader.gdshader")

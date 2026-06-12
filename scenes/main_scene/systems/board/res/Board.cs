@@ -1,8 +1,10 @@
 using Godot;
+using Godot.Collections;
+using Godot.NativeInterop;
 using Microsoft.VisualBasic;
 using System;
 [GlobalClass]
-public partial class Board_cs : ColorRect
+public partial class Board : ColorRect
 {
 	// enums
 public enum PIECE {
@@ -23,15 +25,20 @@ public enum PIECE {
 // consts
 // exports
 // public vars
-public static readonly Shader shader_res = GD.Load<Shader>("res://scenes/main_scene/systems/board/shaders/board_shader.gdshader");
-public static readonly int[] W_BACK_ROW = 
+public ulong[] bitboard = new ulong[12];
+public Dictionary pieces = new();
+public int turn_amount = 0;
+public int turn_color = 0;
+// private vars
+private int[] tiles_highligt = new int[64];
+private static readonly Shader shader_res = GD.Load<Shader>("res://scenes/main_scene/systems/board/shaders/board_shader.gdshader");
+private ShaderMaterial mat = new ShaderMaterial();
+private static readonly int[] W_BACK_ROW = 
 	{(int)PIECE.W_ROOK, (int)PIECE.W_KNIGHT, (int)PIECE.W_BISHOP, (int)PIECE.W_QUEEN,
 	(int)PIECE.W_KING, (int)PIECE.W_BISHOP, (int)PIECE.W_KNIGHT, (int)PIECE.W_ROOK};
-public static readonly int[] B_BACK_ROW = 
+private static readonly int[] B_BACK_ROW = 
 	{(int)PIECE.B_ROOK, (int)PIECE.B_KNIGHT, (int)PIECE.B_BISHOP, (int)PIECE.B_QUEEN,
 	(int)PIECE.B_KING, (int)PIECE.B_BISHOP, (int)PIECE.B_KNIGHT, (int)PIECE.B_ROOK};
-public ulong[] bitboard = new ulong[12];
-// private vars
 // onready vars
 // built-in overide methods
 	// Called when the node enters the scene tree for the first time.
@@ -52,7 +59,6 @@ public ulong[] bitboard = new ulong[12];
 		this.Name = "Board";
 
 		this.Size = new Vector2I(8 * 128, 8 * 128);
-		ShaderMaterial mat = new ShaderMaterial();
 		mat.Shader =  shader_res;
 		this.Material = mat;
 		float shader_ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
@@ -63,7 +69,9 @@ public ulong[] bitboard = new ulong[12];
 				GD.Print("x: ",x,", y: ",y);
 				int piece_int = _calc_piece(x, y);
 				if(piece_int != (int)PIECE.NONE){
-					ulong bit_mask = (ulong)1 << get_tiles_array_index(x, y);
+					Vector2I coord = new Vector2I(x,y);
+					_create_piece(coord, piece_int);
+					ulong bit_mask = (ulong)1 << get_tiles_array_index(coord);
 					int piece_type = piece_int - 1;
 					bitboard[piece_type] |= bit_mask;
 					GD.Print("Piece: ", bitboard[piece_type]);
@@ -89,13 +97,20 @@ public ulong[] bitboard = new ulong[12];
 	public bool is_empty(Vector2I coord){ // refrence placeholder
 		return true;
 	}
-	public bool is_enemy(Vector2I coord){ // refrence placeholder
+	public bool is_enemy(Vector2I coord, int color){ // refrence placeholder
 		return true;
 	}
-	public int get_tiles_array_index(int x, int y){
-		int inverted_y = 7 - y;
-		int array_index = ((inverted_y << 3) + x);
+	public int get_tiles_array_index(Vector2I coord){
+		int inverted_y = 7 - coord.Y;
+		int array_index = ((inverted_y << 3) + coord.X);
 		return array_index;
+	}
+	public void highlight_tile(Vector2I coord, int highlight_type){
+		tiles_highligt[get_tiles_array_index(coord)] = highlight_type;
+		((ShaderMaterial)Material).SetShaderParameter("tile_states", tiles_highligt);
+	}
+	public void unhighlight_tile(Vector2I coord){
+		highlight_tile(coord, 0);
 	}
 // private methods
 	private int _calc_piece(int x, int y){
@@ -115,5 +130,14 @@ public ulong[] bitboard = new ulong[12];
 		};
 	
 		return B_BACK_ROW[x]; // Black Pieces
+	}
+	private Piece _create_piece(Vector2I coord, int piece_int){
+		string piece_string = Enum.GetName(typeof(PIECE), piece_int);
+		GD.Print(piece_string);
+		Piece piece = new Piece();
+		this.AddChild(piece);
+		piece.setup(coord, piece_string);
+		return piece;
+		
 	}
 }
