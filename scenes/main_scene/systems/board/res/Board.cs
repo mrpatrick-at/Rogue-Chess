@@ -22,6 +22,10 @@ public enum PIECE {
 	B_QUEEN,
 	B_KING,
 }
+public enum COLOR {
+	WHITE,
+	BLACK
+}
 // consts
 // exports
 // public vars
@@ -115,6 +119,14 @@ private static readonly int[] B_BACK_ROW =
 		ulong bitmask = 1UL << index;
 		return bitmask;
 	}
+	public ulong get_occupied_bitboard(int color){
+		ulong occupied_bitboard = 0UL;
+		int start_index = color * 6;
+		for(int i = 0; i < 6; i++){
+			occupied_bitboard |= bitboard[start_index + i];
+		};
+		return occupied_bitboard;
+	}
 	public int get_piece_type(int index){ // -1 means no piece
 		ulong bitmask = get_bitmask(index);
 		int piece_int = -1;
@@ -124,17 +136,39 @@ private static readonly int[] B_BACK_ROW =
 				break;
 			};
 		};
-		string piece_string = Enum.GetName(typeof(PIECE), piece_int);
 		return piece_int;
 	}
 	public string get_piece_string(int piece_int){
 		return Enum.GetName(typeof(PIECE), piece_int);
+	}
+	public bool is_piece_white(int piece_int){
+		if(piece_int < 6){
+			return true;
+		}
+		return false;
 	}
 	public bool is_empty(int index){ // refrence placeholder
 		return true;
 	}
 	public bool is_enemy(int index, int color){ // refrence placeholder
 		return true;
+	}
+	public ulong get_piece_moves(int index, int piece_int){
+		ulong white_pieces = get_occupied_bitboard((int)COLOR.WHITE);
+		ulong black_pieces = get_occupied_bitboard((int)COLOR.BLACK);
+		ulong all_pieces = white_pieces | black_pieces;
+
+		bool is_white = is_piece_white(piece_int);
+		ulong friendly_pieces = is_white ? white_pieces : black_pieces;
+
+		ulong moves = 0UL;
+
+		switch (piece_int){
+			case (int)PIECE.W_PAWN:
+			case (int)PIECE.B_PAWN:
+		}
+
+		return moves;
 	}
 // private methods
 	private int _calc_piece(int x, int y){

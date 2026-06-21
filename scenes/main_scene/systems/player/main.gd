@@ -69,8 +69,7 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 					if piece_int != -1:
 						var string:String = board.get_piece_string(piece_int)
 						print("yippie has piece: ",string)
-						
-						#selected_piece = board.pieces[coord]
+						selected_piece = board.piece_objs[index]
 						#if selected_piece.color == board.turn_color:
 							#var piece_moves: PackedVector2Array = selected_piece.get_moves()
 							#for move: Vector2i in piece_moves:
