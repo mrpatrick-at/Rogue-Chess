@@ -10,7 +10,8 @@ var highlighted_tiles: Array = []
 var highlighted_pieces: Array = []
 
 var selected_tile: bool = false
-var selected_piece: Piece
+var selected_piece_index: int
+var selected_piece_moves: Array
 ## private vars
 ## onready vars
 ## built-in override methods
@@ -65,24 +66,20 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 		if board.is_valid_index(index):
 			if selected_tile == false:
 				var piece_int: int = board.get_piece_int(index)
-				board.get_piece_moves(index, piece_int)
-				#if selected_piece.color == board.turn_color:
-					#var piece_moves: PackedVector2Array = selected_piece.get_moves()
-					#for move: Vector2i in piece_moves:
-						#if board.pieces.has(move):
-							#board.highlight_tile(move, Consts.HIGHLIGHT.CAPTURE)
-							#continue
-						#board.highlight_tile(move, Consts.HIGHLIGHT.MOVE)
-						#
-					#highlighted_tiles.append_array(piece_moves)
-					#selected_tile = true
-					#print("PLAYER- Piece Selected")
-			#else:
-				#selected_tile = false
-				#selected_piece.move_to(coord)
-				#selected_piece.reset_highlight()
-				#highlighted_pieces.erase(selected_piece)
-				#print("PLAYER- Piece Moved")
+				var piece_moves: Array = board.get_piece_moves(index, piece_int)
+				for i: int in 64:
+					if piece_moves[i] != 0:
+						board.highlight_tile(i, piece_moves[i])
+				highlighted_tiles.append_array(piece_moves)
+				selected_piece_index = index
+				selected_piece_moves = piece_moves
+				selected_tile = true
+				print("PLAYER- Piece Selected")
+			else:
+				if selected_piece_moves[index] != 0:
+					board.move_piece(selected_piece_index, index)
+				selected_tile = false
+				print("PLAYER- Piece Moved")
 	
 	if event.is_action_pressed(&"_input_mouse_right"):
 		if board.is_valid_index(index_below_mouse):

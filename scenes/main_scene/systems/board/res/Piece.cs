@@ -74,6 +74,11 @@ private float y_offset;
 		}
 		_set_shader_value(0);
 	}
+	public void set_coord(Vector2I new_coord){
+		this.coord = new_coord;
+		((ShaderMaterial)Material).SetShaderParameter("coord", coord);
+		this.reset_highlight();
+	}
 // private methods
 private void _set_shader_value(float value){
 	y_offset = value;

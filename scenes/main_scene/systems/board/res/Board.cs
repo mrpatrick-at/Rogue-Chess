@@ -161,7 +161,7 @@ private ulong[] king_moves = new ulong[64];
 	public bool is_enemy(int index, int color){ // refrence placeholder
 		return true;
 	}
-	public ulong get_piece_moves(int index, int piece_int){
+	public int[] get_piece_moves(int index, int piece_int){
 		GD.Print("Get Moves Called");
 		ulong white_pieces = get_occupied_bitboard((int)COLOR.WHITE);
 		ulong black_pieces = get_occupied_bitboard((int)COLOR.BLACK);
@@ -204,13 +204,15 @@ private ulong[] king_moves = new ulong[64];
 				break;
 		}
 
+		int[] translated_moves = new int[64];
+
 		for(int i = 0; i < 64; i++){
 			if((moves & (1UL << i)) != 0){
-				highlight_tile(i, 2);
+				translated_moves[i] = 1;
 			};
 		};
 
-		return moves & ~friendly_pieces;
+		return translated_moves;
 	}
 	public ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
 		ulong bitmask = get_bitmask(index);
@@ -259,6 +261,19 @@ private ulong[] king_moves = new ulong[64];
 
 		return moves;
 	}
+	public void move_piece(int index, int new_index) {
+		ulong bitmask = get_bitmask(index);
+		int piece_int = get_piece_int(index);
+		ulong new_bitmask = get_bitmask(new_index);
+		bitboard[piece_int] ^= bitmask;
+		bitboard[piece_int] |= new_bitmask;
+
+		Piece piece = (Piece)piece_objs[index];
+		piece_objs[new_index] = piece;
+		piece_objs.Remove(index);
+		piece.set_coord(get_vec2_from_index(new_index));
+	}
+	// private methods
 	private int _calc_piece(int index){
 		if (index < 16) {
 			if (index < 8) {
