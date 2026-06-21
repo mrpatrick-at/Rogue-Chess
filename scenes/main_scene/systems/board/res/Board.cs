@@ -26,6 +26,10 @@ public enum COLOR {
 	WHITE,
 	BLACK
 }
+public enum SLIDE_TYPE {
+	ROOK,
+	BISHOP
+}
 // consts
 // exports
 // public vars
@@ -43,6 +47,8 @@ private static readonly int[] W_BACK_ROW =
 private static readonly int[] B_BACK_ROW = 
 	{(int)PIECE.B_ROOK, (int)PIECE.B_KNIGHT, (int)PIECE.B_BISHOP, (int)PIECE.B_QUEEN,
 	(int)PIECE.B_KING, (int)PIECE.B_BISHOP, (int)PIECE.B_KNIGHT, (int)PIECE.B_ROOK};
+private ulong[] knight_moves = new ulong[64];
+private ulong[] king_moves = new ulong[64];
 // onready vars
 // built-in overide methods
 	// Called when the node enters the scene tree for the first time.
@@ -79,6 +85,9 @@ private static readonly int[] B_BACK_ROW =
 			bitboard[piece_int] |= bitmask;
 			GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{bitboard[piece_int]}[/color]");
 		};
+		
+		knight_moves = _precalc_knight_moves();
+		king_moves = _precalc_king_moves();
 
 		float ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board of size: [color=gold]8[/color] in: [color=gold]",ending_time,"ms[/color]");
@@ -166,9 +175,36 @@ private static readonly int[] B_BACK_ROW =
 		switch (piece_int){
 			case (int)PIECE.W_PAWN:
 			case (int)PIECE.B_PAWN:
+				return get_pawn_moves(index, is_white, all_pieces, friendly_pieces);
+			
+			case (int)PIECE.W_ROOK:
+			case (int)PIECE.B_ROOK:
+				return get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK);
+			
+			case (int)PIECE.W_KNIGHT:
+			case (int)PIECE.B_KNIGHT:
+				return knight_moves[index];
+
+			case (int)PIECE.W_BISHOP:
+			case (int)PIECE.B_BISHOP:
+				return get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+
+			case (int)PIECE.W_QUEEN:
+			case (int)PIECE.B_QUEEN:
+				return get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK) | get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+
+			case (int)PIECE.W_KING:
+			case (int)PIECE.B_KING:
+				return king_moves[index];
 		}
 
-		return moves;
+		return moves & ~friendly_pieces;
+	}
+	public ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
+		return 1UL;
+	}
+	public ulong get_slide_moves(int index, bool is_white, ulong all_pieces, ulong slide_type){
+		return 1UL;
 	}
 // private methods
 	private int _calc_piece(int x, int y){
@@ -195,5 +231,13 @@ private static readonly int[] B_BACK_ROW =
 		this.AddChild(piece);
 		piece.setup(coord, piece_string);
 		piece_objs.Add(index, piece);
+	}
+	private ulong[] _precalc_knight_moves(){
+		ulong[] moves = new ulong[64];
+		return moves;
+	}
+	private ulong[] _precalc_king_moves(){
+		ulong[] moves = new ulong[64];
+		return moves;
 	}
 }
