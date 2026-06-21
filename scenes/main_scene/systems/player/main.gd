@@ -30,11 +30,12 @@ func _process(_delta: float) -> void:
 		board.highlight_tile(index, Consts.HIGHLIGHT.HOVER)
 		highlighted_tiles.append(index)
 		
-		#if board.pieces.has(coord):
-			#var piece: Piece = board.pieces[coord]
-			##if piece.color == board.turn_color:
-			#piece.highlight()
-			#highlighted_pieces.append(piece)
+		var piece_int: int = board.get_piece_type(index)
+		if piece_int != -1:
+			var piece: Piece = board.piece_objs[index]
+			#if piece.color == board.turn_color:
+			piece.highlight()
+			highlighted_pieces.append(piece)
 	
 	for tile: int in highlighted_tiles:
 		if tile == index:
@@ -42,16 +43,16 @@ func _process(_delta: float) -> void:
 		board.unhighlight_tile(tile)
 		highlighted_tiles.erase(tile)
 	
-	#for piece: Piece in highlighted_pieces:
-		#if piece.coord == coord:
-			#continue
-		#piece.unhighlight()
-		#highlighted_pieces.erase(piece)
+	for piece: Piece in highlighted_pieces:
+		if board.piece_objs.has(index) and piece.coord == board.piece_objs[index].coord:
+			continue
+		piece.unhighlight()
+		highlighted_pieces.erase(piece)
 	
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouse:
+	if event is InputEventMouse and selected_tile == false:
 		_mouse_buttons(event)
 
 ## public methods
@@ -62,9 +63,13 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 	if event is InputEventMouseButton:
 		if event.is_action_pressed(&"_input_mouse_left"):
 			var index: int = index_below_mouse
-			#if board.is_valid_index(index):
-				#if selected_tile == false:
-					#if board.pieces.has(coord):
+			if board.is_valid_index(index):
+				if selected_tile == false:
+					var piece_int: int = board.get_piece_type(index)
+					if piece_int != -1:
+						var string:String = board.get_piece_string(piece_int)
+						print("yippie has piece: ",string)
+						
 						#selected_piece = board.pieces[coord]
 						#if selected_piece.color == board.turn_color:
 							#var piece_moves: PackedVector2Array = selected_piece.get_moves()
