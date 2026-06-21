@@ -176,45 +176,58 @@ private ulong[] king_moves = new ulong[64];
 		switch (piece_int){
 			case (int)PIECE.W_PAWN:
 			case (int)PIECE.B_PAWN:
-				return get_pawn_moves(index, is_white, all_pieces, friendly_pieces);
+				moves = get_pawn_moves(index, is_white, all_pieces, friendly_pieces);
+				break;
 			
 			case (int)PIECE.W_ROOK:
 			case (int)PIECE.B_ROOK:
-				return get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK);
+				moves = get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK);
+				break;
 			
 			case (int)PIECE.W_KNIGHT:
 			case (int)PIECE.B_KNIGHT:
-				return knight_moves[index];
+				moves = knight_moves[index];
+				break;
 
 			case (int)PIECE.W_BISHOP:
 			case (int)PIECE.B_BISHOP:
-				return get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+				moves = get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+				break;
 
 			case (int)PIECE.W_QUEEN:
 			case (int)PIECE.B_QUEEN:
-				return get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK) | get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+				moves = get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK) | get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+				break;
 
 			case (int)PIECE.W_KING:
 			case (int)PIECE.B_KING:
-				return king_moves[index];
+				moves = king_moves[index];
+				break;
 		}
+
+		for(int i = 0; i < 64; i++){
+			if((moves & (1UL << i)) != 0){
+				highlight_tile(i, 2);
+			};
+		};
 
 		return moves & ~friendly_pieces;
 	}
 	public ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
-		GD.Print("Highlighting Pawn Moves");
-		//ulong bitmask = get_bitmask(index);
-		//ulong moves = bitmask << 8 | bitmask << 16;
-		
-		//for(int i = 0; i < 64; i++){
-		//	if((bitmask & (1UL << i)) != 0){
-		//		highlight_tile(i, 2);
-		//	};
-		//};
-		highlight_tile(index - 8, 2);
-		highlight_tile(index - 16, 2);
-		GD.Print("Pawn Moves Highlighted");
-		return 1UL;
+		ulong bitmask = get_bitmask(index);
+		ulong moves = is_white ? bitmask >> 8 | bitmask >> 16: bitmask << 8 | bitmask << 16;
+
+		int remainer = index & 7;
+
+		if(remainer != 0){ // can go left
+			moves |= is_white ? bitmask >> 9 : bitmask << 7;
+		}
+
+		if(remainer != 7){ // can go right
+			moves |= is_white ? bitmask >> 7 : bitmask << 9;
+		}
+
+		return moves;
 	}
 	public ulong get_slide_moves(int index, bool is_white, ulong all_pieces, ulong slide_type){
 		return 1UL;

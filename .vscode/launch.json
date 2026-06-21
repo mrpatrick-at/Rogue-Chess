@@ -6,7 +6,7 @@
     "configurations": [
 
         {
-            "name": "Run Godot Run",
+            "name": "Run Godot",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
