@@ -244,16 +244,6 @@ private ulong[] king_moves = new ulong[64];
 		int up_tiles = coord.Y;
 		int down_tiles = 7 - coord.Y;
 
-		// for (int x = 0; x < 7; x++) {
-		// 	if (x < coord.X) {
-		// 		moves |= bitmask >> (x + 1);
-		// 		continue;
-		// 	}
-		// 	if (x >= coord.X) {
-		// 		moves |= bitmask << (x + 1);
-		// 	}
-		// }
-
 		for (int x = 0; x < left_tiles; x++) {
 			moves |= bitmask >> (x + 1);
 		}
