@@ -65,8 +65,7 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 		var index: int = index_below_mouse
 		if board.is_valid_index(index):
 			if selected_tile == false:
-				var piece_int: int = board.get_piece_int(index)
-				var piece_moves: Array = board.get_piece_moves(index, piece_int)
+				var piece_moves: Array = board.get_piece_moves(index)
 				for i: int in 64:
 					if piece_moves[i] != 0:
 						board.highlight_tile(i, piece_moves[i])
