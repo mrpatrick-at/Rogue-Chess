@@ -94,7 +94,7 @@ private ulong[] king_moves = new ulong[64];
 	}
 	public int get_tile_index(){
 		Vector2I local_mouse_pos = (Vector2I)GetLocalMousePosition();
-		if(local_mouse_pos.X <= 0 || local_mouse_pos.X >= 1024){
+		if(local_mouse_pos.X < 0 || local_mouse_pos.X > 1023){
 			return -1;
 		}
 		int y = local_mouse_pos.Y >> 7;
@@ -102,19 +102,18 @@ private ulong[] king_moves = new ulong[64];
 		return array_index;
 	}
 	public bool is_valid_index(int index){
-		if(index >= 0 && index <= 63){
+		if(index >= 0 && index < 64){
 			return true;
 		};
 		return false;
 	}
 	public int get_index_from_vec2(Vector2I coord){
-		int inverted_y = coord.Y;
-		int array_index = (inverted_y << 3) + coord.X;
+		int array_index = (coord.Y << 3) + coord.X;
 		return array_index;
 	}
 	public Vector2I get_vec2_from_index(int index){
 		int x = index & 7;
-		int y = (index >> 3);
+		int y = index >> 3;
 		return new Vector2I(x, y);
 	}
 	public void highlight_tile(int index, int highlight_type){
@@ -237,9 +236,36 @@ private ulong[] king_moves = new ulong[64];
 	public ulong get_slide_moves(int index, bool is_white, ulong all_pieces, ulong slide_type){
 		ulong bitmask = get_bitmask(index);
 		ulong moves = 0UL;
+		Vector2I coord = get_vec2_from_index(index);
 		
+		int left_tiles = coord.X;
+		int right_tiles = 7 - coord.X;
 
+		int up_tiles = coord.Y;
+		int down_tiles = 7 - coord.Y;
 
+		// for (int x = 0; x < 7; x++) {
+		// 	if (x < coord.X) {
+		// 		moves |= bitmask >> (x + 1);
+		// 		continue;
+		// 	}
+		// 	if (x >= coord.X) {
+		// 		moves |= bitmask << (x + 1);
+		// 	}
+		// }
+
+		for (int x = 0; x < left_tiles; x++) {
+			moves |= bitmask >> (x + 1);
+		}
+		for (int x = 0; x < right_tiles; x++) {
+			moves |= bitmask << (x + 1);
+		}
+		for (int y = 0; y < up_tiles; y++) {
+			moves |= bitmask >> ((y + 1) << 3);
+		}
+		for (int y = 0; y < down_tiles; y++) {
+			moves |= bitmask << ((y + 1) << 3);
+		}
 
 		return moves;
 	}
