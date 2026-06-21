@@ -136,7 +136,7 @@ private ulong[] king_moves = new ulong[64];
 		};
 		return occupied_bitboard;
 	}
-	public int get_piece_type(int index){ // -1 means no piece
+	public int get_piece_int(int index){ // -1 means no piece
 		ulong bitmask = get_bitmask(index);
 		int piece_int = -1;
 		for(int i = 0; i < 12; i++){
@@ -163,6 +163,7 @@ private ulong[] king_moves = new ulong[64];
 		return true;
 	}
 	public ulong get_piece_moves(int index, int piece_int){
+		GD.Print("Get Moves Called");
 		ulong white_pieces = get_occupied_bitboard((int)COLOR.WHITE);
 		ulong black_pieces = get_occupied_bitboard((int)COLOR.BLACK);
 		ulong all_pieces = white_pieces | black_pieces;
@@ -201,6 +202,18 @@ private ulong[] king_moves = new ulong[64];
 		return moves & ~friendly_pieces;
 	}
 	public ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
+		GD.Print("Highlighting Pawn Moves");
+		//ulong bitmask = get_bitmask(index);
+		//ulong moves = bitmask << 8 | bitmask << 16;
+		
+		//for(int i = 0; i < 64; i++){
+		//	if((bitmask & (1UL << i)) != 0){
+		//		highlight_tile(i, 2);
+		//	};
+		//};
+		highlight_tile(index - 8, 2);
+		highlight_tile(index - 16, 2);
+		GD.Print("Pawn Moves Highlighted");
 		return 1UL;
 	}
 	public ulong get_slide_moves(int index, bool is_white, ulong all_pieces, ulong slide_type){

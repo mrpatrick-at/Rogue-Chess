@@ -30,7 +30,7 @@ func _process(_delta: float) -> void:
 		board.highlight_tile(index, Consts.HIGHLIGHT.HOVER)
 		highlighted_tiles.append(index)
 		
-		var piece_int: int = board.get_piece_type(index)
+		var piece_int: int = board.get_piece_int(index)
 		if piece_int != -1:
 			var piece: Piece = board.piece_objs[index]
 			#if piece.color == board.turn_color:
@@ -52,7 +52,7 @@ func _process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouse and selected_tile == false:
+	if event is InputEventMouseButton:
 		_mouse_buttons(event)
 
 ## public methods
@@ -60,43 +60,39 @@ func _input(event: InputEvent) -> void:
 ## private methods
 
 func _mouse_buttons(event:InputEventMouse) -> void:
-	if event is InputEventMouseButton:
-		if event.is_action_pressed(&"_input_mouse_left"):
-			var index: int = index_below_mouse
-			if board.is_valid_index(index):
-				if selected_tile == false:
-					var piece_int: int = board.get_piece_type(index)
-					if piece_int != -1:
-						var string:String = board.get_piece_string(piece_int)
-						print("yippie has piece: ",string)
-						selected_piece = board.piece_objs[index]
-						#if selected_piece.color == board.turn_color:
-							#var piece_moves: PackedVector2Array = selected_piece.get_moves()
-							#for move: Vector2i in piece_moves:
-								#if board.pieces.has(move):
-									#board.highlight_tile(move, Consts.HIGHLIGHT.CAPTURE)
-									#continue
-								#board.highlight_tile(move, Consts.HIGHLIGHT.MOVE)
-								#
-							#highlighted_tiles.append_array(piece_moves)
-							#selected_tile = true
-							#print("PLAYER- Piece Selected")
-				#else:
-					#selected_tile = false
-					#selected_piece.move_to(coord)
-					#selected_piece.reset_highlight()
-					#highlighted_pieces.erase(selected_piece)
-					#print("PLAYER- Piece Moved")
-		#
-		if event.is_action_pressed(&"_input_mouse_right"):
-			if board.is_valid_index(index_below_mouse):
-				var piece_int: int = board.get_piece_type(index_below_mouse)
-				print("PLAYER- Tile: ", index_below_mouse)
-				if piece_int != -1:
-					var piece_string :String = board.get_piece_string(piece_int)
-					print("PLAYER- Piece Type: ", piece_string)
-			else:
-				print("PLAYER- Tile not in Board")
+	if event.is_action_pressed(&"_input_mouse_left"):
+		var index: int = index_below_mouse
+		if board.is_valid_index(index):
+			if selected_tile == false:
+				var piece_int: int = board.get_piece_int(index)
+				board.get_piece_moves(index, piece_int)
+				#if selected_piece.color == board.turn_color:
+					#var piece_moves: PackedVector2Array = selected_piece.get_moves()
+					#for move: Vector2i in piece_moves:
+						#if board.pieces.has(move):
+							#board.highlight_tile(move, Consts.HIGHLIGHT.CAPTURE)
+							#continue
+						#board.highlight_tile(move, Consts.HIGHLIGHT.MOVE)
+						#
+					#highlighted_tiles.append_array(piece_moves)
+					#selected_tile = true
+					#print("PLAYER- Piece Selected")
+			#else:
+				#selected_tile = false
+				#selected_piece.move_to(coord)
+				#selected_piece.reset_highlight()
+				#highlighted_pieces.erase(selected_piece)
+				#print("PLAYER- Piece Moved")
 	
-		if event.is_action_pressed(&"_input_mouse_middle"):
-			print("PLAYER- Middle Mouse click detected")
+	if event.is_action_pressed(&"_input_mouse_right"):
+		if board.is_valid_index(index_below_mouse):
+			var piece_int: int = board.get_piece_type(index_below_mouse)
+			print("PLAYER- Tile: ", index_below_mouse)
+			if piece_int != -1:
+				var piece_string :String = board.get_piece_string(piece_int)
+				print("PLAYER- Piece Type: ", piece_string)
+		else:
+			print("PLAYER- Tile not in Board")
+	
+	if event.is_action_pressed(&"_input_mouse_middle"):
+		print("PLAYER- Middle Mouse click detected")
