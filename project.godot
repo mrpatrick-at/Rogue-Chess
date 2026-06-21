@@ -14,7 +14,7 @@ config/name="Rogue Chess"
 config/description="Chess that is Rogue"
 config/version="v0.2"
 run/main_scene="uid://bxmeugje5h5ew"
-config/features=PackedStringArray("4.6", "C#", "Forward Plus")
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]

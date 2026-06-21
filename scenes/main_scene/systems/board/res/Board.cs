@@ -71,7 +71,7 @@ private static readonly int[] B_BACK_ROW =
 				if(piece_int != (int)PIECE.NONE){
 					Vector2I coord = new Vector2I(x,y);
 					_create_piece(coord, piece_int);
-					ulong bit_mask = (ulong)1 << get_tiles_array_index(coord);
+					ulong bit_mask = (ulong)1 << get_index_from_vec2(coord);
 					int piece_type = piece_int - 1;
 					bitboard[piece_type] |= bit_mask;
 					GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{bitboard[piece_type]}[/color]");
@@ -81,36 +81,41 @@ private static readonly int[] B_BACK_ROW =
 		float ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board of size: [color=gold]8[/color] in: [color=gold]",ending_time,"ms[/color]");
 	}
-	public Vector2I get_coord(){
+	public int get_tile_index(){
 		Vector2I local_mouse_pos = (Vector2I)GetLocalMousePosition();
-		int x = local_mouse_pos.X >> 7;
-		int y = 7 - (local_mouse_pos.Y >> 7);
-		Vector2I coord = new Vector2I(x, y);
-		return coord;
+		if(local_mouse_pos.X <= 0 || local_mouse_pos.X >= 1024){
+			return -1;
+		}
+		int y = local_mouse_pos.Y >> 7;
+		int array_index = (y << 3) + (local_mouse_pos.X >> 7);
+		return array_index;
 	}
-	public bool is_valid_coord(Vector2I coord){
-		if(coord.X >= 0 && coord.X <= 7 && coord.Y >= 0 && coord.Y <= 7){
+	public bool is_valid_index(int index){
+		if(index >= 0 && index <= 63){
 			return true;
 		};
 		return false;
 	}
-	public bool is_empty(Vector2I coord){ // refrence placeholder
+	public bool is_empty(int index){ // refrence placeholder
 		return true;
 	}
-	public bool is_enemy(Vector2I coord, int color){ // refrence placeholder
+	public bool is_enemy(int index, int color){ // refrence placeholder
 		return true;
 	}
-	public int get_tiles_array_index(Vector2I coord){
+	public int get_index_from_vec2(Vector2I coord){
 		int inverted_y = 7 - coord.Y;
 		int array_index = ((inverted_y << 3) + coord.X);
 		return array_index;
 	}
-	public void highlight_tile(Vector2I coord, int highlight_type){
-		tiles_highligt[get_tiles_array_index(coord)] = highlight_type;
+	public Vector2I get_vec2_from_index(int index){ // refrence placeholder
+		return new Vector2I();
+	}
+	public void highlight_tile(int index, int highlight_type){
+		tiles_highligt[index] = highlight_type;
 		((ShaderMaterial)Material).SetShaderParameter("tile_states", tiles_highligt);
 	}
-	public void unhighlight_tile(Vector2I coord){
-		highlight_tile(coord, 0);
+	public void unhighlight_tile(int index){
+		highlight_tile(index, 0);
 	}
 // private methods
 	private int _calc_piece(int x, int y){
