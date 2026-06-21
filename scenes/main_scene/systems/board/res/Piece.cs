@@ -42,7 +42,7 @@ private float y_offset;
 		CompressedTexture2D texture = GD.Load<CompressedTexture2D>($"res://assets/images/pieces/{piece_name}.png");
 		this.Texture = texture;
 
-		this.ZIndex = -coord.Y + 7;
+		this.ZIndex = coord.Y;
 		
 		ShaderMaterial mat = new ShaderMaterial();
 		mat.Shader = shader_res;

@@ -86,7 +86,7 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 	
 	if event.is_action_pressed(&"_input_mouse_right"):
 		if board.is_valid_index(index_below_mouse):
-			var piece_int: int = board.get_piece_type(index_below_mouse)
+			var piece_int: int = board.get_piece_int(index_below_mouse)
 			print("PLAYER- Tile: ", index_below_mouse)
 			if piece_int != -1:
 				var piece_string :String = board.get_piece_string(piece_int)

@@ -75,11 +75,11 @@ private ulong[] king_moves = new ulong[64];
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board Shader in: [color=gold]",shader_ending_time,"ms[/color]");
 
 		for(int i = 0; i < 64; i++){
-			Vector2I coord = get_vec2_from_index(i);
-			int piece_int = _calc_piece(coord.X, coord.Y);
+			int piece_int = _calc_piece(i);
 			if(piece_int == -1){ // no piece
 				continue;
 			};
+			Vector2I coord = get_vec2_from_index(i);
 			_create_piece(i, coord, piece_int);
 			ulong bitmask = get_bitmask(i);
 			bitboard[piece_int] |= bitmask;
@@ -108,13 +108,13 @@ private ulong[] king_moves = new ulong[64];
 		return false;
 	}
 	public int get_index_from_vec2(Vector2I coord){
-		int inverted_y = 7 - coord.Y;
+		int inverted_y = coord.Y;
 		int array_index = (inverted_y << 3) + coord.X;
 		return array_index;
 	}
 	public Vector2I get_vec2_from_index(int index){
 		int x = index & 7;
-		int y = 7 - (index >> 3);
+		int y = (index >> 3);
 		return new Vector2I(x, y);
 	}
 	public void highlight_tile(int index, int highlight_type){
@@ -219,37 +219,45 @@ private ulong[] king_moves = new ulong[64];
 
 		int remainer = index & 7;
 
+		ulong capturemask = 0UL;
+
 		if(remainer != 0){ // can go left
-			moves |= is_white ? bitmask >> 9 : bitmask << 7;
+			capturemask |= is_white ? bitmask >> 9 : bitmask << 7;
 		}
 
 		if(remainer != 7){ // can go right
-			moves |= is_white ? bitmask >> 7 : bitmask << 9;
+			capturemask |= is_white ? bitmask >> 7 : bitmask << 9;
 		}
 
+		ulong enemy_pieces = all_pieces ^ friendly_pieces;
+
+		moves |= capturemask & enemy_pieces;
 		return moves;
 	}
 	public ulong get_slide_moves(int index, bool is_white, ulong all_pieces, ulong slide_type){
-		return 1UL;
+		ulong bitmask = get_bitmask(index);
+		ulong moves = 0UL;
+		
+
+
+
+		return moves;
 	}
-// private methods
-	private int _calc_piece(int x, int y){
-		if(y > 1 && y < 6){
-			return -1; // Empty Square
-		};
-
-		if(y == 1){
-			return (int)PIECE.W_PAWN; // White Pawn
-		};
-		if(y == 6){
-			return (int)PIECE.B_PAWN; // Black Pawn
-		};
-
-		if(y == 0){
-			return W_BACK_ROW[x]; // White Pieces
-		};
-	
-		return B_BACK_ROW[x]; // Black Pieces
+	private int _calc_piece(int index){
+		if (index < 16) {
+			if (index < 8) {
+				return B_BACK_ROW[index & 7]; // Black Pieces
+			} else {
+				return (int)PIECE.B_PAWN; // Black Pawn
+			}
+		} else if (index > 47) {
+			if (index > 55) {
+				return W_BACK_ROW[index & 7]; // White Pieces
+			} else {
+				return (int)PIECE.W_PAWN; // White Pawn
+			}
+		}
+		return -1;
 	}
 	private void _create_piece(int index, Vector2I coord, int piece_int){
 		string piece_string = get_piece_string(piece_int);
