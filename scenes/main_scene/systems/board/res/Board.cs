@@ -9,7 +9,6 @@ public partial class Board : ColorRect
 {
 	// enums
 public enum PIECE {
-	NONE,
 	W_PAWN,
 	W_ROOK,
 	W_KNIGHT,
@@ -65,19 +64,18 @@ private static readonly int[] B_BACK_ROW =
 		float shader_ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board Shader in: [color=gold]",shader_ending_time,"ms[/color]");
 
-		for(int y = 0; y < 8; y++){
-			for(int x = 0; x < 8; x++){
-				int piece_int = _calc_piece(x, y);
-				if(piece_int != (int)PIECE.NONE){
-					Vector2I coord = new Vector2I(x,y);
-					_create_piece(coord, piece_int);
-					ulong bit_mask = (ulong)1 << get_index_from_vec2(coord);
-					int piece_type = piece_int - 1;
-					bitboard[piece_type] |= bit_mask;
-					GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{bitboard[piece_type]}[/color]");
-				}
+		for(int i = 0; i < 64; i++){
+			Vector2I coord = get_vec2_from_index(i);
+			int piece_int = _calc_piece(coord.X, coord.Y);
+			if(piece_int == -1){
+				continue;
 			};
+			_create_piece(coord, piece_int);
+			ulong bit_mask = (ulong)1 << i;
+			bitboard[piece_int] |= bit_mask;
+			GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{bitboard[piece_int]}[/color]");
 		};
+
 		float ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board of size: [color=gold]8[/color] in: [color=gold]",ending_time,"ms[/color]");
 	}
@@ -107,8 +105,10 @@ private static readonly int[] B_BACK_ROW =
 		int array_index = ((inverted_y << 3) + coord.X);
 		return array_index;
 	}
-	public Vector2I get_vec2_from_index(int index){ // refrence placeholder
-		return new Vector2I();
+	public Vector2I get_vec2_from_index(int index){
+		int x = index & 7;
+		int y = 7 - (index >> 3);
+		return new Vector2I(x, y);
 	}
 	public void highlight_tile(int index, int highlight_type){
 		tiles_highligt[index] = highlight_type;
@@ -120,7 +120,7 @@ private static readonly int[] B_BACK_ROW =
 // private methods
 	private int _calc_piece(int x, int y){
 		if(y > 1 && y < 6){
-			return (int)PIECE.NONE; // Empty Square
+			return -1; // Empty Square
 		};
 
 		if(y == 1){

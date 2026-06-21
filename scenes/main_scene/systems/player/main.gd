@@ -25,9 +25,7 @@ func _process(_delta: float) -> void:
 		return
 	
 	var index: int = index_below_mouse
-	print("index: ", index)
 	if board.is_valid_index(index) && !highlighted_tiles.has(index):
-		print("valid index: ", index)
 		
 		board.highlight_tile(index, Consts.HIGHLIGHT.HOVER)
 		highlighted_tiles.append(index)
