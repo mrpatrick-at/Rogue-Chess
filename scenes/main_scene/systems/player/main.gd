@@ -31,8 +31,7 @@ func _process(_delta: float) -> void:
 		board.highlight_tile(index, Consts.HIGHLIGHT.HOVER)
 		highlighted_tiles.append(index)
 		
-		var piece_int: int = board.get_piece_int(index)
-		if piece_int != -1:
+		if !board.is_empty(index):
 			var piece: Piece = board.piece_objs[index]
 			#if piece.color == board.turn_color:
 			piece.highlight()
@@ -65,20 +64,20 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 		var index: int = index_below_mouse
 		if board.is_valid_index(index):
 			if selected_tile == false:
-				selected_tile = true
 				selected_piece_index = index
-				var piece_moves: Array = board.get_piece_moves(selected_piece_index)
-				for highlight_index: int in 64:
-					if piece_moves[highlight_index] != 0:
-						board.highlight_tile(highlight_index, 1)
-						selected_piece_moves.append(highlight_index)
-				highlighted_tiles.append_array(selected_piece_moves)
-				print("PLAYER- Piece Selected")
+				if !board.is_empty(index) && !board.is_enemy(index):
+					var piece_moves: Array = board.get_piece_moves(selected_piece_index)
+					
+					selected_tile = true
+					for highlight_index: int in 64:
+						if piece_moves[highlight_index] != 0:
+							board.highlight_tile(highlight_index, 1)
+							selected_piece_moves.append(highlight_index)
+					highlighted_tiles.append_array(selected_piece_moves)
 			else:
 				if selected_piece_moves.has(index):
 					board.move_piece(selected_piece_index, index)
 				selected_tile = false
-				print("PLAYER- Piece Moved")
 	
 	if event.is_action_pressed(&"_input_mouse_right"):
 		if board.is_valid_index(index_below_mouse):

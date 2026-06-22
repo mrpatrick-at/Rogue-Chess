@@ -8,7 +8,7 @@ using System.Linq;
 public partial class Board : ColorRect
 {
 	// enums
-public enum PIECE {
+public enum PIECE : int {
 	W_PAWN,
 	W_ROOK,
 	W_KNIGHT,
@@ -22,11 +22,11 @@ public enum PIECE {
 	B_QUEEN,
 	B_KING,
 }
-public enum COLOR {
+public enum COLOR : int {
 	WHITE,
 	BLACK
 }
-public enum SLIDE_TYPE {
+public enum SLIDE_TYPE : int {
 	ROOK,
 	BISHOP
 }
@@ -36,7 +36,7 @@ public enum SLIDE_TYPE {
 public ulong[] bitboard = new ulong[12];
 public Dictionary piece_objs = new();
 public int turn_amount = 0;
-public int turn_color = 0;
+public int turn_color = (int)COLOR.WHITE;
 // private vars
 private int[] tiles_highligt = new int[64];
 private static readonly Shader shader_res = GD.Load<Shader>("res://scenes/main_scene/systems/board/shaders/board_shader.gdshader");
@@ -155,14 +155,25 @@ private ulong[] king_moves = new ulong[64];
 		}
 		return false;
 	}
-	public bool is_empty(int index){ // refrence placeholder
-		return true;
+	public bool is_empty(int index){
+		int piece_int = get_piece_int(index);
+		if (piece_int == -1) {
+			return true;
+		}
+		return false;
 	}
-	public bool is_enemy(int index, int color){ // refrence placeholder
+	public bool is_enemy(int index){
+		int piece_int = get_piece_int(index);
+		bool is_white = is_piece_white(piece_int);
+		
+		int piece_color = is_white ? (int)COLOR.WHITE : (int)COLOR.BLACK;
+
+		if (piece_color == turn_color) {
+			return false;
+		}
 		return true;
 	}
 	public int[] get_piece_moves(int index){
-		GD.Print("Get Moves Called");
 		int piece_int = get_piece_int(index);
 		ulong white_pieces = get_occupied_bitboard((int)COLOR.WHITE);
 		ulong black_pieces = get_occupied_bitboard((int)COLOR.BLACK);
@@ -217,7 +228,15 @@ private ulong[] king_moves = new ulong[64];
 	}
 	public ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
 		ulong bitmask = get_bitmask(index);
-		ulong moves = is_white ? bitmask >> 8 | bitmask >> 16: bitmask << 8 | bitmask << 16;
+		ulong moves = is_white ? bitmask >> 8 : bitmask << 8;
+
+		ulong long_move = is_white ? bitmask >> 16: bitmask << 16;
+
+		if (index > 7 && index < 16) { //black
+			moves |= bitmask << 16;
+		} else if (index > 47 && index < 56) {
+			moves |= bitmask >> 16;
+		}
 
 		int remainer = index & 7;
 
@@ -241,25 +260,28 @@ private ulong[] king_moves = new ulong[64];
 		ulong moves = 0UL;
 		Vector2I coord = get_vec2_from_index(index);
 		
-		int left_tiles = coord.X;
-		int right_tiles = 7 - coord.X;
+			int left_tiles = coord.X;
+			int right_tiles = 7 - coord.X;
 
-		int up_tiles = coord.Y;
-		int down_tiles = 7 - coord.Y;
+			int up_tiles = coord.Y;
+			int down_tiles = 7 - coord.Y;
 
-		for (int x = 0; x < left_tiles; x++) {
-			moves |= bitmask >> (x + 1);
+		if (slide_type == (int)SLIDE_TYPE.ROOK){
+			for (int x = 0; x < left_tiles; x++) {
+				moves |= bitmask >> (x + 1);
+			}
+			for (int x = 0; x < right_tiles; x++) {
+				moves |= bitmask << (x + 1);
+			}
+			for (int y = 0; y < up_tiles; y++) {
+				moves |= bitmask >> ((y + 1) << 3);
+			}
+			for (int y = 0; y < down_tiles; y++) {
+				moves |= bitmask << ((y + 1) << 3);
+			}
+		} else {
+			
 		}
-		for (int x = 0; x < right_tiles; x++) {
-			moves |= bitmask << (x + 1);
-		}
-		for (int y = 0; y < up_tiles; y++) {
-			moves |= bitmask >> ((y + 1) << 3);
-		}
-		for (int y = 0; y < down_tiles; y++) {
-			moves |= bitmask << ((y + 1) << 3);
-		}
-
 		return moves;
 	}
 	public void move_piece(int index, int new_index) {
@@ -283,6 +305,9 @@ private ulong[] king_moves = new ulong[64];
 		piece_objs[new_index] = piece;
 		piece_objs.Remove(index);
 		piece.set_coord(get_vec2_from_index(new_index));
+
+		turn_color ^= 1;
+		GD.Print($"BOARD- Piece Moved! Turn Color: {Enum.GetName(typeof(COLOR), turn_color)}");
 	}
 	// private methods
 	private int _calc_piece(int index){
