@@ -351,51 +351,79 @@ private ulong[] king_moves = new ulong[64];
 		for (int i = 0; i < 64; i++) {
 			ulong bitmask = get_bitmask(i);
 
-			ulong piece_moves = new ulong();
-
 			if ((bitmask & 65535) == 0) { // can go 2 up
 				if ((bitmask & 72340172838076673) == 0) { // can go 1 left
-					piece_moves |= bitmask >> 17;
+					moves[i] |= bitmask >> 17;
 				}
 				if ((bitmask & 9259542123273814144) == 0) { // can go 1 right
-					piece_moves |= bitmask >> 15;
+					moves[i] |= bitmask >> 15;
 				}
 			}
 
 			if ((bitmask & 18446462598732840960) == 0) { // can go 2 down
 				if ((bitmask & 72340172838076673) == 0) { // can go 1 left
-					piece_moves |= bitmask << 15;
+					moves[i] |= bitmask << 15;
 				}
 				if ((bitmask & 9259542123273814144) == 0) { // can go 1 right
-					piece_moves |= bitmask << 17;
+					moves[i] |= bitmask << 17;
 				}
 			}
 
 			if ((bitmask & 217020518514230019) == 0) { // can go 2 left
 				if ((bitmask & 255) == 0) { // can go 1 up
-					piece_moves |= bitmask >> 10;
+					moves[i] |= bitmask >> 10;
 				}
 				if ((bitmask & 18374686479671623680) == 0) { // can go 1 down
-					piece_moves |= bitmask << 6;
+					moves[i] |= bitmask << 6;
 				}
 			}
 
 			if ((bitmask & 13889313184910721216) == 0) { // can go 2 right
 				if ((bitmask & 255) == 0) { // can go 1 up
-					piece_moves |= bitmask >> 6;
+					moves[i] |= bitmask >> 6;
 				}
 				if ((bitmask & 18374686479671623680) == 0) { // can go 1 down
-					piece_moves |= bitmask << 10;
+					moves[i] |= bitmask << 10;
 				}
 			}
-
-			moves[i] = piece_moves;
 		}
 
 		return moves;
 	}
 	private ulong[] _precalc_king_moves(){
 		ulong[] moves = new ulong[64];
+		for (int i = 0; i < 64; i++) {
+			ulong bitmask = get_bitmask(i);
+			if ((bitmask & 255) == 0) { // can go up
+				moves[i] |= bitmask >> 8;
+
+				if ((bitmask & 72340172838076673) == 0) { // can go left
+					moves[i] |= bitmask >> 9;
+				}
+				if ((bitmask & 9259542123273814144) == 0) { // can go right
+					moves[i] |= bitmask >> 7;
+				}
+
+			}
+			if ((bitmask & 18374686479671623680) == 0) { // can go down
+				moves[i] |= bitmask << 8;
+
+				if ((bitmask & 72340172838076673) == 0) { // can go left
+					moves[i] |= bitmask << 7;
+				}
+				if ((bitmask & 9259542123273814144) == 0) { // can go right
+					moves[i] |= bitmask << 9;
+				}
+
+			}
+			if ((bitmask & 72340172838076673) == 0) { // can go left
+				moves[i] |= bitmask >> 1;
+			}
+			if ((bitmask & 9259542123273814144) == 0) { // can go right
+				moves[i] |= bitmask << 1;
+			}
+
+		}
 		return moves;
 	}
 }
