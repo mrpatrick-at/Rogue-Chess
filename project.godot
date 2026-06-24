@@ -17,11 +17,6 @@ run/main_scene="uid://bxmeugje5h5ew"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
-[autoload]
-
-Scripts="*uid://bdg5eog743ofc"
-Consts="*uid://c2ebw1rfq5ssx"
-
 [debug]
 
 gdscript/warnings/untyped_declaration=1

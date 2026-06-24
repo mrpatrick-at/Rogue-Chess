@@ -1,35 +1,11 @@
 using Godot;
 using Godot.Collections;
-using Godot.NativeInterop;
-using Microsoft.VisualBasic;
 using System;
-using System.Linq;
+using Chess.Consts;
 [GlobalClass]
 public partial class Board : ColorRect
 {
 	// enums
-public enum PIECE : int {
-	W_PAWN,
-	W_ROOK,
-	W_KNIGHT,
-	W_BISHOP,
-	W_QUEEN,
-	W_KING,
-	B_PAWN,
-	B_ROOK,
-	B_KNIGHT,
-	B_BISHOP,
-	B_QUEEN,
-	B_KING,
-}
-public enum COLOR : int {
-	WHITE,
-	BLACK
-}
-public enum SLIDE_TYPE : int {
-	ROOK,
-	BISHOP
-}
 // consts
 // exports
 // public vars
