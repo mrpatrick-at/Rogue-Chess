@@ -8,9 +8,6 @@ public partial class Piece : MeshInstance2D
 {
 // enums
 // consts
-//const PackedVector2Array _knight_directions = {Vector2i(1,2),Vector2i(-1,2), Vector2i(1,-2),Vector2i(-1,-2), Vector2i(2,1),Vector2i(2,-1), Vector2i(-2,1),Vector2i(-2,-1)};
-//const PackedVector2Array _rook_directions = [Vector2i(0,1), Vector2i(0,-1), Vector2i(1,0), Vector2i(-1,0)]
-//const PackedVector2Array _bishop_directions = [Vector2i(1,1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(-1,-1)]
 // exports
 // public vars
 public Vector2I coord = Vector2I.Zero;
@@ -18,7 +15,6 @@ public Vector2I coord = Vector2I.Zero;
 private static readonly Shader shader_res = GD.Load<Shader>("res://scenes/main_scene/systems/board/shaders/piece_shader.gdshader");
 private Tween animation_tween;
 private float y_offset;
-// Called when the node enters the scene tree for the first time.
 // onready vars
 // built-in overide methods
 	public override void _Ready(){
@@ -26,7 +22,6 @@ private float y_offset;
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta){
-
 	}
 // public methods
 	public void setup(Vector2I starting_coord, String piece_name){
@@ -78,6 +73,7 @@ private float y_offset;
 		this.coord = new_coord;
 		((ShaderMaterial)Material).SetShaderParameter("coord", coord);
 		this.reset_highlight();
+		this.ZIndex = coord.Y;
 	}
 // private methods
 private void _set_shader_value(float value){
