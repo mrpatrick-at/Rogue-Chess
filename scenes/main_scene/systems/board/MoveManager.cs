@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Chess.Consts;
 
 public partial class MoveManager : Node
 {
@@ -30,13 +31,13 @@ private ulong[] king_moves = new ulong[64];
 
 // }
 
-// public int[] get_piece_moves(int index){
-// 	int piece_int = get_piece_int(index);
-// 	ulong white_pieces = get_occupied_bitboard((int)COLOR.WHITE);
-// 	ulong black_pieces = get_occupied_bitboard((int)COLOR.BLACK);
+// public ulong get_piece_moves(int index){
+// 	int piece_int = Board.get_piece_int(index);
+// 	ulong white_pieces = Board.get_occupied_bitboard((int)COLOR.WHITE);
+// 	ulong black_pieces = Board.get_occupied_bitboard((int)COLOR.BLACK);
 // 	ulong all_pieces = white_pieces | black_pieces;
 
-// 	bool is_white = is_piece_white(piece_int);
+// 	bool is_white = Board.is_piece_white(piece_int);
 // 	ulong friendly_pieces = is_white ? white_pieces : black_pieces;
 
 // 	ulong moves = 0UL;
@@ -73,21 +74,10 @@ private ulong[] king_moves = new ulong[64];
 // 			break;
 // 	}
 
-// 	moves &= ~friendly_pieces;
-	
-// 	int[] translated_moves = new int[64];
-
-// 	for(int i = 0; i < 64; i++){
-// 		ulong step = 1UL << i;
-// 		if((moves & step) != 0){
-// 			translated_moves[i] = 1;
-// 		};
-// 	};
-
-// 	return translated_moves;
+// 	return moves &= ~friendly_pieces;
 // }
 // public void move_piece(int index, int new_index) {
-// 	ulong new_bitmask = get_bitmask(new_index);
+// 	ulong new_bitmask = Board.get_bitmask(new_index);
 
 // 	int capture_piece_int = get_piece_int(new_index);
 // 	if (capture_piece_int != -1) { // If there is a piece on target coord
@@ -98,8 +88,8 @@ private ulong[] king_moves = new ulong[64];
 // 		capture_piece.Free();
 // 	}
 
-// 	ulong bitmask = get_bitmask(index);
-// 	int piece_int = get_piece_int(index);
+// 	ulong bitmask = Board.get_bitmask(index);
+// 	int piece_int = Board.get_piece_int(index);
 // 	bitboard[piece_int] ^= bitmask;
 // 	bitboard[piece_int] |= new_bitmask;
 
@@ -112,9 +102,9 @@ private ulong[] king_moves = new ulong[64];
 // 	GD.Print($"BOARD- Piece Moved! Turn Color: {Enum.GetName(typeof(COLOR), turn_color)}");
 // }
 
-// // private methods
+// private methods
 // private ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
-// 	ulong bitmask = get_bitmask(index);
+// 	ulong bitmask = Board.get_bitmask(index);
 // 	ulong moves = 0UL;
 	
 // 	if (is_white) {
@@ -142,9 +132,9 @@ private ulong[] king_moves = new ulong[64];
 // 	return moves;
 // }
 // private ulong get_slide_moves(int index, ulong all_pieces, ulong slide_type){
-// 	ulong bitmask = get_bitmask(index);
+// 	ulong bitmask = Board.get_bitmask(index);
 // 	ulong moves = 0UL;
-// 	Vector2I coord = get_vec2_from_index(index);
+// 	Vector2I coord = Board.get_vec2_from_index(index);
 	
 // 		int left_tiles = coord.X;
 // 		int right_tiles = 7 - coord.X;
@@ -220,7 +210,7 @@ private ulong[] king_moves = new ulong[64];
 // private ulong[] _precalc_knight_moves(){
 // 	ulong[] moves = new ulong[64];
 // 	for (int i = 0; i < 64; i++) {
-// 		ulong bitmask = get_bitmask(i);
+// 		ulong bitmask = Board.get_bitmask(i);
 
 // 		if ((bitmask & 65535) == 0) { // can go 2 up
 // 			if ((bitmask & 72340172838076673) == 0) { // can go 1 left
@@ -264,7 +254,7 @@ private ulong[] king_moves = new ulong[64];
 // private ulong[] _precalc_king_moves(){
 // 	ulong[] moves = new ulong[64];
 // 	for (int i = 0; i < 64; i++) {
-// 		ulong bitmask = get_bitmask(i);
+// 		ulong bitmask = Board.get_bitmask(i);
 // 		if ((bitmask & 255) == 0) { // can go up
 // 			moves[i] |= bitmask >> 8;
 

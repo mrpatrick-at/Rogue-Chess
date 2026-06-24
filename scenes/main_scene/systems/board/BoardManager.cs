@@ -2,8 +2,7 @@ using Godot;
 using System;
 using System.Globalization;
 [GlobalClass]
-public partial class BoardManager : AspectRatioContainer
-{
+public partial class BoardManager : AspectRatioContainer {
 // enums
 // consts
 // exports

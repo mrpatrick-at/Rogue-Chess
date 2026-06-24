@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://scenes/main_scene/main.gd" id="1_2w4vt"]
 [ext_resource type="Script" uid="uid://bpq3ymg73huuh" path="res://scenes/main_scene/systems/board/BoardManager.cs" id="2_h5lh5"]
 [ext_resource type="Script" uid="uid://34lhib8w4sru" path="res://scenes/main_scene/systems/player/Player.cs" id="3_h5lh5"]
-[ext_resource type="Script" uid="uid://fngb61oikjfx" path="res://scenes/main_scene/systems/board/res/Board.cs" id="4_h5lh5"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="8_0p6xv"]
 [ext_resource type="Script" uid="uid://cskpf4n74la46" path="res://ui/ingame_ui/main.gd" id="8_loo4n"]
@@ -38,16 +37,6 @@ shader_parameter/lighting = 0.4
 shader_parameter/spin_amount = 0.25
 shader_parameter/pixel_filter = 745.0
 shader_parameter/is_rotating = false
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ln6rh"]
-shader = ExtResource("12_loo4n")
-shader_parameter/white_tile_color = Color(1, 1, 1, 1)
-shader_parameter/black_tile_color = Color(0, 0, 0, 1)
-shader_parameter/hover_color = Color(0, 0, 1, 0.4)
-shader_parameter/move_color = Color(0.2, 1, 0.2, 0.4)
-shader_parameter/capture_color = Color(0.9, 0, 0, 0.4)
-shader_parameter/check_color = Color(0.9, 0, 0, 0.4)
-shader_parameter/tile_states = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5e1wh"]
 shader = ExtResource("12_loo4n")
@@ -139,16 +128,6 @@ offset_bottom = 1080.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("10_o15j2")
-
-[node name="Board" type="ColorRect" parent="World" unique_id=888477038]
-visible = false
-material = SubResource("ShaderMaterial_ln6rh")
-offset_left = -1168.0
-offset_top = -178.0
-offset_right = -144.0
-offset_bottom = 846.0
-script = ExtResource("4_h5lh5")
-metadata/_custom_type_script = "uid://fngb61oikjfx"
 
 [node name="ShaderPrecompiler" type="Node2D" parent="." unique_id=257119363]
 visible = false
