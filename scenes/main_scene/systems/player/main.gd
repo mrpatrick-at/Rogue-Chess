@@ -66,13 +66,15 @@ func _mouse_buttons(event:InputEventMouse) -> void:
 			if selected_tile == false:
 				selected_piece_index = index
 				if !board.is_empty(index) && !board.is_enemy(index):
-					var piece_moves: Array = board.get_piece_moves(selected_piece_index)
+					var piece_moves: Array = board.get_piece_moves(index)
 					
 					selected_tile = true
+					selected_piece_moves = []
 					for highlight_index: int in 64:
 						if piece_moves[highlight_index] != 0:
 							board.highlight_tile(highlight_index, 1)
 							selected_piece_moves.append(highlight_index)
+					print("PLAYER- SELECTED PIECE MOVES: ",selected_piece_moves)
 					highlighted_tiles.append_array(selected_piece_moves)
 			else:
 				if selected_piece_moves.has(index):

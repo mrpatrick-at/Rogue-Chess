@@ -230,15 +230,13 @@ private ulong[] king_moves = new ulong[64];
 		ulong bitmask = get_bitmask(index);
 		ulong moves = is_white ? bitmask >> 8 : bitmask << 8;
 
-		ulong long_move = is_white ? bitmask >> 16: bitmask << 16;
-
 		if (index > 7 && index < 16) { //black
 			moves |= bitmask << 16;
 		} else if (index > 47 && index < 56) {
 			moves |= bitmask >> 16;
 		}
 
-		int remainer = index & 7;
+		int remainer = index % 7;
 
 		ulong capturemask = 0UL;
 
@@ -280,7 +278,22 @@ private ulong[] king_moves = new ulong[64];
 				moves |= bitmask << ((y + 1) << 3);
 			}
 		} else {
-			
+			for (int xy = 0; xy < left_tiles; xy++) {
+				if (xy < up_tiles) {
+					moves |= bitmask >> ((xy + 1) * 9);
+				}
+				if (xy < down_tiles) {
+					moves |= bitmask << ((xy + 1) * 7);
+				}
+			}
+			for (int yx = 0; yx < right_tiles; yx++) {
+				if (yx < up_tiles) {
+					moves |= bitmask >> ((yx + 1) * 7);
+				}
+				if (yx < down_tiles) {
+					moves |= bitmask << ((yx + 1) * 9);
+				}
+			}
 		}
 		return moves;
 	}
@@ -335,6 +348,50 @@ private ulong[] king_moves = new ulong[64];
 	}
 	private ulong[] _precalc_knight_moves(){
 		ulong[] moves = new ulong[64];
+		for (int i = 0; i < 64; i++) {
+			ulong bitmask = get_bitmask(i);
+
+			ulong piece_moves = new ulong();
+
+			if ((bitmask & 65535) == 0) { // can go 2 up
+				if ((bitmask & 72340172838076673) == 0) { // can go 1 left
+					piece_moves |= bitmask >> 17;
+				}
+				if ((bitmask & 9259542123273814144) == 0) { // can go 1 right
+					piece_moves |= bitmask >> 15;
+				}
+			}
+
+			if ((bitmask & 18446462598732840960) == 0) { // can go 2 down
+				if ((bitmask & 72340172838076673) == 0) { // can go 1 left
+					piece_moves |= bitmask << 15;
+				}
+				if ((bitmask & 9259542123273814144) == 0) { // can go 1 right
+					piece_moves |= bitmask << 17;
+				}
+			}
+
+			if ((bitmask & 217020518514230019) == 0) { // can go 2 left
+				if ((bitmask & 255) == 0) { // can go 1 up
+					piece_moves |= bitmask >> 10;
+				}
+				if ((bitmask & 18374686479671623680) == 0) { // can go 1 down
+					piece_moves |= bitmask << 6;
+				}
+			}
+
+			if ((bitmask & 13889313184910721216) == 0) { // can go 2 right
+				if ((bitmask & 255) == 0) { // can go 1 up
+					piece_moves |= bitmask >> 6;
+				}
+				if ((bitmask & 18374686479671623680) == 0) { // can go 1 down
+					piece_moves |= bitmask << 10;
+				}
+			}
+
+			moves[i] = piece_moves;
+		}
+
 		return moves;
 	}
 	private ulong[] _precalc_king_moves(){
