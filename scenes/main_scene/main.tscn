@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://scenes/main_scene/main.gd" id="1_2w4vt"]
 [ext_resource type="Script" uid="uid://d1q80fi7atrmw" path="res://scenes/main_scene/systems/board/main.gd" id="2_43pjp"]
-[ext_resource type="Script" uid="uid://cc4t54f7tvv6f" path="res://scenes/main_scene/systems/player/main.gd" id="3_g0xvp"]
+[ext_resource type="Script" uid="uid://34lhib8w4sru" path="res://scenes/main_scene/systems/player/Player.cs" id="3_h5lh5"]
 [ext_resource type="Script" uid="uid://fngb61oikjfx" path="res://scenes/main_scene/systems/board/res/Board.cs" id="4_h5lh5"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="8_0p6xv"]
@@ -83,7 +83,7 @@ grow_vertical = 2
 script = ExtResource("2_43pjp")
 
 [node name="Player" type="Node2D" parent="World" unique_id=699846906]
-script = ExtResource("3_g0xvp")
+script = ExtResource("3_h5lh5")
 
 [node name="Camera2D" type="Camera2D" parent="World/Player" unique_id=661107056]
 visible = false

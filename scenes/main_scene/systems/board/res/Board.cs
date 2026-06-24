@@ -173,7 +173,7 @@ private ulong[] king_moves = new ulong[64];
 		}
 		return true;
 	}
-	public int[] get_piece_moves(int index){
+	public ulong get_piece_moves(int index){
 		int piece_int = get_piece_int(index);
 		ulong white_pieces = get_occupied_bitboard((int)COLOR.WHITE);
 		ulong black_pieces = get_occupied_bitboard((int)COLOR.BLACK);
@@ -192,7 +192,7 @@ private ulong[] king_moves = new ulong[64];
 			
 			case (int)PIECE.W_ROOK:
 			case (int)PIECE.B_ROOK:
-				moves = get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK);
+				moves = get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.ROOK);
 				break;
 			
 			case (int)PIECE.W_KNIGHT:
@@ -202,12 +202,12 @@ private ulong[] king_moves = new ulong[64];
 
 			case (int)PIECE.W_BISHOP:
 			case (int)PIECE.B_BISHOP:
-				moves = get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+				moves = get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.BISHOP);
 				break;
 
 			case (int)PIECE.W_QUEEN:
 			case (int)PIECE.B_QUEEN:
-				moves = get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.ROOK) | get_slide_moves(index, is_white, all_pieces, (int)SLIDE_TYPE.BISHOP);
+				moves = get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.ROOK) | get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.BISHOP);
 				break;
 
 			case (int)PIECE.W_KING:
@@ -215,16 +215,17 @@ private ulong[] king_moves = new ulong[64];
 				moves = king_moves[index];
 				break;
 		}
+		
+		// int[] translated_moves = new int[64];
 
-		int[] translated_moves = new int[64];
+		// for(int i = 0; i < 64; i++){
+		// 	ulong step = 1UL << i;
+		// 	if((moves & step) != 0){
+		// 		translated_moves[i] = 1;
+		// 	};
+		// };
 
-		for(int i = 0; i < 64; i++){
-			if((moves & (1UL << i)) != 0){
-				translated_moves[i] = 1;
-			};
-		};
-
-		return translated_moves;
+		return moves &= ~friendly_pieces;
 	}
 	public ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
 		ulong bitmask = get_bitmask(index);
@@ -254,7 +255,7 @@ private ulong[] king_moves = new ulong[64];
 		moves |= capturemask & all_pieces;
 		return moves;
 	}
-	public ulong get_slide_moves(int index, bool is_white, ulong all_pieces, ulong slide_type){
+	public ulong get_slide_moves(int index, ulong all_pieces, ulong slide_type){
 		ulong bitmask = get_bitmask(index);
 		ulong moves = 0UL;
 		Vector2I coord = get_vec2_from_index(index);
