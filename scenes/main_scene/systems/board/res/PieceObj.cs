@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 [GlobalClass]
-public partial class Piece : MeshInstance2D
+public partial class PieceObj : MeshInstance2D
 {
 // enums
 // consts

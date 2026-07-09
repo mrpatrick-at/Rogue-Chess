@@ -40,17 +40,17 @@ static func update_check_vars(king_pos:Vector2i) -> void: # Updates this Scripts
 	if !king_check_coords.is_empty():
 		king_in_check = true
 	
-	if !king_potential_check_coords.is_empty():
-		king_in_potential_check = true
-		for potential_checking_piece:Vector2i in king_potential_check_coords:
+	# if !king_potential_check_coords.is_empty():
+	# 	king_in_potential_check = true
+	# 	for potential_checking_piece:Vector2i in king_potential_check_coords:
 			
-			var between_info:Array = Scripts.BOARD_MANAGER.get_tiles_between_points(potential_checking_piece,king_pos)
+	# 		var between_info:Array = Scripts.BOARD_MANAGER.get_tiles_between_points(potential_checking_piece,king_pos)
 			
-			king_between_coords[potential_checking_piece] = {
-					"tiles" = between_info[0],
-					"pieces" = between_info[1]
-			}
-		print("Pieces between check",king_between_coords)
+	# 		king_between_coords[potential_checking_piece] = {
+	# 				"tiles" = between_info[0],
+	# 				"pieces" = between_info[1]
+	# 		}
+	# 	print("Pieces between check",king_between_coords)
 
 static func get_check_coords(check_pos:Vector2i,from_opponent_color:bool) -> Array: # Returns Array of all Pieces Checking the Piece on check_pos
 	print_rich("[color=Turquoise]GET_CHECK_COORDS-[/color] Called")

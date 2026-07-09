@@ -9,22 +9,22 @@ public partial class Board : ColorRect
 // consts
 // exports
 // public vars
-public ulong[] bitboard = new ulong[12];
-public Dictionary piece_objs = new();
+public ulong[] BitBoard = new ulong[12];
+public Dictionary piece_objs = [];
 public int turn_amount = 0;
-public int turn_color = (int)COLOR.WHITE;
+public int turn_color = (int)Piece.Color.White;
 // private vars
 private int[] tiles_highligt = new int[64];
 private static readonly Shader shader_res = GD.Load<Shader>("res://scenes/main_scene/systems/board/shaders/board_shader.gdshader");
-private ShaderMaterial mat = new ShaderMaterial();
+private ShaderMaterial mat = new();
 private static readonly int[] W_BACK_ROW = 
-	{(int)PIECE.W_ROOK, (int)PIECE.W_KNIGHT, (int)PIECE.W_BISHOP, (int)PIECE.W_QUEEN,
-	(int)PIECE.W_KING, (int)PIECE.W_BISHOP, (int)PIECE.W_KNIGHT, (int)PIECE.W_ROOK};
+	[(int)Piece.Name.W_ROOK, (int)Piece.Name.W_KNIGHT, (int)Piece.Name.W_BISHOP, (int)Piece.Name.W_QUEEN,
+	(int)Piece.Name.W_KING, (int)Piece.Name.W_BISHOP, (int)Piece.Name.W_KNIGHT, (int)Piece.Name.W_ROOK];
 private static readonly int[] B_BACK_ROW = 
-	{(int)PIECE.B_ROOK, (int)PIECE.B_KNIGHT, (int)PIECE.B_BISHOP, (int)PIECE.B_QUEEN,
-	(int)PIECE.B_KING, (int)PIECE.B_BISHOP, (int)PIECE.B_KNIGHT, (int)PIECE.B_ROOK};
-private ulong[] knight_moves = new ulong[64];
-private ulong[] king_moves = new ulong[64];
+	[(int)Piece.Name.B_ROOK, (int)Piece.Name.B_KNIGHT, (int)Piece.Name.B_BISHOP, (int)Piece.Name.B_QUEEN,
+	(int)Piece.Name.B_KING, (int)Piece.Name.B_BISHOP, (int)Piece.Name.B_KNIGHT, (int)Piece.Name.B_ROOK];
+private ulong[] KnightMoves = new ulong[64];
+private ulong[] KingMoves = new ulong[64];
 // onready vars
 // built-in overide methods
 	// Called when the node enters the scene tree for the first time.
@@ -51,19 +51,19 @@ private ulong[] king_moves = new ulong[64];
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board Shader in: [color=gold]",shader_ending_time,"ms[/color]");
 
 		for(int i = 0; i < 64; i++){
-			ulong bitmask = get_bitmask(i);
-			int piece_int = _calc_piece(bitmask, i);
+			ulong Bitmask = get_bitmask(i);
+			int piece_int = _calc_piece(Bitmask, i);
 			if(piece_int == -1){ // no piece
 				continue;
 			};
 			Vector2I coord = get_vec2_from_index(i);
 			_create_piece(i, coord, piece_int);
-			bitboard[piece_int] |= bitmask;
-			GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{bitboard[piece_int]}[/color]");
+			BitBoard[piece_int] |= Bitmask;
+			GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{BitBoard[piece_int]}[/color]");
 		};
 		
-		knight_moves = _precalc_knight_moves();
-		king_moves = _precalc_king_moves();
+		KnightMoves = _precalc_knight_moves();
+		KingMoves = _precalc_king_moves();
 
 		float ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board of size: [color=gold]8[/color] in: [color=gold]",ending_time,"ms[/color]");
@@ -88,7 +88,7 @@ private ulong[] king_moves = new ulong[64];
 		return array_index;
 	}
 	public Vector2I get_vec2_from_index(int index){
-		int x = index & 7;
+		int x = index % 8;
 		int y = index >> 3;
 		return new Vector2I(x, y);
 	}
@@ -100,22 +100,22 @@ private ulong[] king_moves = new ulong[64];
 		highlight_tile(index, 0);
 	}
 	public ulong get_bitmask(int index){
-		ulong bitmask = 1UL << index;
-		return bitmask;
+		ulong Bitmask = 1UL << index;
+		return Bitmask;
 	}
-	public ulong get_occupied_bitboard(int color){
-		ulong occupied_bitboard = 0UL;
+	public ulong get_occupied_BitBoard(int color){
+		ulong occupied_BitBoard = 0UL;
 		int start_index = color * 6;
 		for(int i = 0; i < 6; i++){
-			occupied_bitboard |= bitboard[start_index + i];
+			occupied_BitBoard |= BitBoard[start_index + i];
 		};
-		return occupied_bitboard;
+		return occupied_BitBoard;
 	}
 	public int get_piece_int(int index){ // -1 means no piece
-		ulong bitmask = get_bitmask(index);
+		ulong Bitmask = get_bitmask(index);
 		int piece_int = -1;
 		for(int i = 0; i < 12; i++){
-			if((bitboard[i] & bitmask) != 0){
+			if((BitBoard[i] & Bitmask) != 0){
 				piece_int = i;
 				break;
 			};
@@ -123,7 +123,7 @@ private ulong[] king_moves = new ulong[64];
 		return piece_int;
 	}
 	public string get_piece_string(int piece_int){
-		return Enum.GetName(typeof(PIECE), piece_int);
+		return Enum.GetName(typeof(Piece.Name), piece_int);
 	}
 	public bool is_piece_white(int piece_int){
 		if(piece_int < 6){
@@ -142,98 +142,137 @@ private ulong[] king_moves = new ulong[64];
 		int piece_int = get_piece_int(index);
 		bool is_white = is_piece_white(piece_int);
 		
-		int piece_color = is_white ? (int)COLOR.WHITE : (int)COLOR.BLACK;
+		int piece_color = is_white ? (int)Piece.Color.White : (int)Piece.Color.Black;
 
 		if (piece_color == turn_color) {
 			return false;
 		}
 		return true;
 	}
+	public ulong[] MakePieceMoves(){
+		ulong AllPieces = 0UL;
+		for (int PieceIndex = 0; PieceIndex < 12; PieceIndex++) {
+			AllPieces |= BitBoard[PieceIndex];
+		}
+
+		ulong[] Moves = [];
+
+		for (int PieceIndex = 0; PieceIndex < 12; PieceIndex++) {
+			int PieceType = PieceIndex % 6;
+			int PieceColor = PieceIndex / 6;
+			ulong PieceMask = BitBoard[PieceIndex];
+
+			switch (PieceType) {
+				case (int)Piece.Type.Pawn:
+					Moves[PieceIndex] = GetPawnMoves(PieceMask, PieceColor, AllPieces);
+					break;
+
+				case (int)Piece.Type.Rook:
+					Moves[PieceIndex] = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.ROOK);
+					break;
+
+				case (int)Piece.Type.Knight:
+					Moves[PieceIndex] = KnightMoves[];
+					break;
+
+				case (int)Piece.Type.Bishop:
+					break;
+
+				case (int)Piece.Type.Queen:
+					break;
+
+				case (int)Piece.Type.King:
+					Moves[PieceIndex] = KingMoves[index];
+					break;
+			}
+
+
+			
+
+		}
+
+		return Moves;
+	}
 	public ulong get_piece_moves(int index){
 		int piece_int = get_piece_int(index);
-		ulong white_pieces = get_occupied_bitboard((int)COLOR.WHITE);
-		ulong black_pieces = get_occupied_bitboard((int)COLOR.BLACK);
-		ulong all_pieces = white_pieces | black_pieces;
+		ulong white_pieces = get_occupied_BitBoard((int)Piece.Color.White);
+		ulong black_pieces = get_occupied_BitBoard((int)Piece.Color.Black);
+		ulong AllPieces = white_pieces | black_pieces;
 
 		bool is_white = is_piece_white(piece_int);
 		ulong friendly_pieces = is_white ? white_pieces : black_pieces;
 
-		ulong moves = 0UL;
+		ulong Moves = 0UL;
 
 		switch (piece_int){
-			case (int)PIECE.W_PAWN:
-			case (int)PIECE.B_PAWN:
-				moves = get_pawn_moves(index, is_white, all_pieces, friendly_pieces);
+			case (int)Piece.Name.W_PAWN:
+			case (int)Piece.Name.B_PAWN:
+				ulong Bitmask = get_bitmask(index);
+				int PieceColor = piece_int / 6;
+				Moves = GetPawnMoves(Bitmask, PieceColor, AllPieces);
 				break;
 			
-			case (int)PIECE.W_ROOK:
-			case (int)PIECE.B_ROOK:
-				moves = get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.ROOK);
+			case (int)Piece.Name.W_ROOK:
+			case (int)Piece.Name.B_ROOK:
+				Moves = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.ROOK);
 				break;
 			
-			case (int)PIECE.W_KNIGHT:
-			case (int)PIECE.B_KNIGHT:
-				moves = knight_moves[index];
+			case (int)Piece.Name.W_KNIGHT:
+			case (int)Piece.Name.B_KNIGHT:
+				Moves = KnightMoves[index];
 				break;
 
-			case (int)PIECE.W_BISHOP:
-			case (int)PIECE.B_BISHOP:
-				moves = get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.BISHOP);
+			case (int)Piece.Name.W_BISHOP:
+			case (int)Piece.Name.B_BISHOP:
+				Moves = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.BISHOP);
 				break;
 
-			case (int)PIECE.W_QUEEN:
-			case (int)PIECE.B_QUEEN:
-				moves = get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.ROOK) | get_slide_moves(index, all_pieces, (int)SLIDE_TYPE.BISHOP);
+			case (int)Piece.Name.W_QUEEN:
+			case (int)Piece.Name.B_QUEEN:
+				Moves = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.ROOK) | GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.BISHOP);
 				break;
 
-			case (int)PIECE.W_KING:
-			case (int)PIECE.B_KING:
-				moves = king_moves[index];
+			case (int)Piece.Name.W_KING:
+			case (int)Piece.Name.B_KING:
+				Moves = KingMoves[index];
 				break;
 		}
-		
-		// int[] translated_moves = new int[64];
 
-		// for(int i = 0; i < 64; i++){
-		// 	ulong step = 1UL << i;
-		// 	if((moves & step) != 0){
-		// 		translated_moves[i] = 1;
-		// 	};
-		// };
-
-		return moves &= ~friendly_pieces;
+		return Moves &= ~friendly_pieces;
 	}
-	public ulong get_pawn_moves(int index, bool is_white, ulong all_pieces, ulong friendly_pieces){
-		ulong bitmask = get_bitmask(index);
-		ulong moves = 0UL;
-		
-		if (is_white) {
-			moves |= bitmask >> 8;
-			if ((bitmask & 71776119061217280) == bitmask) { // white in start pos
-				moves |= bitmask >> 16;
-			}
-		} else {
-			moves |= bitmask << 8;
-			if ((bitmask & 65280) == bitmask) { // black in start pos
-				moves |= bitmask << 16;
-			}
+	public ulong GetPawnMoves(ulong Bitmask, int PieceColor, ulong AllPieces){
+		ulong Moves;
+		ulong CaptureMask;
+
+		ulong NotLeftBorderPawns = Bitmask & ~72340172838076673UL;
+		ulong NotRightBorderPawns = Bitmask & ~9259542123273814144UL;
+
+		switch (PieceColor) {
+			case (int)Piece.Color.White:
+				Moves = Bitmask >> 8;
+				CaptureMask = NotLeftBorderPawns >> 9;
+				CaptureMask |= NotRightBorderPawns >> 7;
+				if ((Bitmask & 71776119061217280) == Bitmask) { // white in start pos
+					Moves |= Bitmask >> 16;
+				}
+				break;
+			
+			default:
+				Moves = Bitmask << 8;
+				CaptureMask = NotLeftBorderPawns << 7;
+				CaptureMask |= NotRightBorderPawns << 9;
+				if ((Bitmask & 65280) == Bitmask) { // black in start pos
+					Moves |= Bitmask << 16;
+				}
+				break;
 		}
 
-		ulong capturemask = 0UL;
-
-		if((bitmask & 72340172838076673) == 0){ // can go left
-			capturemask |= is_white ? bitmask >> 9 : bitmask << 7;
-		}
-		if((bitmask & 9259542123273814144) == 0){ // can go right
-			capturemask |= is_white ? bitmask >> 7 : bitmask << 9;
-		}
-
-		moves |= capturemask & all_pieces;
-		return moves;
+		Moves &= ~AllPieces;
+		Moves |= CaptureMask & AllPieces;
+		return Moves;
 	}
-	public ulong get_slide_moves(int index, ulong all_pieces, ulong slide_type){
-		ulong bitmask = get_bitmask(index);
-		ulong moves = 0UL;
+	public ulong GetSlideMoves(ulong Bitmask, ulong AllPieces, ulong slide_type){
+		ulong Moves = 0UL;
 		Vector2I coord = get_vec2_from_index(index);
 		
 			int left_tiles = coord.X;
@@ -244,196 +283,196 @@ private ulong[] king_moves = new ulong[64];
 
 		if (slide_type == (int)SLIDE_TYPE.ROOK){
 			for (int x = 0; x < left_tiles; x++) {
-				ulong step_bitmask =  bitmask >> (x + 1);
-				moves |= step_bitmask;
-				if ((step_bitmask & all_pieces) != 0) {
+				ulong step_bitmask =  Bitmask >> (x + 1);
+				Moves |= step_bitmask;
+				if ((step_bitmask & AllPieces) != 0) {
 					break;
 				}
 			}
 			for (int x = 0; x < right_tiles; x++) {
-				ulong step_bitmask = bitmask << (x + 1);
-				moves |= step_bitmask;
-				if ((step_bitmask & all_pieces) != 0) {
+				ulong step_bitmask = Bitmask << (x + 1);
+				Moves |= step_bitmask;
+				if ((step_bitmask & AllPieces) != 0) {
 					break;
 				}
 			}
 			for (int y = 0; y < up_tiles; y++) {
-				ulong step_bitmask = bitmask >> ((y + 1) << 3);
-				moves |= step_bitmask;
-				if ((step_bitmask & all_pieces) != 0) {
+				ulong step_bitmask = Bitmask >> ((y + 1) << 3);
+				Moves |= step_bitmask;
+				if ((step_bitmask & AllPieces) != 0) {
 					break;
 				}
 			}
 			for (int y = 0; y < down_tiles; y++) {
-				ulong step_bitmask = bitmask << ((y + 1) << 3);
-				moves |= step_bitmask;
-				if ((step_bitmask & all_pieces) != 0) {
+				ulong step_bitmask = Bitmask << ((y + 1) << 3);
+				Moves |= step_bitmask;
+				if ((step_bitmask & AllPieces) != 0) {
 					break;
 				}
 			}
 		} else {
 			for (int xy = 0; xy < left_tiles; xy++) {
 				if (xy < up_tiles) {
-					ulong step_bitmask = bitmask >> ((xy + 1) * 9);
-					moves |= step_bitmask;
-					if ((step_bitmask & all_pieces) != 0) {
+					ulong step_bitmask = Bitmask >> ((xy + 1) * 9);
+					Moves |= step_bitmask;
+					if ((step_bitmask & AllPieces) != 0) {
 						break;
 					}
 				}
 				if (xy < down_tiles) {
-					ulong step_bitmask = bitmask << ((xy + 1) * 7);
-					moves |= step_bitmask;
-					if ((step_bitmask & all_pieces) != 0) {
+					ulong step_bitmask = Bitmask << ((xy + 1) * 7);
+					Moves |= step_bitmask;
+					if ((step_bitmask & AllPieces) != 0) {
 						break;
 					}
 				}
 			}
 			for (int yx = 0; yx < right_tiles; yx++) {
 				if (yx < up_tiles) {
-					ulong step_bitmask = bitmask >> ((yx + 1) * 7);
-					moves |= step_bitmask;
-					if ((step_bitmask & all_pieces) != 0) {
+					ulong step_bitmask = Bitmask >> ((yx + 1) * 7);
+					Moves |= step_bitmask;
+					if ((step_bitmask & AllPieces) != 0) {
 						break;
 					}
 				}
 				if (yx < down_tiles) {
-					ulong step_bitmask = bitmask << ((yx + 1) * 9);
-					moves |= step_bitmask;
-					if ((step_bitmask & all_pieces) != 0) {
+					ulong step_bitmask = Bitmask << ((yx + 1) * 9);
+					Moves |= step_bitmask;
+					if ((step_bitmask & AllPieces) != 0) {
 						break;
 					}
 				}
 			}
 		}
-		return moves;
+		return Moves;
 	}
 	public void move_piece(int index, int new_index) {
 		ulong new_bitmask = get_bitmask(new_index);
 
 		int capture_piece_int = get_piece_int(new_index);
 		if (capture_piece_int != -1) { // If there is a piece on target coord
-			bitboard[capture_piece_int] ^= new_bitmask;
-			Piece capture_piece = (Piece)piece_objs[new_index];
+			BitBoard[capture_piece_int] ^= new_bitmask;
+			PieceObj capture_piece = (PieceObj)piece_objs[new_index];
 			piece_objs.Remove(new_index);
 			this.RemoveChild(capture_piece);
 			capture_piece.Free();
 		}
 
-		ulong bitmask = get_bitmask(index);
+		ulong Bitmask = get_bitmask(index);
 		int piece_int = get_piece_int(index);
-		bitboard[piece_int] ^= bitmask;
-		bitboard[piece_int] |= new_bitmask;
+		BitBoard[piece_int] ^= Bitmask;
+		BitBoard[piece_int] |= new_bitmask;
 
-		Piece piece = (Piece)piece_objs[index];
+		PieceObj piece = (PieceObj)piece_objs[index];
 		piece_objs[new_index] = piece;
 		piece_objs.Remove(index);
 		piece.set_coord(get_vec2_from_index(new_index));
 
 		turn_color ^= 1;
-		GD.Print($"BOARD- Piece Moved! Turn Color: {Enum.GetName(typeof(COLOR), turn_color)}");
+		GD.Print($"BOARD- Piece Moved! Turn Color: {Enum.GetName(typeof(Piece.Color), turn_color)}");
 	}
 	// private methods
-	private int _calc_piece(ulong bitmask, int index){
-		if ((bitmask & 65535) != 0) {
-			if ((bitmask & 255) != 0) {
+	private int _calc_piece(ulong Bitmask, int index){
+		if ((Bitmask & 65535) != 0) {
+			if ((Bitmask & 255) != 0) {
 				return B_BACK_ROW[index & 7]; // Black Pieces
 			} else {
-				return (int)PIECE.B_PAWN; // Black Pawn
+				return (int)Piece.Name.B_PAWN; // Black Pawn
 			}
-		} else if ((bitmask & 18446462598732840960) != 0) {
-			if ((bitmask & 18374686479671623680) != 0) {
+		} else if ((Bitmask & 18446462598732840960) != 0) {
+			if ((Bitmask & 18374686479671623680) != 0) {
 				return W_BACK_ROW[index & 7]; // White Pieces
 			} else {
-				return (int)PIECE.W_PAWN; // White Pawn
+				return (int)Piece.Name.W_PAWN; // White Pawn
 			}
 		}
 		return -1;
 	}
 	private void _create_piece(int index, Vector2I coord, int piece_int){
 		string piece_string = get_piece_string(piece_int);
-		Piece piece = new Piece();
+		PieceObj piece = new PieceObj();
 		this.AddChild(piece);
 		piece.setup(coord, piece_string);
 		piece_objs.Add(index, piece);
 	}
 	private ulong[] _precalc_knight_moves(){
-		ulong[] moves = new ulong[64];
+		ulong[] Moves = new ulong[64];
 		for (int i = 0; i < 64; i++) {
-			ulong bitmask = get_bitmask(i);
+			ulong Bitmask = get_bitmask(i);
 
-			if ((bitmask & 65535) == 0) { // can go 2 up
-				if ((bitmask & 72340172838076673) == 0) { // can go 1 left
-					moves[i] |= bitmask >> 17;
+			if ((Bitmask & 65535) == 0) { // can go 2 up
+				if ((Bitmask & 72340172838076673) == 0) { // can go 1 left
+					Moves[i] |= Bitmask >> 17;
 				}
-				if ((bitmask & 9259542123273814144) == 0) { // can go 1 right
-					moves[i] |= bitmask >> 15;
+				if ((Bitmask & 9259542123273814144) == 0) { // can go 1 right
+					Moves[i] |= Bitmask >> 15;
 				}
 			}
 
-			if ((bitmask & 18446462598732840960) == 0) { // can go 2 down
-				if ((bitmask & 72340172838076673) == 0) { // can go 1 left
-					moves[i] |= bitmask << 15;
+			if ((Bitmask & 18446462598732840960) == 0) { // can go 2 down
+				if ((Bitmask & 72340172838076673) == 0) { // can go 1 left
+					Moves[i] |= Bitmask << 15;
 				}
-				if ((bitmask & 9259542123273814144) == 0) { // can go 1 right
-					moves[i] |= bitmask << 17;
-				}
-			}
-
-			if ((bitmask & 217020518514230019) == 0) { // can go 2 left
-				if ((bitmask & 255) == 0) { // can go 1 up
-					moves[i] |= bitmask >> 10;
-				}
-				if ((bitmask & 18374686479671623680) == 0) { // can go 1 down
-					moves[i] |= bitmask << 6;
+				if ((Bitmask & 9259542123273814144) == 0) { // can go 1 right
+					Moves[i] |= Bitmask << 17;
 				}
 			}
 
-			if ((bitmask & 13889313184910721216) == 0) { // can go 2 right
-				if ((bitmask & 255) == 0) { // can go 1 up
-					moves[i] |= bitmask >> 6;
+			if ((Bitmask & 217020518514230019) == 0) { // can go 2 left
+				if ((Bitmask & 255) == 0) { // can go 1 up
+					Moves[i] |= Bitmask >> 10;
 				}
-				if ((bitmask & 18374686479671623680) == 0) { // can go 1 down
-					moves[i] |= bitmask << 10;
+				if ((Bitmask & 18374686479671623680) == 0) { // can go 1 down
+					Moves[i] |= Bitmask << 6;
+				}
+			}
+
+			if ((Bitmask & 13889313184910721216) == 0) { // can go 2 right
+				if ((Bitmask & 255) == 0) { // can go 1 up
+					Moves[i] |= Bitmask >> 6;
+				}
+				if ((Bitmask & 18374686479671623680) == 0) { // can go 1 down
+					Moves[i] |= Bitmask << 10;
 				}
 			}
 		}
 
-		return moves;
+		return Moves;
 	}
 	private ulong[] _precalc_king_moves(){
-		ulong[] moves = new ulong[64];
+		ulong[] Moves = new ulong[64];
 		for (int i = 0; i < 64; i++) {
-			ulong bitmask = get_bitmask(i);
-			if ((bitmask & 255) == 0) { // can go up
-				moves[i] |= bitmask >> 8;
+			ulong Bitmask = get_bitmask(i);
+			if ((Bitmask & 255) == 0) { // can go up
+				Moves[i] |= Bitmask >> 8;
 
-				if ((bitmask & 72340172838076673) == 0) { // can go left
-					moves[i] |= bitmask >> 9;
+				if ((Bitmask & 72340172838076673) == 0) { // can go left
+					Moves[i] |= Bitmask >> 9;
 				}
-				if ((bitmask & 9259542123273814144) == 0) { // can go right
-					moves[i] |= bitmask >> 7;
-				}
-
-			}
-			if ((bitmask & 18374686479671623680) == 0) { // can go down
-				moves[i] |= bitmask << 8;
-
-				if ((bitmask & 72340172838076673) == 0) { // can go left
-					moves[i] |= bitmask << 7;
-				}
-				if ((bitmask & 9259542123273814144) == 0) { // can go right
-					moves[i] |= bitmask << 9;
+				if ((Bitmask & 9259542123273814144) == 0) { // can go right
+					Moves[i] |= Bitmask >> 7;
 				}
 
 			}
-			if ((bitmask & 72340172838076673) == 0) { // can go left
-				moves[i] |= bitmask >> 1;
+			if ((Bitmask & 18374686479671623680) == 0) { // can go down
+				Moves[i] |= Bitmask << 8;
+
+				if ((Bitmask & 72340172838076673) == 0) { // can go left
+					Moves[i] |= Bitmask << 7;
+				}
+				if ((Bitmask & 9259542123273814144) == 0) { // can go right
+					Moves[i] |= Bitmask << 9;
+				}
+
 			}
-			if ((bitmask & 9259542123273814144) == 0) { // can go right
-				moves[i] |= bitmask << 1;
+			if ((Bitmask & 72340172838076673) == 0) { // can go left
+				Moves[i] |= Bitmask >> 1;
+			}
+			if ((Bitmask & 9259542123273814144) == 0) { // can go right
+				Moves[i] |= Bitmask << 1;
 			}
 
 		}
-		return moves;
+		return Moves;
 	}
 }

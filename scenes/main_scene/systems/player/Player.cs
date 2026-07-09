@@ -38,7 +38,7 @@ public ulong selected_piece_moves;
 			highlighted_tiles.Add(index);
 
 			if (!board.is_empty(index)) {
-				Piece piece = (Piece)board.piece_objs[index];
+				PieceObj piece = (PieceObj)board.piece_objs[index];
 				piece.highlight();
 				// highlighted_pieces.Add(index);
 			}
@@ -47,7 +47,7 @@ public ulong selected_piece_moves;
 			if (tile != index) {
 				board.unhighlight_tile(tile);
 				if (board.piece_objs.ContainsKey(tile)) {
-					Piece piece = (Piece)board.piece_objs[tile];
+					PieceObj piece = (PieceObj)board.piece_objs[tile];
 					piece.unhighlight();
 				}
 			}
