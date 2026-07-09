@@ -27,17 +27,17 @@ public ulong selected_piece_moves;
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta) {
-		index_below_mouse = board.get_tile_index();
+		index_below_mouse = board.GetTileIndex();
 		if (selected_tile) {
 			return;
 		}
 
 		int index = index_below_mouse;
-		if (board.is_valid_index(index) && !highlighted_tiles.Contains(index)) {
-			board.highlight_tile(index, 1);
+		if (board.IsValidIndex(index) && !highlighted_tiles.Contains(index)) {
+			board.HighlightTile(index, 1);
 			highlighted_tiles.Add(index);
 
-			if (!board.is_empty(index)) {
+			if (!board.IsEmpty(index)) {
 				PieceObj piece = (PieceObj)board.piece_objs[index];
 				piece.highlight();
 				// highlighted_pieces.Add(index);
@@ -45,7 +45,7 @@ public ulong selected_piece_moves;
 		}
 		foreach (int tile in highlighted_tiles) {
 			if (tile != index) {
-				board.unhighlight_tile(tile);
+				board.UnhighlightTile(tile);
 				if (board.piece_objs.ContainsKey(tile)) {
 					PieceObj piece = (PieceObj)board.piece_objs[tile];
 					piece.unhighlight();
@@ -68,24 +68,24 @@ public ulong selected_piece_moves;
 	private void _mouse_buttons(InputEventMouse @event) {
 		if (@event.IsActionPressed("_input_mouse_left")) {
 			int index = index_below_mouse;
-			if (board.is_valid_index(index)) {
+			if (board.IsValidIndex(index)) {
 				if (selected_tile == false) {
 					selected_piece_index = index;
-					if (!board.is_empty(index) && !board.is_enemy(index)) {
-						selected_piece_moves = board.get_piece_moves(index);
+					if (!board.IsEmpty(index) && !board.IsEnemy(index)) {
+						selected_piece_moves = board.GetPieceMoves(index);
 
 						selected_tile = true;
 						for (int i = 0; i < 64; i++) { // Tidy this Later
 							if ((selected_piece_moves & (1UL << i)) == (1UL << i)) {
-								board.highlight_tile(i, 1);
+								board.HighlightTile(i, 1);
 								highlighted_tiles.Add(i);
 							}
 						}
 
 					}
 				} else {
-					if ((selected_piece_moves & board.get_bitmask(index)) != 0) {
-						board.move_piece(selected_piece_index, index);
+					if ((selected_piece_moves & board.GetBitmask(index)) != 0) {
+						board.MovePiece(selected_piece_index, index);
 					}
 					selected_tile = false;
 				}
@@ -94,12 +94,12 @@ public ulong selected_piece_moves;
 
 		}
 		if (@event.IsActionPressed("_input_mouse_right")) {
-			if (board.is_valid_index(index_below_mouse)) {
-				Vector2I coord = board.get_vec2_from_index(index_below_mouse);
+			if (board.IsValidIndex(index_below_mouse)) {
+				Vector2I coord = board.GetVec2FromIndex(index_below_mouse);
 				GD.Print($"PLAYER- Index: {index_below_mouse}, Coord: {coord}");
-				int piece_int = board.get_piece_int(index_below_mouse);
+				int piece_int = board.GetPieceIndex(index_below_mouse);
 				if (piece_int != -1) {
-					String piece_string = board.get_piece_string(piece_int);
+					String piece_string = board.GetPieceString(piece_int);
 					GD.Print($"PLAYER- Piece Type: {piece_string}");
 				}
 			} else {

@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using Chess.Consts;
+using System.Numerics;
 [GlobalClass]
 public partial class Board : ColorRect
 {
@@ -30,7 +31,7 @@ private ulong[] KingMoves = new ulong[64];
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		build_board();
+		BuildBoard();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -39,7 +40,7 @@ private ulong[] KingMoves = new ulong[64];
 	}
 
 // public methods
-	public void build_board(){
+	public void BuildBoard(){
 		ulong starting_time = Godot.Time.GetTicksUsec();
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Started Building Board");
 		this.Name = "Board";
@@ -51,13 +52,13 @@ private ulong[] KingMoves = new ulong[64];
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board Shader in: [color=gold]",shader_ending_time,"ms[/color]");
 
 		for(int i = 0; i < 64; i++){
-			ulong Bitmask = get_bitmask(i);
-			int piece_int = _calc_piece(Bitmask, i);
+			ulong Bitmask = GetBitmask(i);
+			int piece_int = CalcPiece(Bitmask, i);
 			if(piece_int == -1){ // no piece
 				continue;
 			};
-			Vector2I coord = get_vec2_from_index(i);
-			_create_piece(i, coord, piece_int);
+			Vector2I coord = GetVec2FromIndex(i);
+			CreatePiece(i, coord, piece_int);
 			BitBoard[piece_int] |= Bitmask;
 			GD.PrintRich($"[color=Springgreen]BOARD-[/color] Piece Ulong: [color=gold]{BitBoard[piece_int]}[/color]");
 		};
@@ -68,7 +69,7 @@ private ulong[] KingMoves = new ulong[64];
 		float ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Created Board of size: [color=gold]8[/color] in: [color=gold]",ending_time,"ms[/color]");
 	}
-	public int get_tile_index(){
+	public int GetTileIndex(){
 		Vector2I local_mouse_pos = (Vector2I)GetLocalMousePosition();
 		if(local_mouse_pos.X < 0 || local_mouse_pos.X > 1023){
 			return -1;
@@ -77,33 +78,36 @@ private ulong[] KingMoves = new ulong[64];
 		int array_index = (y << 3) + (local_mouse_pos.X >> 7);
 		return array_index;
 	}
-	public bool is_valid_index(int index){
+	public bool IsValidIndex(int index){
 		if(index >= 0 && index < 64){
 			return true;
 		};
 		return false;
 	}
-	public int get_index_from_vec2(Vector2I coord){
+	public int GetIndexFromVec2(Vector2I coord){
 		int array_index = (coord.Y << 3) + coord.X;
 		return array_index;
 	}
-	public Vector2I get_vec2_from_index(int index){
+	public Vector2I GetVec2FromIndex(int index){
 		int x = index % 8;
 		int y = index >> 3;
 		return new Vector2I(x, y);
 	}
-	public void highlight_tile(int index, int highlight_type){
+	public int GetIndexFromBitmask(ulong Bitmask) {
+		return BitOperations.TrailingZeroCount(Bitmask);
+	}
+	public void HighlightTile(int index, int highlight_type){
 		tiles_highligt[index] = highlight_type;
 		((ShaderMaterial)Material).SetShaderParameter("tile_states", tiles_highligt);
 	}
-	public void unhighlight_tile(int index){
-		highlight_tile(index, 0);
+	public void UnhighlightTile(int index){
+		HighlightTile(index, 0);
 	}
-	public ulong get_bitmask(int index){
+	public ulong GetBitmask(int index){
 		ulong Bitmask = 1UL << index;
 		return Bitmask;
 	}
-	public ulong get_occupied_BitBoard(int color){
+	public ulong GetOccupiedBitBoard(int color){
 		ulong occupied_BitBoard = 0UL;
 		int start_index = color * 6;
 		for(int i = 0; i < 6; i++){
@@ -111,8 +115,8 @@ private ulong[] KingMoves = new ulong[64];
 		};
 		return occupied_BitBoard;
 	}
-	public int get_piece_int(int index){ // -1 means no piece
-		ulong Bitmask = get_bitmask(index);
+	public int GetPieceIndex(int index){ // -1 means no piece
+		ulong Bitmask = GetBitmask(index);
 		int piece_int = -1;
 		for(int i = 0; i < 12; i++){
 			if((BitBoard[i] & Bitmask) != 0){
@@ -122,25 +126,25 @@ private ulong[] KingMoves = new ulong[64];
 		};
 		return piece_int;
 	}
-	public string get_piece_string(int piece_int){
+	public string GetPieceString(int piece_int){
 		return Enum.GetName(typeof(Piece.Name), piece_int);
 	}
-	public bool is_piece_white(int piece_int){
+	public bool IsPieceWhite(int piece_int){
 		if(piece_int < 6){
 			return true;
 		}
 		return false;
 	}
-	public bool is_empty(int index){
-		int piece_int = get_piece_int(index);
+	public bool IsEmpty(int index){
+		int piece_int = GetPieceIndex(index);
 		if (piece_int == -1) {
 			return true;
 		}
 		return false;
 	}
-	public bool is_enemy(int index){
-		int piece_int = get_piece_int(index);
-		bool is_white = is_piece_white(piece_int);
+	public bool IsEnemy(int index){
+		int piece_int = GetPieceIndex(index);
+		bool is_white = IsPieceWhite(piece_int);
 		
 		int piece_color = is_white ? (int)Piece.Color.White : (int)Piece.Color.Black;
 
@@ -168,11 +172,11 @@ private ulong[] KingMoves = new ulong[64];
 					break;
 
 				case (int)Piece.Type.Rook:
-					Moves[PieceIndex] = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.ROOK);
+					Moves[PieceIndex] = GetSlideMoves(PieceMask, AllPieces, (int)SLIDE_TYPE.ROOK);
 					break;
 
 				case (int)Piece.Type.Knight:
-					Moves[PieceIndex] = KnightMoves[];
+					Moves[PieceIndex] = KnightMoves[PieceIndex];
 					break;
 
 				case (int)Piece.Type.Bishop:
@@ -182,7 +186,7 @@ private ulong[] KingMoves = new ulong[64];
 					break;
 
 				case (int)Piece.Type.King:
-					Moves[PieceIndex] = KingMoves[index];
+					Moves[PieceIndex] = KingMoves[PieceIndex];
 					break;
 			}
 
@@ -193,48 +197,49 @@ private ulong[] KingMoves = new ulong[64];
 
 		return Moves;
 	}
-	public ulong get_piece_moves(int index){
-		int piece_int = get_piece_int(index);
-		ulong white_pieces = get_occupied_BitBoard((int)Piece.Color.White);
-		ulong black_pieces = get_occupied_BitBoard((int)Piece.Color.Black);
+	public ulong GetPieceMoves(int Index){
+		int PieceIndex = GetPieceIndex(Index);
+		ulong white_pieces = GetOccupiedBitBoard((int)Piece.Color.White);
+		ulong black_pieces = GetOccupiedBitBoard((int)Piece.Color.Black);
 		ulong AllPieces = white_pieces | black_pieces;
 
-		bool is_white = is_piece_white(piece_int);
+		bool is_white = IsPieceWhite(PieceIndex);
 		ulong friendly_pieces = is_white ? white_pieces : black_pieces;
 
 		ulong Moves = 0UL;
 
-		switch (piece_int){
+		ulong Bitmask = GetBitmask(Index);
+
+		switch (PieceIndex){
 			case (int)Piece.Name.W_PAWN:
 			case (int)Piece.Name.B_PAWN:
-				ulong Bitmask = get_bitmask(index);
-				int PieceColor = piece_int / 6;
+				int PieceColor = PieceIndex / 6;
 				Moves = GetPawnMoves(Bitmask, PieceColor, AllPieces);
 				break;
 			
 			case (int)Piece.Name.W_ROOK:
 			case (int)Piece.Name.B_ROOK:
-				Moves = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.ROOK);
+				Moves = GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.ROOK);
 				break;
 			
 			case (int)Piece.Name.W_KNIGHT:
 			case (int)Piece.Name.B_KNIGHT:
-				Moves = KnightMoves[index];
+				Moves = KnightMoves[Index];
 				break;
 
 			case (int)Piece.Name.W_BISHOP:
 			case (int)Piece.Name.B_BISHOP:
-				Moves = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.BISHOP);
+				Moves = GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.BISHOP);
 				break;
 
 			case (int)Piece.Name.W_QUEEN:
 			case (int)Piece.Name.B_QUEEN:
-				Moves = GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.ROOK) | GetSlideMoves(index, AllPieces, (int)SLIDE_TYPE.BISHOP);
+				Moves = GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.ROOK) | GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.BISHOP);
 				break;
 
 			case (int)Piece.Name.W_KING:
 			case (int)Piece.Name.B_KING:
-				Moves = KingMoves[index];
+				Moves = KingMoves[Index];
 				break;
 		}
 
@@ -273,7 +278,8 @@ private ulong[] KingMoves = new ulong[64];
 	}
 	public ulong GetSlideMoves(ulong Bitmask, ulong AllPieces, ulong slide_type){
 		ulong Moves = 0UL;
-		Vector2I coord = get_vec2_from_index(index);
+		int Index = GetIndexFromBitmask(Bitmask);
+		Vector2I coord = GetVec2FromIndex(Index);
 		
 			int left_tiles = coord.X;
 			int right_tiles = 7 - coord.X;
@@ -346,10 +352,10 @@ private ulong[] KingMoves = new ulong[64];
 		}
 		return Moves;
 	}
-	public void move_piece(int index, int new_index) {
-		ulong new_bitmask = get_bitmask(new_index);
+	public void MovePiece(int index, int new_index) {
+		ulong new_bitmask = GetBitmask(new_index);
 
-		int capture_piece_int = get_piece_int(new_index);
+		int capture_piece_int = GetPieceIndex(new_index);
 		if (capture_piece_int != -1) { // If there is a piece on target coord
 			BitBoard[capture_piece_int] ^= new_bitmask;
 			PieceObj capture_piece = (PieceObj)piece_objs[new_index];
@@ -358,21 +364,21 @@ private ulong[] KingMoves = new ulong[64];
 			capture_piece.Free();
 		}
 
-		ulong Bitmask = get_bitmask(index);
-		int piece_int = get_piece_int(index);
+		ulong Bitmask = GetBitmask(index);
+		int piece_int = GetPieceIndex(index);
 		BitBoard[piece_int] ^= Bitmask;
 		BitBoard[piece_int] |= new_bitmask;
 
 		PieceObj piece = (PieceObj)piece_objs[index];
 		piece_objs[new_index] = piece;
 		piece_objs.Remove(index);
-		piece.set_coord(get_vec2_from_index(new_index));
+		piece.set_coord(GetVec2FromIndex(new_index));
 
 		turn_color ^= 1;
 		GD.Print($"BOARD- Piece Moved! Turn Color: {Enum.GetName(typeof(Piece.Color), turn_color)}");
 	}
 	// private methods
-	private int _calc_piece(ulong Bitmask, int index){
+	private int CalcPiece(ulong Bitmask, int index){
 		if ((Bitmask & 65535) != 0) {
 			if ((Bitmask & 255) != 0) {
 				return B_BACK_ROW[index & 7]; // Black Pieces
@@ -388,8 +394,8 @@ private ulong[] KingMoves = new ulong[64];
 		}
 		return -1;
 	}
-	private void _create_piece(int index, Vector2I coord, int piece_int){
-		string piece_string = get_piece_string(piece_int);
+	private void CreatePiece(int index, Vector2I coord, int piece_int){
+		string piece_string = GetPieceString(piece_int);
 		PieceObj piece = new PieceObj();
 		this.AddChild(piece);
 		piece.setup(coord, piece_string);
@@ -398,7 +404,7 @@ private ulong[] KingMoves = new ulong[64];
 	private ulong[] _precalc_knight_moves(){
 		ulong[] Moves = new ulong[64];
 		for (int i = 0; i < 64; i++) {
-			ulong Bitmask = get_bitmask(i);
+			ulong Bitmask = GetBitmask(i);
 
 			if ((Bitmask & 65535) == 0) { // can go 2 up
 				if ((Bitmask & 72340172838076673) == 0) { // can go 1 left
@@ -442,7 +448,7 @@ private ulong[] KingMoves = new ulong[64];
 	private ulong[] _precalc_king_moves(){
 		ulong[] Moves = new ulong[64];
 		for (int i = 0; i < 64; i++) {
-			ulong Bitmask = get_bitmask(i);
+			ulong Bitmask = GetBitmask(i);
 			if ((Bitmask & 255) == 0) { // can go up
 				Moves[i] |= Bitmask >> 8;
 
