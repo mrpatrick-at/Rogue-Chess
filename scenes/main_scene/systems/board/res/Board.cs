@@ -361,8 +361,6 @@ private ulong[] KingMoves = new ulong[64];
 		return Moves;
 	}
 	public void MovePiece(int OriginIndex, int TargetIndex) {
-		// Get Info
-		ulong OriginBitmask = GetBitmask(OriginIndex);
 		int PieceInt = GetPieceInt(OriginIndex);
 
 		int PieceType = GetPieceType(PieceInt);
@@ -371,12 +369,15 @@ private ulong[] KingMoves = new ulong[64];
 		int CaptureIndex = TargetIndex;
 		switch (PieceType){
 			case (int)Piece.Type.Pawn:
-				int Diffrence = OriginIndex - TargetIndex;
-				// GD.Print($"Dffrence: {Diffrence}, Abs: {Math.Abs(Diffrence)}");
-				if (Math.Abs(Diffrence) is 7 or 9) {
-					int Distance = (Math.Abs(Diffrence) - 8) * Math.Sign(Diffrence);
-					// GD.Print($"EnPassant! Diffence: {Diffrence}, Distance: {Distance}");
-					CaptureIndex = OriginIndex - Distance;
+				int TargetPieceInt = GetPieceInt(TargetIndex);
+				if (TargetPieceInt == -1) {
+					int Diffrence = OriginIndex - TargetIndex;
+					// GD.Print($"Dffrence: {Diffrence}, Abs: {Math.Abs(Diffrence)}");
+					if (Math.Abs(Diffrence) is 7 or 9) {
+						int Distance = (Math.Abs(Diffrence) - 8) * Math.Sign(Diffrence);
+						// GD.Print($"EnPassant! Diffence: {Diffrence}, Distance: {Distance}");
+						CaptureIndex = OriginIndex - Distance;
+				}
 				}
 				break;
 			
@@ -411,6 +412,7 @@ private ulong[] KingMoves = new ulong[64];
 		}
 		
 		// Move on Bitmask
+		ulong OriginBitmask = GetBitmask(OriginIndex);
 		ulong TargetBitmask = GetBitmask(TargetIndex);
 
 		BitBoard[PieceInt] &= ~OriginBitmask;
