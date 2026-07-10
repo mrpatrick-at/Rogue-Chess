@@ -8,7 +8,6 @@ public partial class BoardManager : AspectRatioContainer {
 // exports
 // public vars
 public Board board;
-
 // private vars
 // onready vars
 // built-in override methods

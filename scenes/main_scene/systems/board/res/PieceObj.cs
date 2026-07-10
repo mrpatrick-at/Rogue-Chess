@@ -24,7 +24,7 @@ private float y_offset;
 	public override void _Process(double delta){
 	}
 // public methods
-	public void setup(Vector2I starting_coord, String piece_name){
+	public void Setup(Vector2I starting_coord, String piece_name){
 		ulong starting_time = Time.GetTicksUsec();
 		GD.PrintRich("[color=Orange]Piece-[/color] Started Building Board");
 		coord = starting_coord;

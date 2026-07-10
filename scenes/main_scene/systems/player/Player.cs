@@ -38,7 +38,7 @@ public ulong selected_piece_moves;
 			highlighted_tiles.Add(index);
 
 			if (!board.IsEmpty(index)) {
-				PieceObj piece = (PieceObj)board.piece_objs[index];
+				PieceObj piece = (PieceObj)board.PieceObjs[index];
 				piece.highlight();
 				// highlighted_pieces.Add(index);
 			}
@@ -46,8 +46,8 @@ public ulong selected_piece_moves;
 		foreach (int tile in highlighted_tiles) {
 			if (tile != index) {
 				board.UnhighlightTile(tile);
-				if (board.piece_objs.ContainsKey(tile)) {
-					PieceObj piece = (PieceObj)board.piece_objs[tile];
+				if (board.PieceObjs.ContainsKey(tile)) {
+					PieceObj piece = (PieceObj)board.PieceObjs[tile];
 					piece.unhighlight();
 				}
 			}
@@ -97,7 +97,7 @@ public ulong selected_piece_moves;
 			if (board.IsValidIndex(index_below_mouse)) {
 				Vector2I coord = board.GetVec2FromIndex(index_below_mouse);
 				GD.Print($"PLAYER- Index: {index_below_mouse}, Coord: {coord}");
-				int piece_int = board.GetPieceIndex(index_below_mouse);
+				int piece_int = board.GetPieceInt(index_below_mouse);
 				if (piece_int != -1) {
 					String piece_string = board.GetPieceString(piece_int);
 					GD.Print($"PLAYER- Piece Type: {piece_string}");
