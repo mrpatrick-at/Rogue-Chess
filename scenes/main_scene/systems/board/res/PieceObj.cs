@@ -41,7 +41,7 @@ private float y_offset;
 		
 		ShaderMaterial mat = new ShaderMaterial();
 		mat.Shader = shader_res;
-		mat.SetShaderParameter("coord", coord);
+		mat.SetShaderParameter("Coord", coord);
 
 		this.Material = mat;
 		this.Scale = new Vector2I(8,8);
@@ -71,13 +71,13 @@ private float y_offset;
 	}
 	public void set_coord(Vector2I new_coord){
 		this.coord = new_coord;
-		((ShaderMaterial)Material).SetShaderParameter("coord", coord);
+		((ShaderMaterial)Material).SetShaderParameter("Coord", coord);
 		this.reset_highlight();
 		this.ZIndex = coord.Y;
 	}
 // private methods
 private void _set_shader_value(float value){
 	y_offset = value;
-	((ShaderMaterial)Material).SetShaderParameter("y_offset", y_offset);
+	((ShaderMaterial)Material).SetShaderParameter("YOffset", y_offset);
 }
 }

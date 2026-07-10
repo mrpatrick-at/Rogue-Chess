@@ -1,14 +1,18 @@
 shader_type canvas_item;
 
-uniform vec2 coord = vec2(0,0);
-uniform float y_offset = 0;
+uniform vec2 Coord = vec2(0,0);
+uniform float YOffset = 0;
 
 void vertex() {
-	vec2 grid_pos = vec2(
-		(coord.x * 16.0) + 8.0,
-		(coord.y * 16.0) - 4.0 - y_offset
+	// Positioning
+	vec2 AdjustedCoord = Coord * 16.0;
+	vec2 GridPos = vec2(
+		AdjustedCoord.x + 8.0,
+		AdjustedCoord.y - 4.0 - YOffset
 	);
-	VERTEX += grid_pos;
+	VERTEX += GridPos;
+	
+	// Unflip Texture
 	UV.y = 1.0 - UV.y;
 }
 

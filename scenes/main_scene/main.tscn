@@ -44,8 +44,8 @@ shader_parameter/TileStates = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_h5lh5"]
 shader = ExtResource("11_loo4n")
-shader_parameter/coord = Vector2(0, 0)
-shader_parameter/y_offset = 0.0
+shader_parameter/Coord = Vector2(0, 0)
+shader_parameter/YOffset = 0.0
 
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
