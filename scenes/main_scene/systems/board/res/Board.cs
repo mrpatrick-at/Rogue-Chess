@@ -95,7 +95,7 @@ private ulong[] KingMoves = new ulong[64];
 	}
 	public void HighlightTile(int Index, int highlight_type) {
 		tiles_highligt[Index] = highlight_type;
-		((ShaderMaterial)Material).SetShaderParameter("tile_states", tiles_highligt);
+		((ShaderMaterial)Material).SetShaderParameter("TileStates", tiles_highligt);
 	}
 	public void UnhighlightTile(int Index) {
 		HighlightTile(Index, 0);
@@ -114,14 +114,12 @@ private ulong[] KingMoves = new ulong[64];
 	}
 	public int GetPieceInt(int Index) { // -1 means no piece
 		ulong Bitmask = GetBitmask(Index);
-		int PieceInt = -1;
-		for(int i = 0; i < 12; i++){
-			if((BitBoard[i] & Bitmask) != 0){
-				PieceInt = i;
-				break;
+		for(int PieceInt = 0; PieceInt < 12; PieceInt++){
+			if((BitBoard[PieceInt] & Bitmask) != 0){
+				return PieceInt;
 			};
 		};
-		return PieceInt;
+		return -1;
 	}
 	public int GetPieceType(int PieceInt) {
 		return PieceInt % 6;
@@ -132,12 +130,6 @@ private ulong[] KingMoves = new ulong[64];
 	public string GetPieceString(int PieceInt) {
 		return Enum.GetName(typeof(Piece.Name), PieceInt);
 	}
-	public bool IsPieceWhite(int PieceInt) {
-		if(PieceInt < 6){
-			return true;
-		}
-		return false;
-	}
 	public bool IsEmpty(int Index) {
 		int PieceInt = GetPieceInt(Index);
 		if (PieceInt == -1) {
@@ -147,11 +139,9 @@ private ulong[] KingMoves = new ulong[64];
 	}
 	public bool IsEnemy(int Index){
 		int PieceInt = GetPieceInt(Index);
-		bool is_white = IsPieceWhite(PieceInt);
-		
-		int piece_color = is_white ? (int)Piece.Color.White : (int)Piece.Color.Black;
+		int PieceColor = GetPieceColor(PieceInt);
 
-		if (piece_color == TurnColor) {
+		if (PieceColor == TurnColor) {
 			return false;
 		}
 		return true;
@@ -377,7 +367,7 @@ private ulong[] KingMoves = new ulong[64];
 						int Distance = (Math.Abs(Diffrence) - 8) * Math.Sign(Diffrence);
 						// GD.Print($"EnPassant! Diffence: {Diffrence}, Distance: {Distance}");
 						CaptureIndex = OriginIndex - Distance;
-				}
+					}
 				}
 				break;
 			
@@ -426,15 +416,6 @@ private ulong[] KingMoves = new ulong[64];
 
 		TurnColor = 1 & ~TurnColor;
 		GD.Print($"BOARD- Piece Moved! Turn Color: {Enum.GetName(typeof(Piece.Color), TurnColor)}");
-	}
-	public void DeletePiece(int TargetIndex, int TargetPieceInt, ulong TargetBitmask) {
-		BitBoard[TargetPieceInt] &= ~TargetBitmask;
-
-			// Clear Piece Object
-			PieceObj TargetPiece = (PieceObj)PieceObjs[TargetIndex];
-			this.RemoveChild(TargetPiece);
-			TargetPiece.Free();
-			PieceObjs.Remove(TargetIndex);
 	}
 	// private methods
 	private int CalcPiece(ulong Bitmask, int Index){

@@ -1,39 +1,36 @@
 shader_type canvas_item;
-uniform vec4 white_tile_color : source_color = vec4(1, 1, 1, 1.0);
-uniform vec4 black_tile_color : source_color = vec4(0, 0, 0, 1.0);
 
-uniform vec4 hover_color : source_color = vec4(0.0, 0.0, 1.0, 0.4);
-uniform vec4 move_color : source_color = vec4(0.2, 1.0, 0.2, 0.4);
-uniform vec4 capture_color : source_color = vec4(0.9, 0.0, 0.0, 0.4);
-uniform vec4 check_color : source_color = vec4(0.9, 0.0, 0.0, 0.4);
+const vec4 TileColors[2] = vec4[2](
+	vec4(1, 1, 1, 1.0),
+	vec4(0, 0, 0, 1.0)
+);
 
-uniform int tile_states[64];
+const vec4 OverlayColors[5] = vec4[5](
+	vec4(0.0, 0.0, 0.0, 0.0), // None
+	vec4(0.0, 0.0, 1.0, 0.4), // hover
+	vec4(0.2, 1.0, 0.2, 0.4), // Moves
+	vec4(0.9, 0.0, 0.0, 0.4), // Captures
+	vec4(0.9, 0.0, 0.0, 0.4) // Checks
+);
+
+uniform int TileStates[64];
 
 //void vertex() {
 	//VERTEX.y *= -1.;
 //}
 
 void fragment() {
-	vec2 grid_pos = floor(UV * 8.0); // pos of tile on grid
+	vec2 GridPos = floor(UV * 8.0);
 	
-	bool is_black = mod(grid_pos.x + grid_pos.y, 2.0) == 1.0; // if remainder of both numbers added aint 1 it aint black
-	vec4 final_color = is_black ? black_tile_color : white_tile_color;
+	int ColorIndex = int(mod(GridPos.x + GridPos.y, 2.0));
+	vec4 FinalColor = TileColors[ColorIndex];
 	
-	int array_index = int(grid_pos.y * 8.0 + grid_pos.x);
-	int current_state = tile_states[array_index];
+	int StateIndex = int(GridPos.y * 8.0 + GridPos.x);
+	int CurrentState = TileStates[StateIndex];
 	
-	vec4 overlay = vec4(0.0);
+	vec4 Overlay = OverlayColors[CurrentState];
 	
-	if (current_state == 1) {
-		overlay = hover_color; // blue for hover yehaw
-	} else if (current_state == 2) {
-		overlay = move_color; // green for valid moves
-	} else if (current_state == 3) {
-		overlay = capture_color;
-	} else if (current_state == 4) {
-		overlay = check_color;
-	}
-	final_color.rgb = mix(final_color.rgb, overlay.rgb, overlay.a);
+	FinalColor.rgb = mix(FinalColor.rgb, Overlay.rgb, Overlay.a);
 	
-	COLOR = final_color;
+	COLOR = FinalColor;
 }
