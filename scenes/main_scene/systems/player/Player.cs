@@ -1,3 +1,4 @@
+using Chess.Consts;
 using Godot;
 using Godot.Collections;
 using System;
@@ -12,7 +13,7 @@ public partial class Player : Node2D
 public Camera2D camera;
 public Board board;
 public int IndexBelowMouse = 0;
-public List<int> highlighted_tiles = [];
+public List<int> HighlightedTiles = [];
 public bool IsPieceSelected = false;
 public int SelectedPieceIndex = 0;
 public ulong SelectedPieceMoves;
@@ -33,9 +34,9 @@ public ulong SelectedPieceMoves;
 		}
 
 		int Index = IndexBelowMouse;
-		if (board.IsValidIndex(Index) && !highlighted_tiles.Contains(Index)) {
+		if (board.IsValidIndex(Index) && !HighlightedTiles.Contains(Index)) {
 			board.HighlightTile(Index, 1);
-			highlighted_tiles.Add(Index);
+			HighlightedTiles.Add(Index);
 
 			if (!board.IsEmpty(Index)) {
 				PieceObj piece = (PieceObj)board.PieceObjs[Index];
@@ -43,7 +44,7 @@ public ulong SelectedPieceMoves;
 				// highlighted_pieces.Add(Index);
 			}
 		}
-		foreach (int tile in highlighted_tiles) {
+		foreach (int tile in HighlightedTiles) {
 			if (tile != Index) {
 				board.UnhighlightTile(tile);
 				if (board.PieceObjs.ContainsKey(tile)) {
@@ -52,7 +53,7 @@ public ulong SelectedPieceMoves;
 				}
 			}
 		}
-		highlighted_tiles.RemoveAll(id => id != Index);
+		HighlightedTiles.RemoveAll(id => id != Index);
 
 	}
 
@@ -76,11 +77,19 @@ public ulong SelectedPieceMoves;
 					SelectedPieceIndex = Index;
 					SelectedPieceMoves = board.GetPieceMoves(Index);
 					IsPieceSelected = true;
-					
-					for (int i = 0; i < 64; i++) { // Tidy this Later
-						if ((SelectedPieceMoves & (1UL << i)) == (1UL << i)) {
-							board.HighlightTile(i, 1);
-							highlighted_tiles.Add(i);
+
+					// Highlight Tiles
+					int EnemyColor = 1 & ~board.TurnColor;
+					ulong EnemyPieces = board.GetOccupiedBitBoard(EnemyColor);
+					for (int i = 0; i < 64; i++) {
+						ulong Bitmask = 1UL << i;
+						if ((SelectedPieceMoves & Bitmask) != 0) {
+							HighlightedTiles.Add(i);
+							if ((EnemyPieces & Bitmask) != 0) {
+								board.HighlightTile(i, (int)Tile.Highlight.Capture);
+								continue;
+							}
+							board.HighlightTile(i, (int)Tile.Highlight.Move);
 						}
 					}
 

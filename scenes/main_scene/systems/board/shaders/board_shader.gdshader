@@ -7,7 +7,7 @@ const vec4 TileColors[2] = vec4[2](
 
 const vec4 OverlayColors[5] = vec4[5](
 	vec4(0.0, 0.0, 0.0, 0.0), // None
-	vec4(0.0, 0.0, 1.0, 0.4), // hover
+	vec4(0.0, 0.0, 1.0, 0.4), // Hover
 	vec4(0.2, 1.0, 0.2, 0.4), // Moves
 	vec4(0.9, 0.0, 0.0, 0.4), // Captures
 	vec4(0.9, 0.0, 0.0, 0.4) // Checks

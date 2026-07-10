@@ -16,7 +16,7 @@ public class Piece {
 		B_KNIGHT = 8,
 		B_BISHOP = 9,
 		B_QUEEN = 10,
-		B_KING = 11,
+		B_KING = 11
 	}
 	public enum Type : int {
 		Pawn = 0,
@@ -24,13 +24,22 @@ public class Piece {
 		Knight = 2,
 		Bishop = 3,
 		Queen = 4,
-		King = 5,
+		King = 5
 	}
 	public enum Color : int {
-	White = 0,
-	Black = 1,
-}
+		White = 0,
+		Black = 1
+	}
 
+}
+public class Tile {
+	public enum Highlight : int {
+		None = 0,
+		Hover = 1,
+		Move = 2,
+		Capture = 3,
+		Check = 4,
+	}
 }
 public enum SLIDE_TYPE : int {
 	ROOK = 0,
