@@ -5,7 +5,7 @@ using Chess.Consts;
 using System.Numerics;
 [GlobalClass]
 // enums
-public partial class BoardManager : AspectRatioContainer {
+public partial class BoardManager : CenterContainer {
 	// consts
 	// exports
 	// signals

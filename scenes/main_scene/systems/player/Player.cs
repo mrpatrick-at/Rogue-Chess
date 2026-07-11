@@ -9,9 +9,12 @@ public partial class Player : Camera2D {
 	// consts
 	// exports
 	// signals
+	[Signal]
+	public delegate void ToggleEscMenuEventHandler();
 	// public vars
 	public Board board;
-	public bool IsMenuOpen = true;
+	public CenterContainer BoardContainer;
+	public bool IsMenuOpen = false;
 	public int IndexBelowMouse = 0;
 	public List<int> HighlightedTiles = [];
 	public bool IsPieceSelected = false;
@@ -22,7 +25,9 @@ public partial class Player : Camera2D {
 	// built-in override methods
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		board = GetNode<Board>("CenterContainer/BoardManager/Board");
+		BoardContainer = GetNode<CenterContainer>("BoardContainer");
+		board = new Board();
+		BoardContainer.AddChild(board);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -59,7 +64,10 @@ public partial class Player : Camera2D {
     public override void _Input(InputEvent @event) {
         base._Input(@event);
 		if (@event is InputEventMouseButton MouseInput) {
-			MouseButtons(MouseInput);
+			HandleMouseInput(MouseInput);
+		}
+		if (@event is InputEventKey KeyInput) {
+			HandleKeyInput(KeyInput);
 		}
     }
 	public void _OnMenuStateChanged(bool TmpIsMenuOpen) {
@@ -69,7 +77,7 @@ public partial class Player : Camera2D {
 // public methods
 
 // private methods
-	private void MouseButtons(InputEventMouseButton MouseInput) {
+	private void HandleMouseInput(InputEventMouseButton MouseInput) {
 		if (!board.IsValidIndex(IndexBelowMouse)) {
 			GD.Print($"PLAYER- Tile not in Board");
 			return;
@@ -121,6 +129,11 @@ public partial class Player : Camera2D {
 			GD.Print("PLAYER- Middle Mouse Button Detected");
 		}
 
+	}
+	private void HandleKeyInput(InputEventKey KeyInput) {
+		if (KeyInput.IsActionReleased("_input_esc")) {
+			EmitSignal(SignalName.ToggleEscMenu);
+		}
 	}
 }
 

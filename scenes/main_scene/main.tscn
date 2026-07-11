@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://bxmeugje5h5ew"]
 
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://scenes/main_scene/main.gd" id="1_2w4vt"]
-[ext_resource type="Script" uid="uid://bpq3ymg73huuh" path="res://scenes/main_scene/systems/board/BoardManager.cs" id="2_h5lh5"]
 [ext_resource type="Script" uid="uid://34lhib8w4sru" path="res://scenes/main_scene/systems/player/Player.cs" id="3_h5lh5"]
 [ext_resource type="Script" uid="uid://c6sn878yudmoj" path="res://ui/UIManager.cs" id="5_g0xvp"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
@@ -42,16 +41,14 @@ script = ExtResource("1_2w4vt")
 zoom = Vector2(0.5, 0.5)
 script = ExtResource("3_h5lh5")
 
-[node name="CenterContainer" type="CenterContainer" parent="Player" unique_id=80139206]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="BoardContainer" type="CenterContainer" parent="Player" unique_id=2053324086]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="BoardManager" type="AspectRatioContainer" parent="Player/CenterContainer" unique_id=581804202]
-layout_mode = 2
-script = ExtResource("2_h5lh5")
 
 [node name="Foreground" type="CanvasLayer" parent="." unique_id=786620078]
 layer = 2
@@ -80,6 +77,7 @@ script = ExtResource("5_g0xvp")
 layout_mode = 1
 
 [node name="EscMenu" parent="Foreground/UIManager" unique_id=5292294 instance=ExtResource("9_x6nru")]
+visible = false
 layout_mode = 1
 
 [node name="LoseMenu" parent="Foreground/UIManager" unique_id=1947740458 instance=ExtResource("10_ix53w")]
@@ -102,6 +100,7 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("10_o15j2")
 
+[connection signal="ToggleEscMenu" from="Player" to="Foreground/UIManager" method="ToggleEscMenu"]
 [connection signal="MenuStateChanged" from="Foreground/UIManager" to="Player" method="_OnMenuStateChanged"]
 [connection signal="ContinuePressed" from="Foreground/UIManager/EscMenu" to="Foreground/UIManager" method="_OnContinuePressed"]
 [connection signal="MainMenuPressed" from="Foreground/UIManager/EscMenu" to="Foreground/UIManager" method="_OnMainMenuPressed"]
