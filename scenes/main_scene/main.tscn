@@ -3,16 +3,13 @@
 [ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://scenes/main_scene/main.gd" id="1_2w4vt"]
 [ext_resource type="Script" uid="uid://bpq3ymg73huuh" path="res://scenes/main_scene/systems/board/BoardManager.cs" id="2_h5lh5"]
 [ext_resource type="Script" uid="uid://34lhib8w4sru" path="res://scenes/main_scene/systems/player/Player.cs" id="3_h5lh5"]
+[ext_resource type="Script" uid="uid://c6sn878yudmoj" path="res://ui/UIManager.cs" id="5_g0xvp"]
 [ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
 [ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="8_0p6xv"]
-[ext_resource type="Script" uid="uid://cskpf4n74la46" path="res://ui/ingame_ui/main.gd" id="8_loo4n"]
 [ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="9_5rdu2"]
 [ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://ui/esc_menu/main.tscn" id="9_x6nru"]
 [ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://ui/lose_menu/main.tscn" id="10_ix53w"]
 [ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
-[ext_resource type="Shader" uid="uid://dutrkpk5bv0qu" path="res://scenes/main_scene/systems/board/shaders/piece_shader.gdshader" id="11_loo4n"]
-[ext_resource type="Shader" uid="uid://c0q74rp2ahinc" path="res://scenes/main_scene/systems/board/shaders/board_shader.gdshader" id="12_loo4n"]
-[ext_resource type="Texture2D" uid="uid://coaetw1cksjft" path="res://icon.svg" id="13_5e1wh"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_efxa6"]
 shader = ExtResource("6_nr3ba")
@@ -38,80 +35,62 @@ shader_parameter/spin_amount = 0.25
 shader_parameter/pixel_filter = 745.0
 shader_parameter/is_rotating = false
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5e1wh"]
-shader = ExtResource("12_loo4n")
-shader_parameter/TileStates = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_h5lh5"]
-shader = ExtResource("11_loo4n")
-shader_parameter/Coord = Vector2(0, 0)
-shader_parameter/YOffset = 0.0
-
 [node name="Main" type="Node" unique_id=585145888]
 script = ExtResource("1_2w4vt")
 
-[node name="World" type="Node2D" parent="." unique_id=390371608]
+[node name="Player" type="Camera2D" parent="." unique_id=574600234]
+zoom = Vector2(0.5, 0.5)
+script = ExtResource("3_h5lh5")
 
-[node name="BoardManager" type="AspectRatioContainer" parent="World" unique_id=581804202]
-custom_minimum_size = Vector2(1024, 1024)
+[node name="CenterContainer" type="CenterContainer" parent="Player" unique_id=80139206]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -512.0
-offset_top = -512.0
-offset_right = 512.0
-offset_bottom = 512.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="BoardManager" type="AspectRatioContainer" parent="Player/CenterContainer" unique_id=581804202]
+layout_mode = 2
 script = ExtResource("2_h5lh5")
 
-[node name="Player" type="Node2D" parent="World" unique_id=699846906]
-script = ExtResource("3_h5lh5")
-
-[node name="Camera2D" type="Camera2D" parent="World/Player" unique_id=661107056]
-visible = false
-zoom = Vector2(0.5, 0.5)
-limit_left = -19200
-limit_top = -10800
-limit_right = 19200
-limit_bottom = 10800
-limit_smoothed = true
-position_smoothing_enabled = true
-
-[node name="Foreground" type="CanvasLayer" parent="World" unique_id=786620078]
+[node name="Foreground" type="CanvasLayer" parent="." unique_id=786620078]
 layer = 2
 
-[node name="VhsFilter" type="TextureRect" parent="World/Foreground" unique_id=2109015937]
+[node name="VhsFilter" type="TextureRect" parent="Foreground" unique_id=2109015937]
 visible = false
 z_index = -1
 material = SubResource("ShaderMaterial_efxa6")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 64.0
-offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("CanvasTexture_43pjp")
 
-[node name="EscMenu" parent="World/Foreground" unique_id=5292294 instance=ExtResource("9_x6nru")]
+[node name="UIManager" type="Control" parent="Foreground" unique_id=16941110]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_g0xvp")
+
+[node name="IngameUI" parent="Foreground/UIManager" unique_id=693206669 instance=ExtResource("8_0p6xv")]
+layout_mode = 1
+
+[node name="EscMenu" parent="Foreground/UIManager" unique_id=5292294 instance=ExtResource("9_x6nru")]
+layout_mode = 1
+
+[node name="LoseMenu" parent="Foreground/UIManager" unique_id=1947740458 instance=ExtResource("10_ix53w")]
 visible = false
-script = null
+layout_mode = 1
 
-[node name="LoseMenu" parent="World/Foreground" unique_id=1947740458 instance=ExtResource("10_ix53w")]
-visible = false
-script = null
-
-[node name="IngameUI" parent="World/Foreground" unique_id=693206669 instance=ExtResource("8_0p6xv")]
-script = ExtResource("8_loo4n")
-
-[node name="Background" type="CanvasLayer" parent="World" unique_id=764705812]
+[node name="Background" type="CanvasLayer" parent="." unique_id=764705812]
 layer = -1
 visible = false
 
-[node name="BackgroundImage" type="TextureRect" parent="World/Background" unique_id=1815771888]
+[node name="BackgroundImage" type="TextureRect" parent="Background" unique_id=1815771888]
 show_behind_parent = true
 material = SubResource("ShaderMaterial_4c57u")
 anchors_preset = 15
@@ -123,15 +102,9 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("10_o15j2")
 
-[node name="ShaderPrecompiler" type="Node2D" parent="." unique_id=257119363]
-visible = false
-
-[node name="BoardShader" type="ColorRect" parent="ShaderPrecompiler" unique_id=2038663416]
-material = SubResource("ShaderMaterial_5e1wh")
-custom_minimum_size = Vector2(1024, 1024)
-offset_right = 1024.0
-offset_bottom = 1024.0
-
-[node name="PieceShader" type="MeshInstance2D" parent="ShaderPrecompiler" unique_id=891350435]
-material = SubResource("ShaderMaterial_h5lh5")
-texture = ExtResource("13_5e1wh")
+[connection signal="MenuStateChanged" from="Foreground/UIManager" to="Player" method="_OnMenuStateChanged"]
+[connection signal="ContinuePressed" from="Foreground/UIManager/EscMenu" to="Foreground/UIManager" method="_OnContinuePressed"]
+[connection signal="MainMenuPressed" from="Foreground/UIManager/EscMenu" to="Foreground/UIManager" method="_OnMainMenuPressed"]
+[connection signal="OptionsPressed" from="Foreground/UIManager/EscMenu" to="Foreground/UIManager" method="_OnOptionsPressed"]
+[connection signal="QuitPressed" from="Foreground/UIManager/EscMenu" to="Foreground/UIManager" method="_OnQuitPressed"]
+[connection signal="RestartPressed" from="Foreground/UIManager/EscMenu" to="Foreground/UIManager" method="_OnRestartPressed"]

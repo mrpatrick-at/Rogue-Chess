@@ -5,11 +5,11 @@ using Chess.Consts;
 using System.Numerics;
 using System.ComponentModel.DataAnnotations;
 [GlobalClass]
-public partial class Board : ColorRect
-{
-	// enums
+// enums
+public partial class Board : ColorRect {
 // consts
 // exports
+// signals
 // public vars
 public ulong[] BitBoard = new ulong[12];
 public Dictionary PieceObjs = [];
@@ -30,14 +30,13 @@ private ulong[] KingMoves = new ulong[64];
 // onready vars
 // built-in overide methods
 	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
+	public override void _Ready() {
 		BuildBoard();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
+	public override void _Process(double delta) {
+
 	}
 
 // public methods
@@ -46,7 +45,7 @@ private ulong[] KingMoves = new ulong[64];
 		GD.PrintRich("[color=Springgreen]BOARD-[/color] Started Building Board");
 		this.Name = "Board";
 
-		this.Size = new Vector2I(1024, 1024);
+		this.CustomMinimumSize = new Vector2I(1024, 1024);
 		mat.Shader =  shader_res;
 		this.Material = mat;
 		float shader_ending_time = (Godot.Time.GetTicksUsec() - starting_time) / 1000f;
@@ -167,7 +166,7 @@ private ulong[] KingMoves = new ulong[64];
 					break;
 
 				case (int)Piece.Type.Rook:
-					Moves[PieceInt] = GetSlideMoves(PieceMask, AllPieces, (int)SLIDE_TYPE.ROOK);
+					Moves[PieceInt] = GetSlideMoves(PieceMask, AllPieces, (int)Piece.SlideType.Rook);
 					break;
 
 				case (int)Piece.Type.Knight:
@@ -175,11 +174,11 @@ private ulong[] KingMoves = new ulong[64];
 					break;
 
 				case (int)Piece.Type.Bishop:
-					Moves[PieceInt] = GetSlideMoves(PieceMask, AllPieces, (int)SLIDE_TYPE.BISHOP);
+					Moves[PieceInt] = GetSlideMoves(PieceMask, AllPieces, (int)Piece.SlideType.Bishop);
 					break;
 
 				case (int)Piece.Type.Queen:
-					Moves[PieceInt] = GetSlideMoves(PieceMask, AllPieces, (int)SLIDE_TYPE.ROOK) | GetSlideMoves(PieceMask, AllPieces, (int)SLIDE_TYPE.BISHOP);
+					Moves[PieceInt] = GetSlideMoves(PieceMask, AllPieces, (int)Piece.SlideType.Rook) | GetSlideMoves(PieceMask, AllPieces, (int)Piece.SlideType.Bishop);
 					break;
 
 				case (int)Piece.Type.King:
@@ -214,7 +213,7 @@ private ulong[] KingMoves = new ulong[64];
 				break;
 			
 			case (int)Piece.Type.Rook:
-				Moves = GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.ROOK);
+				Moves = GetSlideMoves(Bitmask, AllPieces, (int)Piece.SlideType.Rook);
 				break;
 			
 			case (int)Piece.Type.Knight:
@@ -222,11 +221,11 @@ private ulong[] KingMoves = new ulong[64];
 				break;
 
 			case (int)Piece.Type.Bishop:
-				Moves = GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.BISHOP);
+				Moves = GetSlideMoves(Bitmask, AllPieces, (int)Piece.SlideType.Bishop);
 				break;
 
 			case (int)Piece.Type.Queen:
-				Moves = GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.ROOK) | GetSlideMoves(Bitmask, AllPieces, (int)SLIDE_TYPE.BISHOP);
+				Moves = GetSlideMoves(Bitmask, AllPieces, (int)Piece.SlideType.Rook) | GetSlideMoves(Bitmask, AllPieces, (int)Piece.SlideType.Bishop);
 				break;
 
 			case (int)Piece.Type.King:
@@ -285,7 +284,7 @@ private ulong[] KingMoves = new ulong[64];
 			int up_tiles = Coord.Y;
 			int down_tiles = 7 - Coord.Y;
 
-		if (slide_type == (int)SLIDE_TYPE.ROOK){
+		if (slide_type == (int)Piece.SlideType.Rook){
 			for (int x = 0; x < left_tiles; x++) {
 				ulong step_bitmask =  Bitmask >> (x + 1);
 				Moves |= step_bitmask;
@@ -524,4 +523,28 @@ private ulong[] KingMoves = new ulong[64];
 		}
 		return Moves;
 	}
+}
+
+public partial class DataBoard {
+	// public vars
+	public ulong[] BitBoard = new ulong[12];
+
+	// public funcs
+	// public ulong GetOccupiedBitBoard(int color) {
+	// 	ulong occupied_BitBoard = 0UL;
+	// 	int start_index = color * 6;
+	// 	for(int i = 0; i < 6; i++){
+	// 		occupied_BitBoard |= BitBoard[start_index + i];
+	// 	};
+	// 	return occupied_BitBoard;
+	// }
+	// public int GetPieceInt(int Index) { // -1 means no piece
+	// 	ulong Bitmask = GetBitmask(Index);
+	// 	for(int PieceInt = 0; PieceInt < 12; PieceInt++){
+	// 		if((BitBoard[PieceInt] & Bitmask) != 0){
+	// 			return PieceInt;
+	// 		};
+	// 	};
+	// 	return -1;
+	// }
 }

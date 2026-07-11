@@ -30,7 +30,10 @@ public class Piece {
 		White = 0,
 		Black = 1
 	}
-
+	public enum SlideType : int {
+		Rook = 0,
+		Bishop = 1
+	}
 }
 public class Tile {
 	public enum Highlight : int {
@@ -40,8 +43,4 @@ public class Tile {
 		Capture = 3,
 		Check = 4,
 	}
-}
-public enum SLIDE_TYPE : int {
-	ROOK = 0,
-	BISHOP = 1,
 }
