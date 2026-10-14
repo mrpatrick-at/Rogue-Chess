@@ -1,17 +1,17 @@
-[gd_scene format=3 uid="uid://bxmeugje5h5ew"]
+[gd_scene format=3 uid="uid://bmkhncrdkmqvl"]
 
-[ext_resource type="Script" uid="uid://dvsjgyqqfk2v8" path="res://scenes/main_scene/main.gd" id="1_2w4vt"]
-[ext_resource type="Script" uid="uid://34lhib8w4sru" path="res://scenes/main_scene/systems/player/Player.cs" id="3_h5lh5"]
-[ext_resource type="Script" uid="uid://c6sn878yudmoj" path="res://ui/UIManager.cs" id="5_g0xvp"]
-[ext_resource type="Shader" uid="uid://dxbn1e7b1ekts" path="res://assets/shaders/vhs.gdshader" id="6_nr3ba"]
-[ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="8_0p6xv"]
-[ext_resource type="Shader" uid="uid://h3v8q3arftpo" path="res://assets/shaders/background_refrence.gdshader" id="9_5rdu2"]
-[ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://ui/esc_menu/main.tscn" id="9_x6nru"]
-[ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://ui/lose_menu/main.tscn" id="10_ix53w"]
-[ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="10_o15j2"]
+[ext_resource type="Script" uid="uid://culehhpt7nioc" path="res://scenes/main/Main.cs" id="1_fihwq"]
+[ext_resource type="Script" uid="uid://34lhib8w4sru" path="res://scenes/main/systems/player/Player.cs" id="2_whwr3"]
+[ext_resource type="Shader" uid="uid://bg8a06kno8hpe" path="res://assets/shaders/overlay/vhs.gdshader" id="3_w0vd4"]
+[ext_resource type="Script" uid="uid://c6sn878yudmoj" path="res://ui/UIManager.cs" id="4_cmo8q"]
+[ext_resource type="PackedScene" uid="uid://bgxr68chixp88" path="res://ui/ingame_ui/main.tscn" id="5_f8lpr"]
+[ext_resource type="PackedScene" uid="uid://qfk2ipuga0om" path="res://ui/esc_menu/main.tscn" id="6_drc3f"]
+[ext_resource type="PackedScene" uid="uid://kbo1u2wwtp6p" path="res://ui/lose_menu/main.tscn" id="7_ou7wu"]
+[ext_resource type="Shader" uid="uid://dkh5r36qk1cad" path="res://assets/shaders/background/background_refrence.gdshader" id="8_g0g34"]
+[ext_resource type="Texture2D" uid="uid://dony4jtkbd8sa" path="res://assets/images/background/temp_background.jpg" id="9_7xhte"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_efxa6"]
-shader = ExtResource("6_nr3ba")
+shader = ExtResource("3_w0vd4")
 shader_parameter/see_uv = false
 shader_parameter/cam_passthru = true
 shader_parameter/offset = 0.001
@@ -20,7 +20,7 @@ shader_parameter/overlay_color = Color(0, 0.078431375, 0, 1)
 [sub_resource type="CanvasTexture" id="CanvasTexture_43pjp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4c57u"]
-shader = ExtResource("9_5rdu2")
+shader = ExtResource("8_g0g34")
 shader_parameter/see_uv = false
 shader_parameter/spin_rotation_speed = 2.0
 shader_parameter/move_speed = 7.0
@@ -34,14 +34,15 @@ shader_parameter/spin_amount = 0.25
 shader_parameter/pixel_filter = 745.0
 shader_parameter/is_rotating = false
 
-[node name="Main" type="Node" unique_id=585145888]
-script = ExtResource("1_2w4vt")
+[node name="Main" type="Node2D" unique_id=1018058624]
+script = ExtResource("1_fihwq")
 
 [node name="Player" type="Camera2D" parent="." unique_id=574600234]
-zoom = Vector2(0.5, 0.5)
-script = ExtResource("3_h5lh5")
+zoom = Vector2(0.7, 0.7)
+script = ExtResource("2_whwr3")
 
 [node name="BoardContainer" type="CenterContainer" parent="Player" unique_id=2053324086]
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -52,6 +53,7 @@ grow_vertical = 2
 
 [node name="Foreground" type="CanvasLayer" parent="." unique_id=786620078]
 layer = 2
+visible = false
 
 [node name="VhsFilter" type="TextureRect" parent="Foreground" unique_id=2109015937]
 visible = false
@@ -71,16 +73,16 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("5_g0xvp")
+script = ExtResource("4_cmo8q")
 
-[node name="IngameUI" parent="Foreground/UIManager" unique_id=693206669 instance=ExtResource("8_0p6xv")]
+[node name="IngameUI" parent="Foreground/UIManager" unique_id=693206669 instance=ExtResource("5_f8lpr")]
 layout_mode = 1
 
-[node name="EscMenu" parent="Foreground/UIManager" unique_id=5292294 instance=ExtResource("9_x6nru")]
+[node name="EscMenu" parent="Foreground/UIManager" unique_id=5292294 instance=ExtResource("6_drc3f")]
 visible = false
 layout_mode = 1
 
-[node name="LoseMenu" parent="Foreground/UIManager" unique_id=1947740458 instance=ExtResource("10_ix53w")]
+[node name="LoseMenu" parent="Foreground/UIManager" unique_id=1947740458 instance=ExtResource("7_ou7wu")]
 visible = false
 layout_mode = 1
 
@@ -98,7 +100,7 @@ offset_right = 1206.0
 offset_bottom = 1080.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("10_o15j2")
+texture = ExtResource("9_7xhte")
 
 [connection signal="ToggleEscMenu" from="Player" to="Foreground/UIManager" method="ToggleEscMenu"]
 [connection signal="MenuStateChanged" from="Foreground/UIManager" to="Player" method="_OnMenuStateChanged"]

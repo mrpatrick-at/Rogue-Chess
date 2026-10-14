@@ -13,6 +13,7 @@ config_version=5
 config/name="Rogue Chess"
 config/description="Chess that is Rogue"
 config/version="v0.2"
+config/tags=PackedStringArray("game")
 run/main_scene="uid://bxmeugje5h5ew"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"

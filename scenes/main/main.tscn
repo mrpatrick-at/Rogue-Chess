@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bxmeugje5h5ew"]
+
+[ext_resource type="Script" uid="uid://culehhpt7nioc" path="res://scenes/main/Main.cs" id="1_b1x3f"]
+[ext_resource type="Shader" uid="uid://bad3vkc507sm5" path="res://assets/shaders/board/board.gdshader" id="2_iuonh"]
+[ext_resource type="Texture2D" uid="uid://nnwu01mw2nv0" path="res://assets/images/pieces/spritesheet.png" id="3_k2fmo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ln6rh"]
+shader = ExtResource("2_iuonh")
+shader_parameter/BoardSize = 8
+shader_parameter/SpriteSheet = ExtResource("3_k2fmo")
+shader_parameter/BrightTileColor = Vector4(1, 1, 1, 1)
+shader_parameter/DarkTileColor = Vector4(0, 0, 0, 1)
+shader_parameter/PiecePosistions = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/TileStates = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/PieceOffsets = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[node name="Main" type="Node2D" unique_id=1018058624]
+script = ExtResource("1_b1x3f")
+
+[node name="ShaderPreview" type="ColorRect" parent="." unique_id=1612084078]
+material = SubResource("ShaderMaterial_ln6rh")
+offset_right = 40.0
+offset_bottom = 40.0

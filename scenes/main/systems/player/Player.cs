@@ -95,17 +95,20 @@ public partial class Player : Camera2D {
 				// Highlight Tiles
 				int EnemyColor = 1 & ~board.TurnColor;
 				ulong EnemyPieces = board.GetOccupiedBitBoard(EnemyColor);
+				int[] HighlightTiles = new int[64];
+				HighlightTiles[Index] = (int)Tile.Highlight.Hover;
 				for (int i = 0; i < 64; i++) {
 					ulong Bitmask = 1UL << i;
 					if ((SelectedPieceMoves & Bitmask) != 0) {
 						HighlightedTiles.Add(i);
 						if ((EnemyPieces & Bitmask) != 0) {
-							board.HighlightTile(i, (int)Tile.Highlight.Capture);
+							HighlightTiles[i] = (int)Tile.Highlight.Capture;
 							continue;
 						}
-						board.HighlightTile(i, (int)Tile.Highlight.Move);
+						HighlightTiles[i] = (int)Tile.Highlight.Move;
 					}
 				}
+				board.SetHighlightTiles(HighlightTiles);
 
 			} else {
 				if ((SelectedPieceMoves & board.GetBitmask(Index)) != 0) {
@@ -113,8 +116,6 @@ public partial class Player : Camera2D {
 				}
 				IsPieceSelected = false;
 			}
-
-
 		}
 		if (MouseInput.IsActionPressed("_input_mouse_right")) {
 			Vector2I coord = board.GetVec2FromIndex(Index);

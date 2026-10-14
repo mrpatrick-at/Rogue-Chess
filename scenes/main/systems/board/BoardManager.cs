@@ -1,29 +1,19 @@
 using Godot;
 using System;
 using System.Globalization;
-using Chess.Consts;
 using System.Numerics;
-[GlobalClass]
+using Chess.Consts;
+namespace Chess.BoardManager;
+
 // enums
-public partial class BoardManager : CenterContainer {
+public static class BoardManager {
 	// consts
 	// exports
 	// signals
 	// public vars
-	public Board board;
 	// private vars
 	// onready vars
 	// built-in override methods
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready() {
-		board = new Board();
-		this.AddChild(board);
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta) {
-
-	}
 
 	// public funcs
 
