@@ -31,6 +31,9 @@ public partial class Main : Node2D {
     private ulong BlackBitboard = 0;
     // Selected Piece Vars
     ulong SelectedPieceMoves = 0;
+    int SelectedPieceTile = 0;
+    int SelectedPieceType = 0;
+    ulong SelectedPieceBitmask = 0;
     private int[] PiecePositions = new int[64];
     // Tile Vars
     private int[] TileStates = new int[64];
@@ -115,6 +118,8 @@ public partial class Main : Node2D {
     private void OnLMB(int TileInt) {
         int PieceInt = PieceManager.GetPieceInt(TileInt, Bitboard);
 
+        ulong Bitmask = Bitmath.GetBitmask(TileInt);
+
         GD.Print("Tile Int: ", TileInt);
         GD.Print("Piece Int: ", PieceInt);
 
@@ -126,13 +131,32 @@ public partial class Main : Node2D {
                 return;
             }
 
-            SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceInt, OccupationBitboard, WhiteBitboard, BlackBitboard);
+            SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceInt, Bitmask, OccupationBitboard, WhiteBitboard, BlackBitboard);
+            SelectedPieceTile = TileInt;
+            SelectedPieceType = PieceInt;
+            SelectedPieceBitmask = Bitmask;
 
             TileStates[TileInt] = (int)TileHighlight.Selected;
             CurrentGameState = GameState.PieceSelected;
         } else {
             // A Piece is already selected.
 
+            ulong Move = Bitmask & SelectedPieceMoves;
+
+            if (Move != 0) {
+                // Valid Move
+
+                // Remove Old Piece
+                QueuedBitboard[SelectedPieceType] ^= SelectedPieceBitmask;
+
+                // Clear Target Cell
+                // QueuedBitboard[PieceInt | 0] = 0;
+
+                // Add Piece to Target Cell
+                QueuedBitboard[SelectedPieceType] |= Bitmask;
+            }
+
+            TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
             CurrentGameState = GameState.NoSelection;
         }
 
@@ -232,6 +256,9 @@ public partial class Main : Node2D {
         } else if (CurrentGameState == GameState.PieceSelected) {
             for (int i = 0; i < 64; i++) {
                 i += BitOperations.TrailingZeroCount(SelectedPieceMoves >> i);
+                if (i >= 64) {
+                    break;
+                }
                 TileStates[i] = (int)TileHighlight.Moves;
             }
             RendererObj.UpdateTileStates(TileStates);

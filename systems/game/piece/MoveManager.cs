@@ -13,14 +13,14 @@ public static partial class MoveManager {
     private static readonly ulong[] KingMoves = PreCalcKingMoves();
     private static readonly ulong[] KnightMoves = PreCalcKnightMoves();
     // --- Public Funcs ---
-    public static ulong GetPieceMoves(int TileInt, int PieceInt, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
+    public static ulong GetPieceMoves(int TileInt, int PieceInt, ulong Bitmask, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
         int PieceType = PieceManager.GetPieceType(PieceInt);
         int Color = PieceManager.GetPieceColor(PieceInt);
 
         ulong FriendlyBitboard = Color == 0 ? WhiteBitboard : BlackBitboard;
         ulong EnemyBitboard = OccupationBitboard & ~FriendlyBitboard;
 
-        ulong Bitmask = Bitmath.GetBitmask(TileInt);
+        // ulong Bitmask = Bitmath.GetBitmask(TileInt);
 
         ulong Moves = PieceType switch {
             (int)MoveType.Pawn => GetPawnMoves(Bitmask, Color, OccupationBitboard, EnemyBitboard),

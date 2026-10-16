@@ -10,9 +10,9 @@ using Chess.systems.game.piece.enums;
 namespace Chess.systems.bitmath;
 public static partial class Bitmath {
     // --- Public Funcs ---
-    public static ulong GetBitmask(int Index) {
+    public static ulong GetBitmask(int TileInt) {
         // Gets the Bitmask for a given Index
-        ulong Bitmask = 1UL << Index;
+        ulong Bitmask = 1UL << TileInt;
         return Bitmask;
     }
     // --- Private Funcs ---
