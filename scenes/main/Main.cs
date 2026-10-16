@@ -31,7 +31,6 @@ public partial class Main : Node2D {
     private ulong BlackBitboard = 0;
     // Selected Piece Vars
     ulong SelectedPieceMoves = 0;
-    int SelectedPieceTile = 0;
     int SelectedPieceType = 0;
     ulong SelectedPieceBitmask = 0;
     private int[] PiecePositions = new int[64];
@@ -132,7 +131,6 @@ public partial class Main : Node2D {
             }
 
             SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceInt, Bitmask, OccupationBitboard, WhiteBitboard, BlackBitboard);
-            SelectedPieceTile = TileInt;
             SelectedPieceType = PieceInt;
             SelectedPieceBitmask = Bitmask;
 
