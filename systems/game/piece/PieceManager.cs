@@ -34,12 +34,12 @@ public static partial class PieceManager {
         return Bitboard;
     }
 
-    public static int GetPieceInt(int Index, ulong[] Bitboard) {
+    public static int GetPieceInt(int TileInt, ulong[] Bitboard) {
         // Returns the Type of Piece as an Int. (Returns -1 if no Piece)
-        ulong Bitmask = Bitmath.GetBitmask(Index);
-        for (int PieceInt = 0; PieceInt < 12; PieceInt++) {
-            if ((Bitboard[PieceInt] & Bitmask) != 0) {
-                return PieceInt;
+        ulong Bitmask = Bitmath.GetBitmask(TileInt);
+        for (int i = 0; i < 12; i++) {
+            if ((Bitboard[i] & Bitmask) != 0) {
+                return i;
             }
         }
 

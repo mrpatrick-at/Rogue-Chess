@@ -6,5 +6,5 @@ public enum GameState {
     Loading,
     InMenu,
     Waiting,
-    Selected,
+    PieceSelected,
 }

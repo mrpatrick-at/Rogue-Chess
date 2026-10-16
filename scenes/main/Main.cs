@@ -69,21 +69,23 @@ public partial class Main : Node2D {
 
         int TileInt = TileManager.GetTileInt(MouseBoardPos);
 
+        TileManager.RemoveTileState(TileStates, (int)TileState.Highlighted);
+
         if (MouseBoardPos == new Vector2I(-1, -1)) {
             // Outside Board
             return;
         }
 
-        TileManager.RemoveTileState(TileStates, (int)TileState.Highlighted);
-
         switch (Clicktype) {
             case Clicktype.None:
-                TileStates[TileInt] = (int)TileState.Highlighted;
+                if (CurrentGameState == GameState.Waiting) {
+                    TileStates[TileInt] = (int)TileState.Highlighted;
+                }
                 break;
 
             case Clicktype.Left:
                 TileManager.RemoveTileState(TileStates, (int)TileState.Selected);
-                TileStates[TileInt] = (int)TileState.Selected;
+                OnLMB(TileInt);
                 GD.Print("PLAYER- LMB Detected at: ", MouseBoardPos);
                 break;
 
@@ -106,12 +108,25 @@ public partial class Main : Node2D {
     private void OnLMB(int TileInt) {
         int PieceInt = PieceManager.GetPieceInt(TileInt, Bitboard);
 
-        if (!PieceManager.IsPiece(PieceInt) || PieceManager.IsEnemy(PieceInt, TurnColor)) {
-            // No Piece
-            return;
+        GD.Print("Tile Int: ", TileInt);
+        GD.Print("Piece Int: ", PieceInt);
+
+        if (CurrentGameState == GameState.Waiting) {
+            // No Piece currently selected.
+
+            if (!PieceManager.IsPiece(PieceInt) || PieceManager.IsEnemy(PieceInt, TurnColor)) {
+                // Not a valid Selection
+                return;
+            }
+
+            TileStates[TileInt] = (int)TileState.Selected;
+
+            CurrentGameState = GameState.PieceSelected;
+        } else {
+            // A Piece is already selected.
+
+            CurrentGameState = GameState.Waiting;
         }
-
-
 
 
 
@@ -148,8 +163,28 @@ public partial class Main : Node2D {
     // Gamestate Funcs
     private void UpdateGame() {
         // Runs every Game Update
+
+        // Reset Occupation Board
+        ulong NewOccupationBoard = 0;
+
+        for (int i = 0; i < Bitboard.Length; i++) {
+            NewOccupationBoard |= QueuedBitboard[i];
+        }
+
+        if (NewOccupationBoard == OccupationBoard) {
+            // No Change on Board
+            return;
+        }
+
+        OccupationBoard = NewOccupationBoard;
+
+        // Remove Empty Tiles from PiecePositions
         for (int i = 0; i < 64; i++) {
-            PiecePositions[i] = -1;
+            ulong Bitmask = Bitmath.GetBitmask(i);
+            if ((OccupationBoard & Bitmask) == 0) {
+                // Tile is Empty
+                PiecePositions[i] = -1;
+            }
         }
 
         // Check if Piece Data Updated and act
@@ -164,7 +199,7 @@ public partial class Main : Node2D {
                 ulong Bitmask = Bitmath.GetBitmask(k);
 
                 if ((QueuedBitboard[i] & Bitmask) == 0) {
-                    // No Piece on Tile
+                    // No Piece of this Type on the Tile
                     continue;
                 }
 
@@ -172,7 +207,7 @@ public partial class Main : Node2D {
             }
 
             // Update Bitboard
-            // Bitboard[i] = QueuedBitboard[i];
+            Bitboard[i] = QueuedBitboard[i];
         }
 
         RendererObj.UpdatePiecePosistions(PiecePositions);
@@ -180,9 +215,5 @@ public partial class Main : Node2D {
     private void ResetGame() {
         // Resets Game to Starting State
         QueuedBitboard = PieceManager.ResetPieces();
-        for (int i = 0; i < Bitboard.Length; i++) {
-
-            GD.Print(QueuedBitboard[i]);
-        }
     }
 }
