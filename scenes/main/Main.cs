@@ -1,6 +1,7 @@
 using Godot;
 using Godot.Collections;
 using System;
+using System.Numerics;
 
 using Chess.systems.bitmath;
 using Chess.systems.renderer;
@@ -12,6 +13,8 @@ using Chess.systems.game.piece.enums;
 using Chess.systems.game.tile;
 using Chess.systems.game.tile.enums;
 using Chess.systems.game;
+using Vector2 = Godot.Vector2;
+
 
 namespace Chess.scenes.main;
 // --- Enums ---
@@ -20,10 +23,14 @@ public partial class Main : Node2D {
     // --- Exports ---
     // --- Public Vars ---
     // --- Private Vars ---
-    // Piece Vars
+    // Bitboard Vars
     private ulong[] Bitboard = new ulong[12];
     private ulong[] QueuedBitboard = new ulong[12];
-    private ulong OccupationBoard = new();
+    private ulong OccupationBitboard = 0;
+    private ulong WhiteBitboard = 0;
+    private ulong BlackBitboard = 0;
+    // Selected Piece Vars
+    ulong SelectedPieceMoves = 0;
     private int[] PiecePositions = new int[64];
     // Tile Vars
     private int[] TileStates = new int[64];
@@ -59,7 +66,7 @@ public partial class Main : Node2D {
 
         ResetGame();
 
-        CurrentGameState = GameState.Waiting;
+        CurrentGameState = GameState.NoSelection;
     }
     public override void _Process(double delta) {
         UpdateGame();
@@ -69,7 +76,7 @@ public partial class Main : Node2D {
 
         int TileInt = TileManager.GetTileInt(MouseBoardPos);
 
-        TileManager.RemoveTileState(TileStates, (int)TileState.Highlighted);
+        TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Highlighted);
 
         if (MouseBoardPos == new Vector2I(-1, -1)) {
             // Outside Board
@@ -78,13 +85,13 @@ public partial class Main : Node2D {
 
         switch (Clicktype) {
             case Clicktype.None:
-                if (CurrentGameState == GameState.Waiting) {
-                    TileStates[TileInt] = (int)TileState.Highlighted;
+                if (CurrentGameState == GameState.NoSelection) {
+                    TileStates[TileInt] = (int)TileHighlight.Highlighted;
                 }
                 break;
 
             case Clicktype.Left:
-                TileManager.RemoveTileState(TileStates, (int)TileState.Selected);
+                TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Selected);
                 OnLMB(TileInt);
                 GD.Print("PLAYER- LMB Detected at: ", MouseBoardPos);
                 break;
@@ -111,7 +118,7 @@ public partial class Main : Node2D {
         GD.Print("Tile Int: ", TileInt);
         GD.Print("Piece Int: ", PieceInt);
 
-        if (CurrentGameState == GameState.Waiting) {
+        if (CurrentGameState == GameState.NoSelection) {
             // No Piece currently selected.
 
             if (!PieceManager.IsPiece(PieceInt) || PieceManager.IsEnemy(PieceInt, TurnColor)) {
@@ -119,13 +126,14 @@ public partial class Main : Node2D {
                 return;
             }
 
-            TileStates[TileInt] = (int)TileState.Selected;
+            SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceInt, OccupationBitboard, WhiteBitboard, BlackBitboard);
 
+            TileStates[TileInt] = (int)TileHighlight.Selected;
             CurrentGameState = GameState.PieceSelected;
         } else {
             // A Piece is already selected.
 
-            CurrentGameState = GameState.Waiting;
+            CurrentGameState = GameState.NoSelection;
         }
 
 
@@ -164,53 +172,70 @@ public partial class Main : Node2D {
     private void UpdateGame() {
         // Runs every Game Update
 
-        // Reset Occupation Board
-        ulong NewOccupationBoard = 0;
+        if (CurrentGameState == GameState.NoSelection) {
+            // Reset Occupation Board
+            ulong NewOccupationBitboard = 0;
+            ulong NewWhiteBitboard = 0;
+            ulong NewBlackBitboard = 0;
 
-        for (int i = 0; i < Bitboard.Length; i++) {
-            NewOccupationBoard |= QueuedBitboard[i];
-        }
-
-        if (NewOccupationBoard == OccupationBoard) {
-            // No Change on Board
-            return;
-        }
-
-        OccupationBoard = NewOccupationBoard;
-
-        // Remove Empty Tiles from PiecePositions
-        for (int i = 0; i < 64; i++) {
-            ulong Bitmask = Bitmath.GetBitmask(i);
-            if ((OccupationBoard & Bitmask) == 0) {
-                // Tile is Empty
-                PiecePositions[i] = -1;
-            }
-        }
-
-        // Check if Piece Data Updated and act
-        for (int i = 0; i < Bitboard.Length; i++) {
-            if (QueuedBitboard[i] == Bitboard[i]) {
-                // No Change in PieceBoard
-                continue;
+            for (int i = 0; i < 12; i++) {
+                NewOccupationBitboard |= QueuedBitboard[i];
+                if (i < 6) {
+                    NewWhiteBitboard |= QueuedBitboard[i];
+                } else {
+                    NewBlackBitboard |= QueuedBitboard[i];
+                }
             }
 
-            // Update Piece Positions
-            for (int k = 0; k < 64; k++) {
-                ulong Bitmask = Bitmath.GetBitmask(k);
+            if (NewOccupationBitboard == OccupationBitboard) {
+                // No Change on Board
+                return;
+            }
 
-                if ((QueuedBitboard[i] & Bitmask) == 0) {
-                    // No Piece of this Type on the Tile
+            OccupationBitboard = NewOccupationBitboard;
+            WhiteBitboard = NewWhiteBitboard;
+            BlackBitboard = NewBlackBitboard;
+
+            // Remove Empty Tiles from PiecePositions
+            for (int i = 0; i < 64; i++) {
+                ulong Bitmask = Bitmath.GetBitmask(i);
+                if ((OccupationBitboard & Bitmask) == 0) {
+                    // Tile is Empty
+                    PiecePositions[i] = -1;
+                }
+            }
+
+            // Check if Piece Data Updated and act
+            for (int i = 0; i < 12; i++) {
+                if (QueuedBitboard[i] == Bitboard[i]) {
+                    // No Change in PieceBoard
                     continue;
                 }
 
-                PiecePositions[k] = i;
+                // Update Piece Positions
+                for (int k = 0; k < 64; k++) {
+                    ulong Bitmask = Bitmath.GetBitmask(k);
+
+                    if ((QueuedBitboard[i] & Bitmask) == 0) {
+                        // No Piece of this Type on the Tile
+                        continue;
+                    }
+
+                    PiecePositions[k] = i;
+                }
+
+                // Update Bitboard
+                Bitboard[i] = QueuedBitboard[i];
             }
 
-            // Update Bitboard
-            Bitboard[i] = QueuedBitboard[i];
+            RendererObj.UpdatePiecePosistions(PiecePositions);
+        } else if (CurrentGameState == GameState.PieceSelected) {
+            for (int i = 0; i < 64; i++) {
+                i += BitOperations.TrailingZeroCount(SelectedPieceMoves >> i);
+                TileStates[i] = (int)TileHighlight.Moves;
+            }
+            RendererObj.UpdateTileStates(TileStates);
         }
-
-        RendererObj.UpdatePiecePosistions(PiecePositions);
     }
     private void ResetGame() {
         // Resets Game to Starting State

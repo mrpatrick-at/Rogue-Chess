@@ -2,7 +2,7 @@ using Godot;
 using System;
 using Chess.OldConsts;
 
-public partial class MoveManager : Node {
+public partial class OldMoveManager : Node {
     // enums
     // consts
     // exports

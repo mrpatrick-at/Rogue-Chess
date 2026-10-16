@@ -13,10 +13,10 @@ public static partial class TileManager {
         return TileCoord.X + TileCoord.Y * Consts.BoardSize.X;
     }
 
-    public static int[] RemoveTileState(int[] TileStates, int TargetState) {
+    public static int[] RemoveTileHighlight(int[] TileStates, int TargetState) {
         for (int i = 0; i < TileStates.Length; i++) {
             if (TileStates[i] == TargetState) {
-                TileStates[i] = (int)TileState.None;
+                TileStates[i] = (int)TileHighlight.None;
             }
         }
 

@@ -33,7 +33,6 @@ public partial class Renderer : Node2D {
     private Rid SpriteSheet;
     // Layers
     private ShaderLayer BoardLayer;
-    private ShaderLayer SnakeLayer;
     // Layer Vars
     private Rect2 RenderRect;
     private Transform2D Transform;

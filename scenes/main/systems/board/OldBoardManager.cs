@@ -5,7 +5,7 @@ using System.Numerics;
 namespace Chess.OldBoardManager;
 
 // enums
-public static class BoardManager {
+public static class OldBoardManager {
     // consts
     // exports
     // signals
@@ -17,7 +17,7 @@ public static class BoardManager {
     // public funcs
 
     // public static funcs
-    public static bool IsValidIndex(int Index) {
+    public static bool IsValidTileInt(int Index) {
         if (Index >= 0 && Index < 64) {
             return true;
         }
@@ -25,9 +25,7 @@ public static class BoardManager {
         return false;
     }
     public static Vector2I GetVec2FromIndex(int Index) {
-        int x = Index % 8;
-        int y = Index >> 3;
-        return new Vector2I(x, y);
+        return new Vector2I(Index % 8, Index >> 3);
     }
     public static int GetIndexFromBitmask(ulong Bitmask) {
         return BitOperations.TrailingZeroCount(Bitmask);

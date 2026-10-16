@@ -13,8 +13,8 @@ public static class BoardManager {
     // --- Private vars ---
 
     // --- Public Funcs ---
-    public static bool IsValidIndex(int Index) {
-        if (Index >= 0 && Index < 64) {
+    public static bool IsValidTileInt(int TileInt) {
+        if (TileInt >= 0 && TileInt < 64) {
             return true;
         }
         return false;
@@ -25,17 +25,11 @@ public static class BoardManager {
         }
         return false;
     }
-    public static Vector2I GetVec2FromIndex(int Index) {
-        int x = Index % 8;
-        int y = Index >> 3;
-        return new Vector2I(x, y);
+    public static Vector2I GetVec2FromTileInt(int TileInt) {
+        return new Vector2I(TileInt % 8, TileInt >> 3);
     }
-    public static int GetIndexFromBitmask(ulong Bitmask) {
+    public static int GetTileIntFromBitmask(ulong Bitmask) {
         return BitOperations.TrailingZeroCount(Bitmask);
-    }
-    public static ulong GetBitmask(int Index) {
-        ulong Bitmask = 1UL << Index;
-        return Bitmask;
     }
     // public static string GetPieceString(int PieceInt) {
     //     return Enum.GetName(typeof(Piece.Name), PieceInt);

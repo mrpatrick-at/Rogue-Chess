@@ -5,6 +5,6 @@ namespace Chess.systems.game;
 public enum GameState {
     Loading,
     InMenu,
-    Waiting,
+    NoSelection,
     PieceSelected,
 }
