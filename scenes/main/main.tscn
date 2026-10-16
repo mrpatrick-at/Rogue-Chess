@@ -18,6 +18,7 @@ shader_parameter/PieceOffsets = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 script = ExtResource("1_b1x3f")
 
 [node name="ShaderPreview" type="ColorRect" parent="." unique_id=1612084078]
+visible = false
 material = SubResource("ShaderMaterial_ln6rh")
 offset_right = 40.0
 offset_bottom = 40.0

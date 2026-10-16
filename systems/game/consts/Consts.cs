@@ -7,10 +7,11 @@ using System;
 namespace Chess.systems.game.consts;
 
 public readonly struct Consts {
-    public static readonly Vector2I BoardSize = new Vector2I(8, 8);
-    // public static readonly Vector2I CellPixelSize = new Vector2I(8, 8);
+    public static readonly Vector2I BoardSize = new(8, 8);
+    public static readonly Vector2I CellPixelSize = new(32, 32);
+    public static readonly Vector2I BoardPixelSize = BoardSize * CellPixelSize;
 }
-public class Piece {
+public readonly struct Piece {
     public enum Name : int {
         None = -1,
         W_PAWN = 0,
@@ -43,7 +44,7 @@ public class Piece {
         Bishop = 1
     }
 }
-public class Tile {
+public readonly struct Tile {
     public enum Highlight : int {
         None = 0,
         Hover = 1,

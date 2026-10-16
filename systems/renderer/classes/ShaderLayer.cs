@@ -6,13 +6,16 @@ namespace Chess.systems.renderer.classes;
 public sealed class ShaderLayer {
     public Rid Item { get; private set; }
     public Rid Material { get; private set; }
+    public Transform2D LocalTransform { get; private set; }
 
     // Creation Func
     public ShaderLayer(
         CanvasItem Parent,
         Shader LayerShader,
         Rect2 SizeRect,
+        Transform2D Transform,
         int DrawIndex = 0
+
     ) {
         Item = RenderingServer.CanvasItemCreate();
 
@@ -33,6 +36,14 @@ public sealed class ShaderLayer {
             Item,
             Material
         );
+
+        // Set The Transform of the CanvasItem
+        LocalTransform = Transform;
+
+        // RenderingServer.CanvasItemSetTransform(
+        //     Item,
+        //     Transform
+        // );
 
         // Set the z Index of the CanvasItem
         RenderingServer.CanvasItemSetDrawIndex(

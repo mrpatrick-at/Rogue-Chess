@@ -8,7 +8,7 @@ using Chess.systems.game.piece;
 using Chess.systems.game.piece.enums;
 
 namespace Chess.systems.bitmath;
-public static partial class BitMath {
+public static partial class Bitmath {
     // --- Public Funcs ---
     public static ulong GetBitmask(int Index) {
         // Gets the Bitmask for a given Index

@@ -28,12 +28,15 @@ public partial class Renderer : Node2D {
     // const String SnakeShaderPath = "res://assets/shaders/board/piece.gdshader";
     const String SpriteSheetPath = "res://assets/images/pieces/spritesheet.png";
     // --- Public Vars ---
+    public int SizeMult = 8;
+    // --- Private Vars ---
     private Rid SpriteSheet;
     // Layers
     private ShaderLayer BoardLayer;
     private ShaderLayer SnakeLayer;
-    // Render Vars
+    // Layer Vars
     private Rect2 RenderRect;
+    private Transform2D Transform;
     // --- Override Methods ---
     public override void _Ready() {
         ApplyGrid();
@@ -47,7 +50,7 @@ public partial class Renderer : Node2D {
     public override void _Process(double delta) {
     }
     // --- Public Methods ---
-    public void UpdateTileState(int[] TileStates) {
+    public void UpdateTileStates(int[] TileStates) {
         BoardLayer.SetShaderParameter("TileStates", TileStates);
     }
     public void UpdatePiecePosistions(int[] PiecePosistions) {
@@ -56,12 +59,11 @@ public partial class Renderer : Node2D {
     // --- Private Methods ---
     private void ApplyGrid() {
         Vector2 ScreenSize = GetViewportRect().Size;
+        Vector2 RenderSize = Consts.BoardPixelSize;
 
-        // Vector2 RenderSize = Consts.BoardSize * Consts.BoardSize * 4;
-        Vector2 RenderSize = new Vector2I(8, 8) * new Vector2I(8, 8) * 4;
-        Vector2 RenderPosition = (ScreenSize - RenderSize) / 2;
-
-        RenderRect = new Rect2(RenderPosition, RenderSize);
+        RenderRect = new Rect2(Vector2.Zero, RenderSize);
+        Transform = new(new Vector2(SizeMult, 0), new Vector2(0, SizeMult), ScreenSize / 2 - RenderSize * SizeMult / 2);
+        // Transform = new();
 
         // Make Grid Layer
         Shader GridShader = GD.Load<Shader>(BoardShaderPath);
@@ -72,6 +74,7 @@ public partial class Renderer : Node2D {
             this,
             GridShader,
             RenderRect,
+            Transform,
             0
         );
 

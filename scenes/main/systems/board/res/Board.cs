@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 using System;
-using Chess.Consts;
+using Chess.OldConsts;
 using System.Numerics;
 using System.ComponentModel.DataAnnotations;
 [GlobalClass]

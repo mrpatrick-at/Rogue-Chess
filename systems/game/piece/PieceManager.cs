@@ -8,7 +8,7 @@ using Chess.systems.game.piece.enums;
 
 namespace Chess.systems.game.piece;
 public static partial class PieceManager {
-    // --- Private Vars
+    // --- Private Vars ---
     private static readonly PieceType[] W_BACK_ROW =
         [PieceType.W_ROOK, PieceType.W_KNIGHT, PieceType.W_BISHOP, PieceType.W_QUEEN,
         PieceType.W_KING, PieceType.W_BISHOP, PieceType.W_KNIGHT, PieceType.W_ROOK];
@@ -17,10 +17,11 @@ public static partial class PieceManager {
         PieceType.B_KING, PieceType.B_BISHOP, PieceType.B_KNIGHT, PieceType.B_ROOK];
     // --- Public Funcs ---
     public static ulong[] ResetPieces() {
+        // Returns a Fresh Bitboard with Starting Piece Positions.
         ulong[] Bitboard = new ulong[12];
 
         for (int i = 0; i < 64; i++) {
-            ulong PosBitmask = BitMath.GetBitmask(i);
+            ulong PosBitmask = Bitmath.GetBitmask(i);
             PieceType PieceInt = CalcPiece(PosBitmask, i);
             if (PieceInt == PieceType.None) {
                 // No Piece on Tile
@@ -31,6 +32,39 @@ public static partial class PieceManager {
         }
 
         return Bitboard;
+    }
+
+    public static int GetPieceInt(int Index, ulong[] Bitboard) {
+        // Returns the Type of Piece as an Int. (Returns -1 if no Piece)
+        ulong Bitmask = Bitmath.GetBitmask(Index);
+        for (int PieceInt = 0; PieceInt < 12; PieceInt++) {
+            if ((Bitboard[PieceInt] & Bitmask) != 0) {
+                return PieceInt;
+            }
+        }
+
+        return -1;
+    }
+    public static int GetPieceType(int PieceInt) {
+        return PieceInt % 6;
+    }
+    public static int GetPieceColor(int PieceInt) {
+        return PieceInt / 6;
+    }
+    public static bool IsPiece(int PieceInt) {
+        if (PieceInt == -1) {
+            return false;
+        }
+        return true;
+    }
+    public static bool IsEnemy(int PieceInt, PieceColor TurnColor) {
+        int PieceColor = GetPieceColor(PieceInt);
+
+        if (PieceColor == (int)TurnColor) {
+            return false;
+        }
+
+        return true;
     }
     // --- Private Funcs ---
 
