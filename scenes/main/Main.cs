@@ -141,18 +141,18 @@ public partial class Main : Node2D {
         } else {
             // A Piece is already selected.
 
-            ulong Move = Bitmask & SelectedPieceMoves;
+            ulong MoveBitmask = Bitmask & SelectedPieceMoves;
 
-            if (Move != 0) {
+            if (MoveBitmask != 0) {
                 // Valid Move
 
-                // Remove Old Piece
-                QueuedBitboard[SelectedPieceType] ^= SelectedPieceBitmask;
-
                 // Clear Target Cell
-                // QueuedBitboard[PieceInt | 0] = 0;
+                if (PieceInt >= 0) {
+                    QueuedBitboard[PieceInt] ^= MoveBitmask;
+                }
 
-                // Add Piece to Target Cell
+                // Move Piece
+                QueuedBitboard[SelectedPieceType] ^= SelectedPieceBitmask;
                 QueuedBitboard[SelectedPieceType] |= Bitmask;
             }
 
