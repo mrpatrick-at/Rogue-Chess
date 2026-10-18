@@ -146,58 +146,47 @@ public partial class Main : Node2D {
         GD.Print("Piece Int: ", PieceType);
 
         if (CurrentGameState == GameState.NoSelection) {
-            // No Piece currently selected.
-
-            if (!PieceManager.IsPiece(PieceType) || PieceManager.IsEnemy(PieceType, TurnColor)) {
-                // Not a valid Selection
-                return;
-            }
-
-            SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceType, Bitmask, OccupationBitboard, WhiteBitboard, BlackBitboard);
-            SelectedPieceType = PieceType;
-            SelectedPieceBitmask = Bitmask;
-
-            TileStates[TileInt] = (int)TileHighlight.Selected;
-            CurrentGameState = GameState.PieceSelected;
+            SelectPiece(PieceType, TileInt, Bitmask);
         } else {
-            // A Piece is already selected.
-
-            ulong MoveBitmask = Bitmask & SelectedPieceMoves;
-
-            if (MoveBitmask != 0) {
-                // Valid Move
-
-                // Clear Target Cell
-                if ((int)PieceType >= 0) {
-                    QueuedBitboard[(int)PieceType] ^= MoveBitmask;
-                }
-
-                // Move Piece
-                QueuedBitboard[(int)SelectedPieceType] ^= SelectedPieceBitmask;
-                QueuedBitboard[(int)SelectedPieceType] |= Bitmask;
-            }
-
-            TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
-            CurrentGameState = GameState.NoSelection;
+            TryMovePiece(PieceType, Bitmask);
         }
     }
 
-    // # Refrences from old Code for Future Piece Animation
-    // public void highlight() {
-    //     if (animation_tween != null) {
-    //         animation_tween.Kill();
-    //     }
-    //     animation_tween = CreateTween().SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Sine);
-    //     animation_tween.TweenMethod(Callable.From<float>((val) => _set_shader_value(val)), y_offset, 4.0, 0.07);
-    // }
-    // public async void unhighlight() {
-    //     await Task.Delay(50);
-    //     if (animation_tween != null) {
-    //         animation_tween.Kill();
-    //     }
-    //     animation_tween = CreateTween().SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Sine);
-    //     animation_tween.TweenMethod(Callable.From<float>((val) => _set_shader_value(val)), y_offset, 0.0, 0.05);
-    // }
+    // Gameplay Funcs
+    public void SelectPiece(PieceType PieceType, int TileInt, ulong Bitmask) {
+        // Selects the Requested Piece
+        if (!PieceManager.IsPiece(PieceType) || PieceManager.IsEnemy(PieceType, TurnColor)) {
+            // Not a valid Selection
+            return;
+        }
+
+        SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceType, Bitmask, OccupationBitboard, WhiteBitboard, BlackBitboard);
+        SelectedPieceType = PieceType;
+        SelectedPieceBitmask = Bitmask;
+
+        TileStates[TileInt] = (int)TileHighlight.Selected;
+        CurrentGameState = GameState.PieceSelected;
+    }
+    public void TryMovePiece(PieceType PieceType, ulong Bitmask) {
+        // Quits out of Selection and if Move Valid Moves
+        ulong MoveBitmask = Bitmask & SelectedPieceMoves;
+
+        if (MoveBitmask != 0) {
+            // Valid Move
+
+            // Clear Target Cell
+            if ((int)PieceType >= 0) {
+                QueuedBitboard[(int)PieceType] ^= MoveBitmask;
+            }
+
+            // Move Piece
+            QueuedBitboard[(int)SelectedPieceType] ^= SelectedPieceBitmask;
+            QueuedBitboard[(int)SelectedPieceType] |= Bitmask;
+        }
+
+        TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
+        CurrentGameState = GameState.NoSelection;
+    }
 
     // Gamestate Funcs
     private void UpdateGame() {

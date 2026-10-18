@@ -67,9 +67,6 @@ public static partial class PieceManager {
         return true;
     }
 
-    public static ulong[] MovePiece() {
-
-    }
     // --- Private Funcs ---
 
     private static PieceType CalcPiece(ulong Bitmask, int Index) {
