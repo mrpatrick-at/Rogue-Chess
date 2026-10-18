@@ -153,7 +153,7 @@ public partial class Main : Node2D {
     }
 
     // Gameplay Funcs
-    public void SelectPiece(PieceType PieceType, int TileInt, ulong Bitmask) {
+    private void SelectPiece(PieceType PieceType, int TileInt, ulong Bitmask) {
         // Selects the Requested Piece
         if (!PieceManager.IsPiece(PieceType) || PieceManager.IsEnemy(PieceType, TurnColor)) {
             // Not a valid Selection
@@ -167,7 +167,7 @@ public partial class Main : Node2D {
         TileStates[TileInt] = (int)TileHighlight.Selected;
         CurrentGameState = GameState.PieceSelected;
     }
-    public void TryMovePiece(PieceType PieceType, ulong Bitmask) {
+    private void TryMovePiece(PieceType PieceType, ulong Bitmask) {
         // Quits out of Selection and if Move Valid Moves
         ulong MoveBitmask = Bitmask & SelectedPieceMoves;
 
@@ -182,10 +182,16 @@ public partial class Main : Node2D {
             // Move Piece
             QueuedBitboard[(int)SelectedPieceType] ^= SelectedPieceBitmask;
             QueuedBitboard[(int)SelectedPieceType] |= Bitmask;
+
+            // Update GameState
+            TurnAmount += 1;
+            TurnColor = (PieceColor)(TurnAmount & 1);
         }
 
-        TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
         CurrentGameState = GameState.NoSelection;
+
+        // Update Shader
+        TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
     }
 
     // Gamestate Funcs
