@@ -35,7 +35,7 @@ public partial class Renderer : Node2D {
     private ShaderLayer BoardLayer;
     // Layer Vars
     private Rect2 RenderRect;
-    private Transform2D Transform;
+    private Transform2D BoardTransform;
     // --- Override Methods ---
     public override void _Ready() {
         ApplyGrid();
@@ -55,14 +55,17 @@ public partial class Renderer : Node2D {
     public void UpdatePiecePosistions(int[] PiecePosistions) {
         BoardLayer.SetShaderParameter("PiecePosistions", PiecePosistions);
     }
+    public void UpdatePieceOffsets(float[] PieceOffsets) {
+        BoardLayer.SetShaderParameter("PieceOffsets", PieceOffsets);
+    }
     // --- Private Methods ---
     private void ApplyGrid() {
         Vector2 ScreenSize = GetViewportRect().Size;
         Vector2 RenderSize = Consts.BoardPixelSize;
 
         RenderRect = new Rect2(Vector2.Zero, RenderSize);
-        Transform = new(new Vector2(SizeMult, 0), new Vector2(0, SizeMult), ScreenSize / 2 - RenderSize * SizeMult / 2);
-        // Transform = new();
+        BoardTransform = new(new Vector2(SizeMult, 0), new Vector2(0, SizeMult), ScreenSize / 2 - RenderSize * SizeMult / 2);
+        // BoardTransform = new();
 
         // Make Grid Layer
         Shader GridShader = GD.Load<Shader>(BoardShaderPath);
@@ -73,7 +76,7 @@ public partial class Renderer : Node2D {
             this,
             GridShader,
             RenderRect,
-            Transform,
+            BoardTransform,
             0
         );
 

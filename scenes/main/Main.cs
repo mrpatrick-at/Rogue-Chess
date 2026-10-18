@@ -31,9 +31,11 @@ public partial class Main : Node2D {
     private ulong BlackBitboard = 0;
     // Selected Piece Vars
     ulong SelectedPieceMoves = 0;
+    int SelectedTileInt = 0;
     int SelectedPieceType = 0;
     ulong SelectedPieceBitmask = 0;
     private int[] PiecePositions = new int[64];
+    private float[] PieceOffsets = new float[64];
     // Tile Vars
     private int[] TileStates = new int[64];
     // Gamestate Vars
@@ -44,6 +46,9 @@ public partial class Main : Node2D {
     private Player PlayerObj;
     private Camera2D CamObj;
     private Renderer RendererObj;
+    // Animation Vars
+    private double PieceHoverClock = 0; // Clock of Hover Animation
+    private double PieceHoverTick = 0.001; // Interval of Hover Animation
     // --- Override Funcs ---
     public override void _Ready() {
         PlayerObj = new() {
@@ -71,12 +76,28 @@ public partial class Main : Node2D {
         CurrentGameState = GameState.NoSelection;
     }
     public override void _Process(double delta) {
+
         UpdateGame();
+
+        // Animations
+        PieceHoverClock += delta;
+
+        if (PieceHoverClock >= PieceHoverTick) {
+            for (int i = 0; i < PieceOffsets.Length; i++) {
+                PieceHoverClock -= PieceHoverTick;
+
+                if (i == SelectedTileInt) {
+                    PieceOffsets[i] = Mathf.Min(PieceOffsets[i] + 0.1F, 2F);
+                    continue;
+                }
+
+                PieceOffsets[i] = Mathf.Max(PieceOffsets[i] - 0.1F, 0F);
+            }
+            RendererObj.UpdatePieceOffsets(PieceOffsets);
+        }
     }
 
     public void OnMouseStateChanged(Vector2I MouseBoardPos, Clicktype Clicktype) {
-
-        int TileInt = TileManager.GetTileInt(MouseBoardPos);
 
         TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Highlighted);
 
@@ -85,11 +106,15 @@ public partial class Main : Node2D {
             return;
         }
 
+        int TileInt = TileManager.GetTileInt(MouseBoardPos);
+
         switch (Clicktype) {
             case Clicktype.None:
                 if (CurrentGameState == GameState.NoSelection) {
                     TileStates[TileInt] = (int)TileHighlight.Highlighted;
                 }
+
+                SelectedTileInt = TileInt;
                 break;
 
             case Clicktype.Left:
@@ -157,38 +182,24 @@ public partial class Main : Node2D {
             TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
             CurrentGameState = GameState.NoSelection;
         }
-
-
-
-
-        // IndexBelowMouse = board.GetTileIndex();
-        // if (IsPieceSelected) {
-        //     return;
-        // }
-
-        // int Index = IndexBelowMouse;
-        // if (!IsMenuOpen && board.IsValidIndex(Index) && !HighlightedTiles.Contains(Index)) {
-        //     board.HighlightTile(Index, 1);
-        //     HighlightedTiles.Add(Index);
-
-        //     if (!board.IsEmpty(Index)) {
-        //         PieceObj piece = (PieceObj)board.PieceObjs[Index];
-        //         piece.highlight();
-        //         // highlighted_pieces.Add(Index);
-        //     }
-        // }
-
-        // foreach (int tile in HighlightedTiles) {
-        //     if (tile != Index) {
-        //         board.UnhighlightTile(tile);
-        //         if (board.PieceObjs.ContainsKey(tile)) {
-        //             PieceObj piece = (PieceObj)board.PieceObjs[tile];
-        //             piece.unhighlight();
-        //         }
-        //     }
-        // }
-        // HighlightedTiles.RemoveAll(id => id != Index);
     }
+
+    // # Refrences from old Code for Future Piece Animation
+    // public void highlight() {
+    //     if (animation_tween != null) {
+    //         animation_tween.Kill();
+    //     }
+    //     animation_tween = CreateTween().SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Sine);
+    //     animation_tween.TweenMethod(Callable.From<float>((val) => _set_shader_value(val)), y_offset, 4.0, 0.07);
+    // }
+    // public async void unhighlight() {
+    //     await Task.Delay(50);
+    //     if (animation_tween != null) {
+    //         animation_tween.Kill();
+    //     }
+    //     animation_tween = CreateTween().SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Sine);
+    //     animation_tween.TweenMethod(Callable.From<float>((val) => _set_shader_value(val)), y_offset, 0.0, 0.05);
+    // }
 
     // Gamestate Funcs
     private void UpdateGame() {
