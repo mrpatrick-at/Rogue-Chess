@@ -2,7 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 
-using Chess.systems.bitmath;
+using Chess.systems.math;
 using Chess.systems.game.consts;
 using Chess.systems.game.board;
 using Chess.systems.game.piece.enums;
@@ -13,22 +13,22 @@ public static partial class MoveManager {
     private static readonly ulong[] KingMoves = PreCalcKingMoves();
     private static readonly ulong[] KnightMoves = PreCalcKnightMoves();
     // --- Public Funcs ---
-    public static ulong GetPieceMoves(int TileInt, int PieceInt, ulong Bitmask, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
-        int PieceType = PieceManager.GetPieceType(PieceInt);
-        int Color = PieceManager.GetPieceColor(PieceInt);
+    public static ulong GetPieceMoves(int TileInt, PieceType PieceType, ulong Bitmask, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
+        MoveType MoveType = PieceManager.GetMoveType(PieceType);
+        int Color = PieceManager.GetPieceColor(PieceType);
 
         ulong FriendlyBitboard = Color == 0 ? WhiteBitboard : BlackBitboard;
         ulong EnemyBitboard = OccupationBitboard & ~FriendlyBitboard;
 
         // ulong Bitmask = Bitmath.GetBitmask(TileInt);
 
-        ulong Moves = PieceType switch {
-            (int)MoveType.Pawn => GetPawnMoves(Bitmask, Color, OccupationBitboard, EnemyBitboard),
-            (int)MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
-            (int)MoveType.Knight => KnightMoves[TileInt],
-            (int)MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
-            (int)MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
-            (int)MoveType.King => Moves = KingMoves[TileInt],
+        ulong Moves = MoveType switch {
+            MoveType.Pawn => GetPawnMoves(Bitmask, Color, OccupationBitboard, EnemyBitboard),
+            MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
+            MoveType.Knight => KnightMoves[TileInt],
+            MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+            MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+            MoveType.King => KingMoves[TileInt],
             _ => 0
         };
 

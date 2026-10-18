@@ -2,7 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 
-using Chess.systems.bitmath;
+using Chess.systems.math;
 using Chess.systems.game.consts;
 using Chess.systems.game.piece.enums;
 
@@ -34,37 +34,41 @@ public static partial class PieceManager {
         return Bitboard;
     }
 
-    public static int GetPieceInt(int TileInt, ulong[] Bitboard) {
+    public static PieceType GetPieceType(int TileInt, ulong[] Bitboard) {
         // Returns the Type of Piece as an Int. (Returns -1 if no Piece)
         ulong Bitmask = Bitmath.GetBitmask(TileInt);
         for (int i = 0; i < 12; i++) {
             if ((Bitboard[i] & Bitmask) != 0) {
-                return i;
+                return (PieceType)i;
             }
         }
 
-        return -1;
+        return PieceType.None;
     }
-    public static int GetPieceType(int PieceInt) {
-        return PieceInt % 6;
+    public static MoveType GetMoveType(PieceType PieceType) {
+        return (MoveType)((int)PieceType % 6);
     }
-    public static int GetPieceColor(int PieceInt) {
-        return PieceInt / 6;
+    public static int GetPieceColor(PieceType PieceType) {
+        return (int)PieceType / 6;
     }
-    public static bool IsPiece(int PieceInt) {
-        if (PieceInt == -1) {
+    public static bool IsPiece(PieceType PieceType) {
+        if ((int)PieceType == -1) {
             return false;
         }
         return true;
     }
-    public static bool IsEnemy(int PieceInt, PieceColor TurnColor) {
-        int PieceColor = GetPieceColor(PieceInt);
+    public static bool IsEnemy(PieceType PieceType, PieceColor TurnColor) {
+        int PieceColor = GetPieceColor(PieceType);
 
         if (PieceColor == (int)TurnColor) {
             return false;
         }
 
         return true;
+    }
+
+    public static ulong[] MovePiece() {
+
     }
     // --- Private Funcs ---
 

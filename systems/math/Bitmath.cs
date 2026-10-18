@@ -7,7 +7,7 @@ using Chess.systems.game.consts;
 using Chess.systems.game.piece;
 using Chess.systems.game.piece.enums;
 
-namespace Chess.systems.bitmath;
+namespace Chess.systems.math;
 public static partial class Bitmath {
     // --- Public Funcs ---
     public static ulong GetBitmask(int TileInt) {

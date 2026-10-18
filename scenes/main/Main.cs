@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 using System.Numerics;
 
-using Chess.systems.bitmath;
+using Chess.systems.math;
 using Chess.systems.renderer;
 using Chess.systems.player;
 using Chess.systems.player.enums;
@@ -32,7 +32,7 @@ public partial class Main : Node2D {
     // Selected Piece Vars
     ulong SelectedPieceMoves = 0;
     int SelectedTileInt = 0;
-    int SelectedPieceType = 0;
+    PieceType SelectedPieceType = 0;
     ulong SelectedPieceBitmask = 0;
     private int[] PiecePositions = new int[64];
     private float[] PieceOffsets = new float[64];
@@ -47,8 +47,7 @@ public partial class Main : Node2D {
     private Camera2D CamObj;
     private Renderer RendererObj;
     // Animation Vars
-    private double PieceHoverClock = 0; // Clock of Hover Animation
-    private double PieceHoverTick = 0.001; // Interval of Hover Animation
+    private float HoverAnimSpeedMod = 10;
     // --- Override Funcs ---
     public override void _Ready() {
         PlayerObj = new() {
@@ -80,21 +79,20 @@ public partial class Main : Node2D {
         UpdateGame();
 
         // Animations
-        PieceHoverClock += delta;
+        for (int i = 0; i < PieceOffsets.Length; i++) {
 
-        if (PieceHoverClock >= PieceHoverTick) {
-            for (int i = 0; i < PieceOffsets.Length; i++) {
-                PieceHoverClock -= PieceHoverTick;
-
-                if (i == SelectedTileInt) {
-                    PieceOffsets[i] = Mathf.Min(PieceOffsets[i] + 0.1F, 2F);
-                    continue;
-                }
-
-                PieceOffsets[i] = Mathf.Max(PieceOffsets[i] - 0.1F, 0F);
+            if (i == SelectedTileInt) {
+                // Hovered Piece
+                PieceOffsets[i] = MathF.Min(PieceOffsets[i] + EasingFuncs.EaseOutCubic((float)delta * HoverAnimSpeedMod), 2F);
+                continue;
             }
-            RendererObj.UpdatePieceOffsets(PieceOffsets);
+
+            // Other Pieces
+            PieceOffsets[i] = MathF.Max(PieceOffsets[i] - EasingFuncs.EaseOutCubic((float)delta * HoverAnimSpeedMod), 0F);
         }
+        // Update Shader
+        RendererObj.UpdatePieceOffsets(PieceOffsets);
+
     }
 
     public void OnMouseStateChanged(Vector2I MouseBoardPos, Clicktype Clicktype) {
@@ -140,23 +138,23 @@ public partial class Main : Node2D {
     // --- Private Funcs ---
     // Input Funcs
     private void OnLMB(int TileInt) {
-        int PieceInt = PieceManager.GetPieceInt(TileInt, Bitboard);
+        PieceType PieceType = PieceManager.GetPieceType(TileInt, Bitboard);
 
         ulong Bitmask = Bitmath.GetBitmask(TileInt);
 
         GD.Print("Tile Int: ", TileInt);
-        GD.Print("Piece Int: ", PieceInt);
+        GD.Print("Piece Int: ", PieceType);
 
         if (CurrentGameState == GameState.NoSelection) {
             // No Piece currently selected.
 
-            if (!PieceManager.IsPiece(PieceInt) || PieceManager.IsEnemy(PieceInt, TurnColor)) {
+            if (!PieceManager.IsPiece(PieceType) || PieceManager.IsEnemy(PieceType, TurnColor)) {
                 // Not a valid Selection
                 return;
             }
 
-            SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceInt, Bitmask, OccupationBitboard, WhiteBitboard, BlackBitboard);
-            SelectedPieceType = PieceInt;
+            SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceType, Bitmask, OccupationBitboard, WhiteBitboard, BlackBitboard);
+            SelectedPieceType = PieceType;
             SelectedPieceBitmask = Bitmask;
 
             TileStates[TileInt] = (int)TileHighlight.Selected;
@@ -170,13 +168,13 @@ public partial class Main : Node2D {
                 // Valid Move
 
                 // Clear Target Cell
-                if (PieceInt >= 0) {
-                    QueuedBitboard[PieceInt] ^= MoveBitmask;
+                if ((int)PieceType >= 0) {
+                    QueuedBitboard[(int)PieceType] ^= MoveBitmask;
                 }
 
                 // Move Piece
-                QueuedBitboard[SelectedPieceType] ^= SelectedPieceBitmask;
-                QueuedBitboard[SelectedPieceType] |= Bitmask;
+                QueuedBitboard[(int)SelectedPieceType] ^= SelectedPieceBitmask;
+                QueuedBitboard[(int)SelectedPieceType] |= Bitmask;
             }
 
             TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
