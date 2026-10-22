@@ -1,6 +1,6 @@
 // GameState.cs
 
-namespace Chess.systems.game;
+namespace Chess.systems.game.gamestate.enums;
 
 public enum GameState {
     Loading,

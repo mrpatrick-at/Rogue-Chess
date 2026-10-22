@@ -6,6 +6,8 @@ using Chess.systems.math;
 using Chess.systems.game.consts;
 using Chess.systems.game.board;
 using Chess.systems.game.piece.enums;
+using System.Security.Authentication.ExtendedProtection;
+using Chess.OldConsts;
 
 namespace Chess.systems.game.piece;
 public static partial class MoveManager {
@@ -13,9 +15,37 @@ public static partial class MoveManager {
     private static readonly ulong[] KingMoves = PreCalcKingMoves();
     private static readonly ulong[] KnightMoves = PreCalcKnightMoves();
     // --- Public Funcs ---
+    public static ulong[] MakePieceMoves(ulong[] Bitboard, PieceColor TurnColor, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
+        ulong[] Moves = new ulong[64];
+
+        ulong FriendlyBitboard = TurnColor == PieceColor.White ? WhiteBitboard : BlackBitboard;
+        ulong EnemyBitboard = OccupationBitboard & ~FriendlyBitboard;
+
+        for (int i = 0; i < 64; i++) {
+            ulong Bitmask = Bitmath.GetBitmask(i);
+            PieceType PieceType = PieceManager.GetPieceType(i, Bitboard);
+            MoveType MoveType = PieceManager.GetMoveType(PieceType);
+
+            Moves[i] = MoveType switch {
+                MoveType.Pawn => GetPawnMoves(Bitmask, TurnColor, OccupationBitboard, EnemyBitboard),
+                MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
+                MoveType.Knight => KnightMoves[i],
+                MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+                MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+                MoveType.King => KingMoves[i],
+                _ => 0
+            };
+
+            Moves[i] &= ~FriendlyBitboard;
+
+            GD.Print(Moves[i]);
+        }
+
+        return Moves;
+    }
     public static ulong GetPieceMoves(int TileInt, PieceType PieceType, ulong Bitmask, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
         MoveType MoveType = PieceManager.GetMoveType(PieceType);
-        int Color = PieceManager.GetPieceColor(PieceType);
+        PieceColor Color = PieceManager.GetPieceColor(PieceType);
 
         ulong FriendlyBitboard = Color == 0 ? WhiteBitboard : BlackBitboard;
         ulong EnemyBitboard = OccupationBitboard & ~FriendlyBitboard;
@@ -35,7 +65,7 @@ public static partial class MoveManager {
         return Moves &= ~FriendlyBitboard;
     }
     // --- Private Funcs ---
-    private static ulong GetPawnMoves(ulong Bitmask, int Color, ulong OccupationBitboard, ulong EnemyBitboard) {
+    private static ulong GetPawnMoves(ulong Bitmask, PieceColor Color, ulong OccupationBitboard, ulong EnemyBitboard) {
         ulong Moves;
         ulong CaptureMask;
 
@@ -44,7 +74,7 @@ public static partial class MoveManager {
         ulong NeighborMask = (NotLeftBorderPawns << 1 | NotRightBorderPawns >> 1) & EnemyBitboard;
 
         switch (Color) {
-            case (int)PieceColor.White:
+            case PieceColor.White:
                 Moves = Bitmask >> 8;
                 CaptureMask = NotLeftBorderPawns >> 9;
                 CaptureMask |= NotRightBorderPawns >> 7;

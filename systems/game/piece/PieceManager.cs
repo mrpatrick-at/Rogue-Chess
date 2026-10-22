@@ -5,6 +5,7 @@ using System;
 using Chess.systems.math;
 using Chess.systems.game.consts;
 using Chess.systems.game.piece.enums;
+using Chess.OldConsts;
 
 namespace Chess.systems.game.piece;
 public static partial class PieceManager {
@@ -48,8 +49,8 @@ public static partial class PieceManager {
     public static MoveType GetMoveType(PieceType PieceType) {
         return (MoveType)((int)PieceType % 6);
     }
-    public static int GetPieceColor(PieceType PieceType) {
-        return (int)PieceType / 6;
+    public static PieceColor GetPieceColor(PieceType PieceType) {
+        return (PieceColor)((int)PieceType / 6);
     }
     public static bool IsPiece(PieceType PieceType) {
         if ((int)PieceType == -1) {
@@ -58,9 +59,9 @@ public static partial class PieceManager {
         return true;
     }
     public static bool IsEnemy(PieceType PieceType, PieceColor TurnColor) {
-        int PieceColor = GetPieceColor(PieceType);
+        PieceColor PieceColor = GetPieceColor(PieceType);
 
-        if (PieceColor == (int)TurnColor) {
+        if (PieceColor == TurnColor) {
             return false;
         }
 

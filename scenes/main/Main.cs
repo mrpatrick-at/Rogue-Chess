@@ -12,7 +12,8 @@ using Chess.systems.game.piece;
 using Chess.systems.game.piece.enums;
 using Chess.systems.game.tile;
 using Chess.systems.game.tile.enums;
-using Chess.systems.game;
+using Chess.systems.game.gamestate.enums;
+using Chess.systems.game.gamestate.structs;
 using Vector2 = Godot.Vector2;
 
 
@@ -24,16 +25,18 @@ public partial class Main : Node2D {
     // --- Public Vars ---
     // --- Private Vars ---
     // Bitboard Vars
-    private ulong[] Bitboard = new ulong[12];
-    private ulong[] QueuedBitboard = new ulong[12];
-    private ulong OccupationBitboard = 0;
-    private ulong WhiteBitboard = 0;
-    private ulong BlackBitboard = 0;
+    // private ulong[] QueuedBitboard = new ulong[12];
+    // private ulong OccupationBitboard = 0;
+    // private ulong WhiteBitboard = 0;
+    // private ulong BlackBitboard = 0;
+    private GameData GameData = new();
     // Selected Piece Vars
+    // private ulong[] PieceMoveBitmasks = new ulong[64];
     ulong SelectedPieceMoves = 0;
     int SelectedTileInt = 0;
     PieceType SelectedPieceType = 0;
     ulong SelectedPieceBitmask = 0;
+    // Piece Shader Vars
     private int[] PiecePositions = new int[64];
     private float[] PieceOffsets = new float[64];
     // Tile Vars
@@ -41,7 +44,7 @@ public partial class Main : Node2D {
     // Gamestate Vars
     private GameState CurrentGameState = GameState.Loading;
     private int TurnAmount = 0;
-    private PieceColor TurnColor = PieceColor.White;
+    // private PieceColor TurnColor = PieceColor.White;
     // Obj Vars
     private Player PlayerObj;
     private Camera2D CamObj;
@@ -73,6 +76,9 @@ public partial class Main : Node2D {
         ResetGame();
 
         CurrentGameState = GameState.NoSelection;
+
+        UpdateGame();
+
     }
     public override void _Process(double delta) {
 
@@ -138,7 +144,7 @@ public partial class Main : Node2D {
     // --- Private Funcs ---
     // Input Funcs
     private void OnLMB(int TileInt) {
-        PieceType PieceType = PieceManager.GetPieceType(TileInt, Bitboard);
+        PieceType PieceType = PieceManager.GetPieceType(TileInt, GameData.Bitboard);
 
         ulong Bitmask = Bitmath.GetBitmask(TileInt);
 
@@ -155,12 +161,12 @@ public partial class Main : Node2D {
     // Gameplay Funcs
     private void SelectPiece(PieceType PieceType, int TileInt, ulong Bitmask) {
         // Selects the Requested Piece
-        if (!PieceManager.IsPiece(PieceType) || PieceManager.IsEnemy(PieceType, TurnColor)) {
+        if (!PieceManager.IsPiece(PieceType) || PieceManager.IsEnemy(PieceType, GameData.TurnColor)) {
             // Not a valid Selection
             return;
         }
 
-        SelectedPieceMoves = MoveManager.GetPieceMoves(TileInt, PieceType, Bitmask, OccupationBitboard, WhiteBitboard, BlackBitboard);
+        SelectedPieceMoves = GameData.PieceMoves[TileInt];
         SelectedPieceType = PieceType;
         SelectedPieceBitmask = Bitmask;
 
@@ -176,16 +182,17 @@ public partial class Main : Node2D {
 
             // Clear Target Cell
             if ((int)PieceType >= 0) {
-                QueuedBitboard[(int)PieceType] ^= MoveBitmask;
+                GameData.Bitboard[(int)PieceType] ^= MoveBitmask;
             }
 
             // Move Piece
-            QueuedBitboard[(int)SelectedPieceType] ^= SelectedPieceBitmask;
-            QueuedBitboard[(int)SelectedPieceType] |= Bitmask;
+            GameData.Bitboard[(int)SelectedPieceType] ^= SelectedPieceBitmask;
+            GameData.Bitboard[(int)SelectedPieceType] |= Bitmask;
 
             // Update GameState
             TurnAmount += 1;
-            TurnColor = (PieceColor)(TurnAmount & 1);
+            GameData.TurnColor = (PieceColor)(TurnAmount & 1);
+            GameData.PieceMoves = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
         }
 
         CurrentGameState = GameState.NoSelection;
@@ -196,63 +203,53 @@ public partial class Main : Node2D {
 
     // Gamestate Funcs
     private void UpdateGame() {
-        // Runs every Game Update
+        // Runs every Move
 
         if (CurrentGameState == GameState.NoSelection) {
-            // Reset Occupation Board
-            ulong NewOccupationBitboard = 0;
+            // Update Occupation Boards
             ulong NewWhiteBitboard = 0;
             ulong NewBlackBitboard = 0;
 
             for (int i = 0; i < 12; i++) {
-                NewOccupationBitboard |= QueuedBitboard[i];
                 if (i < 6) {
-                    NewWhiteBitboard |= QueuedBitboard[i];
+                    NewWhiteBitboard |= GameData.Bitboard[i];
                 } else {
-                    NewBlackBitboard |= QueuedBitboard[i];
+                    NewBlackBitboard |= GameData.Bitboard[i];
                 }
             }
 
-            if (NewOccupationBitboard == OccupationBitboard) {
-                // No Change on Board
-                return;
-            }
+            GameData.WhiteOccupations = NewWhiteBitboard;
+            GameData.BlackOccupations = NewBlackBitboard;
 
-            OccupationBitboard = NewOccupationBitboard;
-            WhiteBitboard = NewWhiteBitboard;
-            BlackBitboard = NewBlackBitboard;
-
-            // Remove Empty Tiles from PiecePositions
+            // Update Piece Array for Shader
             for (int i = 0; i < 64; i++) {
-                ulong Bitmask = Bitmath.GetBitmask(i);
-                if ((OccupationBitboard & Bitmask) == 0) {
-                    // Tile is Empty
-                    PiecePositions[i] = -1;
-                }
+                PieceType PieceType = PieceManager.GetPieceType(i, GameData.Bitboard);
+
+                PiecePositions[i] = (int)PieceType;
             }
 
             // Check if Piece Data Updated and act
-            for (int i = 0; i < 12; i++) {
-                if (QueuedBitboard[i] == Bitboard[i]) {
-                    // No Change in PieceBoard
-                    continue;
-                }
+            // for (int i = 0; i < 12; i++) {
+            //     if (GameData.QueuedBitboard[i] == GameData.Bitboard[i]) {
+            //         // No Change in PieceBoard
+            //         continue;
+            //     }
 
-                // Update Piece Positions
-                for (int k = 0; k < 64; k++) {
-                    ulong Bitmask = Bitmath.GetBitmask(k);
+            //     // Update Piece Positions
+            //     for (int k = 0; k < 64; k++) {
+            //         ulong Bitmask = Bitmath.GetBitmask(k);
 
-                    if ((QueuedBitboard[i] & Bitmask) == 0) {
-                        // No Piece of this Type on the Tile
-                        continue;
-                    }
+            //         if ((GameData.QueuedBitboard[i] & Bitmask) == 0) {
+            //             // No Piece of this Type on the Tile
+            //             continue;
+            //         }
 
-                    PiecePositions[k] = i;
-                }
+            //         PiecePositions[k] = i;
+            //     }
 
-                // Update Bitboard
-                Bitboard[i] = QueuedBitboard[i];
-            }
+            //     // Update Bitboard
+            //     GameData.Bitboard[i] = GameData.QueuedBitboard[i];
+            // }
 
             RendererObj.UpdatePiecePosistions(PiecePositions);
         } else if (CurrentGameState == GameState.PieceSelected) {
@@ -267,7 +264,10 @@ public partial class Main : Node2D {
         }
     }
     private void ResetGame() {
-        // Resets Game to Starting State
-        QueuedBitboard = PieceManager.ResetPieces();
+        // // Resets Game to Starting State
+        // GameData.QueuedBitboard = PieceManager.ResetPieces();
+
+        // Generates The Moves for the Start
+        GameData.PieceMoves = MoveManager.MakePieceMoves(GameData.QueuedBitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
     }
 }
