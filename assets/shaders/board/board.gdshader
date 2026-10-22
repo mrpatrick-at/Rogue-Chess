@@ -70,28 +70,24 @@ void fragment() {
 	
 	// --- Piece Sprite ---
 	int PieceIndex = PiecePosistions[ArrayIndex];
-	vec2 PieceUv = vec2(LocalUv.x, (LocalUv.y + (1. + PieceOffsets[ArrayIndex]) / 16.) * 0.5);
+	vec2 PieceUv = vec2(LocalUv.x, (LocalUv.y + (1. + PieceOffsets[ArrayIndex]) / 16.) * 0.5 + 0.5) ;
 	
 	// Main Piece on Cell
 	if (PieceIndex >= 0 && PieceIndex < 12) {
-		vec4 PieceColor = GetSprite(
-			PieceIndex,
-			PieceUv + vec2(0, 0.5)
-		);
-		
-		FinalColor = mix(
-			FinalColor,
-			PieceColor,
-			PieceColor.a
-		);
+		vec4 PieceColor = GetSprite(PieceIndex, PieceUv);
+		FinalColor = mix(FinalColor, PieceColor, PieceColor.a);
 	}
 	
 	// Overlapping Piece from Below
+	
 	if (GridPos.y < 7.0) {
-		int BelowPiece = PiecePosistions[ArrayIndex + 8];
+		int BelowArrayIndex = ArrayIndex + 8;
+		int BelowPiece = PiecePosistions[BelowArrayIndex];
 		
 		if (BelowPiece >= 0 && BelowPiece < 12) {
-			vec4 PieceColor = GetSprite(BelowPiece, PieceUv);
+			vec2 BelowPieceUv = vec2(LocalUv.x, (LocalUv.y + (1. + PieceOffsets[BelowArrayIndex]) / 16.) * 0.5);
+			
+			vec4 PieceColor = GetSprite(BelowPiece, BelowPieceUv);
 			FinalColor = mix(FinalColor, PieceColor, PieceColor.a);
 		}
 	}

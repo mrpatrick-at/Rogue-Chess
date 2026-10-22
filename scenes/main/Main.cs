@@ -77,13 +77,12 @@ public partial class Main : Node2D {
 
         CurrentGameState = GameState.NoSelection;
 
-        UpdateGame();
+        UpdateGameData();
+
+        UpdateShaderData();
 
     }
     public override void _Process(double delta) {
-
-        UpdateGame();
-
         // Animations
         for (int i = 0; i < PieceOffsets.Length; i++) {
 
@@ -172,6 +171,8 @@ public partial class Main : Node2D {
 
         TileStates[TileInt] = (int)TileHighlight.Selected;
         CurrentGameState = GameState.PieceSelected;
+
+        UpdateShaderData();
     }
     private void TryMovePiece(PieceType PieceType, ulong Bitmask) {
         // Quits out of Selection and if Move Valid Moves
@@ -192,6 +193,7 @@ public partial class Main : Node2D {
             // Update GameState
             TurnAmount += 1;
             GameData.TurnColor = (PieceColor)(TurnAmount & 1);
+            UpdateGameData();
             GameData.PieceMoves = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
         }
 
@@ -199,28 +201,34 @@ public partial class Main : Node2D {
 
         // Update Shader
         TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
+
+        UpdateShaderData();
     }
 
     // Gamestate Funcs
-    private void UpdateGame() {
-        // Runs every Move
+    private void UpdateGameData() {
+        // Updates Data Related to GameState and Pieces
+
+        // Update Occupation Boards
+        ulong NewWhiteBitboard = 0;
+        ulong NewBlackBitboard = 0;
+
+        for (int i = 0; i < 12; i++) {
+            if (i < 6) {
+                NewWhiteBitboard |= GameData.Bitboard[i];
+            } else {
+                NewBlackBitboard |= GameData.Bitboard[i];
+            }
+        }
+
+        GameData.WhiteOccupations = NewWhiteBitboard;
+        GameData.BlackOccupations = NewBlackBitboard;
+
+    }
+    private void UpdateShaderData() {
+        // Updates Data related to the Shader
 
         if (CurrentGameState == GameState.NoSelection) {
-            // Update Occupation Boards
-            ulong NewWhiteBitboard = 0;
-            ulong NewBlackBitboard = 0;
-
-            for (int i = 0; i < 12; i++) {
-                if (i < 6) {
-                    NewWhiteBitboard |= GameData.Bitboard[i];
-                } else {
-                    NewBlackBitboard |= GameData.Bitboard[i];
-                }
-            }
-
-            GameData.WhiteOccupations = NewWhiteBitboard;
-            GameData.BlackOccupations = NewBlackBitboard;
-
             // Update Piece Array for Shader
             for (int i = 0; i < 64; i++) {
                 PieceType PieceType = PieceManager.GetPieceType(i, GameData.Bitboard);
@@ -228,30 +236,8 @@ public partial class Main : Node2D {
                 PiecePositions[i] = (int)PieceType;
             }
 
-            // Check if Piece Data Updated and act
-            // for (int i = 0; i < 12; i++) {
-            //     if (GameData.QueuedBitboard[i] == GameData.Bitboard[i]) {
-            //         // No Change in PieceBoard
-            //         continue;
-            //     }
-
-            //     // Update Piece Positions
-            //     for (int k = 0; k < 64; k++) {
-            //         ulong Bitmask = Bitmath.GetBitmask(k);
-
-            //         if ((GameData.QueuedBitboard[i] & Bitmask) == 0) {
-            //             // No Piece of this Type on the Tile
-            //             continue;
-            //         }
-
-            //         PiecePositions[k] = i;
-            //     }
-
-            //     // Update Bitboard
-            //     GameData.Bitboard[i] = GameData.QueuedBitboard[i];
-            // }
-
             RendererObj.UpdatePiecePosistions(PiecePositions);
+
         } else if (CurrentGameState == GameState.PieceSelected) {
             for (int i = 0; i < 64; i++) {
                 i += BitOperations.TrailingZeroCount(SelectedPieceMoves >> i);
