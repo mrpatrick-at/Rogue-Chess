@@ -25,7 +25,6 @@ public partial class Main : Node2D {
     // --- Public Vars ---
     // --- Private Vars ---
     // Bitboard Vars
-    // private ulong[] QueuedBitboard = new ulong[12];
     // private ulong OccupationBitboard = 0;
     // private ulong WhiteBitboard = 0;
     // private ulong BlackBitboard = 0;
@@ -73,7 +72,7 @@ public partial class Main : Node2D {
         };
         this.AddChild(RendererObj);
 
-        ResetGame();
+        // ResetGame();
 
         CurrentGameState = GameState.NoSelection;
 
@@ -97,9 +96,9 @@ public partial class Main : Node2D {
         }
         // Update Shader
         RendererObj.UpdatePieceOffsets(PieceOffsets);
-
     }
 
+    // --- Signal Funcs ---
     public void OnMouseStateChanged(Vector2I MouseBoardPos, Clicktype Clicktype) {
 
         TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Highlighted);
@@ -194,7 +193,7 @@ public partial class Main : Node2D {
             TurnAmount += 1;
             GameData.TurnColor = (PieceColor)(TurnAmount & 1);
             UpdateGameData();
-            GameData.PieceMoves = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
+            (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
         }
 
         CurrentGameState = GameState.NoSelection;
@@ -250,10 +249,7 @@ public partial class Main : Node2D {
         }
     }
     private void ResetGame() {
-        // // Resets Game to Starting State
-        // GameData.QueuedBitboard = PieceManager.ResetPieces();
-
-        // Generates The Moves for the Start
-        GameData.PieceMoves = MoveManager.MakePieceMoves(GameData.QueuedBitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
+        // Resets Game to Starting State
+        GameData = new();
     }
 }

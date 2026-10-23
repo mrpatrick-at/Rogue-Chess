@@ -6,6 +6,8 @@ using Chess.systems.math;
 using Chess.systems.game.consts;
 using Chess.systems.game.piece.enums;
 using Chess.OldConsts;
+using System.Numerics;
+using System.Collections.Generic;
 
 namespace Chess.systems.game.piece;
 public static partial class PieceManager {
@@ -36,7 +38,7 @@ public static partial class PieceManager {
     }
 
     public static PieceType GetPieceType(int TileInt, ulong[] Bitboard) {
-        // Returns the Type of Piece as an Int. (Returns -1 if no Piece)
+        // Returns the Type of Piece. (Returns -1 if no Piece)
         ulong Bitmask = Bitmath.GetBitmask(TileInt);
         for (int i = 0; i < 12; i++) {
             if ((Bitboard[i] & Bitmask) != 0) {
@@ -45,6 +47,22 @@ public static partial class PieceManager {
         }
 
         return PieceType.None;
+    }
+    public static int[] GetPiecePositionsOfType(ulong PieceUlong) {
+        // Returns the All Piece Positions of the Requested Type.
+        List<int> PiecePositions = new();
+
+        ulong Pieces = PieceUlong;
+
+        while (Pieces != 0) {
+            int pos = BitOperations.TrailingZeroCount(Pieces);
+            PiecePositions.Add(pos);
+
+            Pieces &= ~(1UL << pos);
+        }
+
+
+        return PiecePositions.ToArray();
     }
     public static MoveType GetMoveType(PieceType PieceType) {
         return (MoveType)((int)PieceType % 6);

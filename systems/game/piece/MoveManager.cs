@@ -8,6 +8,7 @@ using Chess.systems.game.board;
 using Chess.systems.game.piece.enums;
 using System.Security.Authentication.ExtendedProtection;
 using Chess.OldConsts;
+using System.Runtime.Serialization;
 
 namespace Chess.systems.game.piece;
 public static partial class MoveManager {
@@ -15,33 +16,91 @@ public static partial class MoveManager {
     private static readonly ulong[] KingMoves = PreCalcKingMoves();
     private static readonly ulong[] KnightMoves = PreCalcKnightMoves();
     // --- Public Funcs ---
-    public static ulong[] MakePieceMoves(ulong[] Bitboard, PieceColor TurnColor, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
+    public static (ulong[], ulong) MakePieceMoves(ulong[] Bitboard, PieceColor TurnColor, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
         ulong[] Moves = new ulong[64];
+        ulong ThreatenedTiles = new();
 
         ulong FriendlyBitboard = TurnColor == PieceColor.White ? WhiteBitboard : BlackBitboard;
         ulong EnemyBitboard = OccupationBitboard & ~FriendlyBitboard;
 
-        for (int i = 0; i < 64; i++) {
-            ulong Bitmask = Bitmath.GetBitmask(i);
-            PieceType PieceType = PieceManager.GetPieceType(i, Bitboard);
-            MoveType MoveType = PieceManager.GetMoveType(PieceType);
+        for (int PieceType = 0; PieceType < Bitboard.Length; PieceType++) {
+            ulong PieceUlong = Bitboard[PieceType];
 
-            Moves[i] = MoveType switch {
-                MoveType.Pawn => GetPawnMoves(Bitmask, TurnColor, OccupationBitboard, EnemyBitboard),
-                MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
-                MoveType.Knight => KnightMoves[i],
-                MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
-                MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
-                MoveType.King => KingMoves[i],
-                _ => 0
-            };
+            if (PieceUlong == 0) {
+                // No Pieces of this Type
+                continue;
+            }
 
-            Moves[i] &= ~FriendlyBitboard;
+            bool IsPieceFriendly = PieceManager.GetPieceColor((PieceType)PieceType) == TurnColor;
+            MoveType MoveType = PieceManager.GetMoveType((PieceType)PieceType);
 
-            GD.Print(Moves[i]);
+            int[] PiecePositions = PieceManager.GetPiecePositionsOfType(PieceUlong);
+
+            for (int i = 0; i < PiecePositions.Length; i++) {
+                // For every Piece of this Type
+                int PiecePos = PiecePositions[i];
+
+                ulong Bitmask = Bitmath.GetBitmask(PiecePos);
+
+                ulong PieceMoves = MoveType switch {
+                    MoveType.Pawn => GetPawnMoves(Bitmask, TurnColor, OccupationBitboard, EnemyBitboard),
+                    MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
+                    MoveType.Knight => KnightMoves[PiecePos],
+                    MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+                    MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+                    MoveType.King => KingMoves[PiecePos],
+                    _ => 0
+                };
+
+                if (IsPieceFriendly) {
+                    // Piece is Friendly
+                    PieceMoves &= ~FriendlyBitboard;
+                    Moves[PiecePos] = PieceMoves;
+                } else {
+                    // Piece Is Enemy
+                    ThreatenedTiles |= PieceMoves;
+                }
+            }
         }
 
-        return Moves;
+        // for (int i = 0; i < 64; i++) {
+        //     ulong Bitmask = Bitmath.GetBitmask(i);
+        //     PieceType PieceType = PieceManager.GetPieceType(i, Bitboard);
+
+        //     if (PieceType == PieceType.None) {
+        //         continue;
+        //     }
+
+        //     bool IsPieceFriendly = PieceManager.GetPieceColor(PieceType) == TurnColor;
+
+        //     // ulong AttackablePieces = IsPieceFriendly ? EnemyBitboard : FriendlyBitboard;
+        //     if (IsPieceFriendly) {
+
+        //     }
+
+        //     MoveType MoveType = PieceManager.GetMoveType(PieceType);
+
+        //     ulong PieceMoves = MoveType switch {
+        //         MoveType.Pawn => GetPawnMoves(Bitmask, TurnColor, OccupationBitboard, EnemyBitboard),
+        //         MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
+        //         MoveType.Knight => KnightMoves[i],
+        //         MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+        //         MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+        //         MoveType.King => KingMoves[i],
+        //         _ => 0
+        //     };
+
+        //     if (IsPieceFriendly) {
+        //         // Piece is Friendly
+        //         PieceMoves &= ~FriendlyBitboard;
+        //         Moves[i] = PieceMoves;
+        //     } else {
+        //         // Piece Is Enemy
+        //         ThreatenedTiles |= PieceMoves;
+        //     }
+        // }
+
+        return (Moves, ThreatenedTiles);
     }
     public static ulong GetPieceMoves(int TileInt, PieceType PieceType, ulong Bitmask, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
         MoveType MoveType = PieceManager.GetMoveType(PieceType);
