@@ -115,8 +115,10 @@ public static partial class MoveManager {
 
                 Moves |= (NeighborMask >> 8) & ~OccupationBitboard; // EnPassant
 
-                if ((Bitmask & 71776119061217280) == Bitmask) { // white in start pos
-                    Moves |= Bitmask >> 16;
+                if ((Bitmask & 71776119061217280) == Bitmask) { // White in Start Pos
+                    if ((OccupationBitboard & Bitmask >> 8) == 0) {
+                        Moves |= Bitmask >> 16;
+                    }
                 }
                 break;
 
@@ -127,8 +129,10 @@ public static partial class MoveManager {
 
                 Moves |= (NeighborMask << 8) & ~OccupationBitboard; // EnPassant
 
-                if ((Bitmask & 65280) == Bitmask) { // black in start pos
-                    Moves |= Bitmask << 16;
+                if ((Bitmask & 65280) == Bitmask) { // Black in Start Pos
+                    if ((OccupationBitboard & Bitmask << 8) == 0) {
+                        Moves |= Bitmask << 16;
+                    }
                 }
                 break;
         }
