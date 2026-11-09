@@ -42,7 +42,7 @@ public partial class Main : Node2D {
     private int[] TileStates = new int[64];
     // Gamestate Vars
     private GameState CurrentGameState = GameState.Loading;
-    private int TurnAmount = 0;
+    private int TurnCount = 0;
     // private PieceColor TurnColor = PieceColor.White;
     // Obj Vars
     private Player PlayerObj;
@@ -140,7 +140,7 @@ public partial class Main : Node2D {
     // --- Public Funcs ---
 
     // --- Private Funcs ---
-    // Input Funcs
+    // * Input Funcs
     private void OnLMB(int TileInt) {
         PieceId PieceID = PieceManager.GetPieceId(TileInt, GameData.Bitboard);
 
@@ -150,81 +150,86 @@ public partial class Main : Node2D {
         GD.Print("Piece Int: ", PieceID);
 
         if (CurrentGameState == GameState.NoSelection) {
+            // Try to select Piece
             if (!PieceManager.IsPiece(PieceID) || PieceManager.IsEnemy(PieceID, GameData.TurnColor)) {
                 // Not a valid Selection
                 return;
             }
 
             SelectPiece(PieceID, TileInt, Bitmask);
+
+            // Highlight Possible Moves
+            TileStates[TileInt] = (int)TileHighlight.Selected;
+            CurrentGameState = GameState.PieceSelected;
         } else {
-            TryMovePiece(PieceID, Bitmask);
+            // Try to Move Piece
+            ulong MoveBitmask = Bitmask & SelectedPieceMoves;
+
+            if (MoveBitmask != 0) {
+                MovePiece(PieceID, MoveBitmask, Bitmask);
+
+                FinishTurn();
+            }
+
+            // Unhighlight Possible Moves
+            CurrentGameState = GameState.NoSelection;
+            TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
         }
+
+        UpdateShaderData();
     }
 
-    // Gameplay Funcs
+    // * Gameplay Funcs
     private void SelectPiece(PieceId PieceID, int TileInt, ulong Bitmask) {
-        // Selects the Requested Piece
+        // Selects the Piece on the given Tile
 
         SelectedPieceMoves = GameData.PieceMoves[TileInt];
         SelectedPieceId = PieceID;
         SelectedPieceBitmask = Bitmask;
-
-        TileStates[TileInt] = (int)TileHighlight.Selected;
-        CurrentGameState = GameState.PieceSelected;
-
-        UpdateShaderData();
     }
-    private void TryMovePiece(PieceId PieceID, ulong Bitmask) {
-        // Quits out of Selection and if Move Valid Moves
-        ulong MoveBitmask = Bitmask & SelectedPieceMoves;
+    private void MovePiece(PieceId PieceID, ulong MoveBitmask, ulong Bitmask) {
+        // Moves the given Piece to the given Tile
 
-        if (MoveBitmask != 0) {
-            // Valid Move
-
-            // Clear Target Cell
-            if ((int)PieceID >= 0) {
-                GameData.Bitboard[(int)PieceID] ^= MoveBitmask;
-            }
-
-            // Move Piece
-            GameData.Bitboard[(int)SelectedPieceId] ^= SelectedPieceBitmask;
-            GameData.Bitboard[(int)SelectedPieceId] |= Bitmask;
-
-            // Update GameState
-            TurnAmount += 1;
-            GameData.TurnColor = (TeamColor)(TurnAmount & 1);
-            UpdateGameData();
-            (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
+        // Clear Target Cell
+        if ((int)PieceID >= 0) {
+            GameData.Bitboard[(int)PieceID] ^= MoveBitmask;
         }
 
-        CurrentGameState = GameState.NoSelection;
-
-        // Update Shader
-        TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Moves);
-
-        UpdateShaderData();
+        // Move Piece
+        GameData.Bitboard[(int)SelectedPieceId] ^= SelectedPieceBitmask;
+        GameData.Bitboard[(int)SelectedPieceId] |= Bitmask;
     }
 
-    // Gamestate Funcs
+    // * Gamestate Funcs
+    private void FinishTurn() {
+        // "Finishes" the current turn and prepares everything for the Next Turn
+
+        // Update Turn Count and Color
+        TurnCount += 1;
+        GameData.TurnColor = (TeamColor)(TurnCount & 1);
+        // Update Game Data
+        UpdateGameData();
+        (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
+    }
     private void UpdateGameData() {
         // Updates Data Related to GameState and Pieces
 
         // Update Occupation Boards
-        ulong NewWhiteBitboard = 0;
-        ulong NewBlackBitboard = 0;
+        GameData.WhiteOccupations = MakeOccupationBoard(TeamColor.White, GameData.Bitboard);
+        GameData.BlackOccupations = MakeOccupationBoard(TeamColor.Black, GameData.Bitboard);
+    }
+    private ulong MakeOccupationBoard(TeamColor Color, ulong[] Bitboard) {
+        ulong NewOccupationBoard = 0;
 
-        for (int i = 0; i < 12; i++) {
-            if (i < 6) {
-                NewWhiteBitboard |= GameData.Bitboard[i];
-            } else {
-                NewBlackBitboard |= GameData.Bitboard[i];
-            }
+        int ColorOffset = 6 * (int)Color;
+
+        for (int i = ColorOffset; i < ColorOffset + 6; i++) {
+            NewOccupationBoard |= Bitboard[i];
         }
 
-        GameData.WhiteOccupations = NewWhiteBitboard;
-        GameData.BlackOccupations = NewBlackBitboard;
-
+        return NewOccupationBoard;
     }
+
     private void UpdateShaderData() {
         // Updates Data related to the Shader
 

@@ -49,7 +49,7 @@ public static partial class PieceManager {
         return PieceId.None;
     }
     public static int[] GetPiecePositionsOfType(ulong PieceUlong) {
-        // Returns the All Tiles occupied by a Piece of the requested Type
+        // Converts a Piece Ulong to an int[] of Positions
         List<int> PiecePositions = new();
 
         ulong Pieces = PieceUlong;
