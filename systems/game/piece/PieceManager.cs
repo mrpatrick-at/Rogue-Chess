@@ -12,12 +12,12 @@ using System.Collections.Generic;
 namespace Chess.systems.game.piece;
 public static partial class PieceManager {
     // --- Private Vars ---
-    private static readonly PieceType[] W_BACK_ROW =
-        [PieceType.W_ROOK, PieceType.W_KNIGHT, PieceType.W_BISHOP, PieceType.W_QUEEN,
-        PieceType.W_KING, PieceType.W_BISHOP, PieceType.W_KNIGHT, PieceType.W_ROOK];
-    private static readonly PieceType[] B_BACK_ROW =
-        [PieceType.B_ROOK, PieceType.B_KNIGHT, PieceType.B_BISHOP, PieceType.B_QUEEN,
-        PieceType.B_KING, PieceType.B_BISHOP, PieceType.B_KNIGHT, PieceType.B_ROOK];
+    private static readonly PieceId[] W_BACK_ROW =
+        [PieceId.W_ROOK, PieceId.W_KNIGHT, PieceId.W_BISHOP, PieceId.W_QUEEN,
+        PieceId.W_KING, PieceId.W_BISHOP, PieceId.W_KNIGHT, PieceId.W_ROOK];
+    private static readonly PieceId[] B_BACK_ROW =
+        [PieceId.B_ROOK, PieceId.B_KNIGHT, PieceId.B_BISHOP, PieceId.B_QUEEN,
+        PieceId.B_KING, PieceId.B_BISHOP, PieceId.B_KNIGHT, PieceId.B_ROOK];
     // --- Public Funcs ---
     public static ulong[] ResetPieces() {
         // Returns a Fresh Bitboard with Starting Piece Positions.
@@ -25,31 +25,31 @@ public static partial class PieceManager {
 
         for (int i = 0; i < 64; i++) {
             ulong PosBitmask = Bitmath.GetBitmask(i);
-            PieceType PieceInt = CalcPiece(PosBitmask, i);
-            if (PieceInt == PieceType.None) {
+            PieceId PieceID = CalcPiece(PosBitmask, i);
+            if (PieceID == PieceId.None) {
                 // No Piece on Tile
                 continue;
             }
 
-            Bitboard[(int)PieceInt] |= PosBitmask;
+            Bitboard[(int)PieceID] |= PosBitmask;
         }
 
         return Bitboard;
     }
 
-    public static PieceType GetPieceType(int TileInt, ulong[] Bitboard) {
-        // Returns the Type of Piece. (Returns -1 if no Piece)
+    public static PieceId GetPieceId(int TileInt, ulong[] Bitboard) {
+        // Returns the Type of Piece on the requested Tile. (Returns -1 if no Piece)
         ulong Bitmask = Bitmath.GetBitmask(TileInt);
         for (int i = 0; i < 12; i++) {
             if ((Bitboard[i] & Bitmask) != 0) {
-                return (PieceType)i;
+                return (PieceId)i;
             }
         }
 
-        return PieceType.None;
+        return PieceId.None;
     }
     public static int[] GetPiecePositionsOfType(ulong PieceUlong) {
-        // Returns the All Piece Positions of the Requested Type.
+        // Returns the All Tiles occupied by a Piece of the requested Type
         List<int> PiecePositions = new();
 
         ulong Pieces = PieceUlong;
@@ -61,23 +61,22 @@ public static partial class PieceManager {
             Pieces &= ~(1UL << pos);
         }
 
-
         return PiecePositions.ToArray();
     }
-    public static MoveType GetMoveType(PieceType PieceType) {
-        return (MoveType)((int)PieceType % 6);
+    public static MoveType GetMoveType(PieceId PieceID) {
+        return (MoveType)((int)PieceID % 6);
     }
-    public static PieceColor GetPieceColor(PieceType PieceType) {
-        return (PieceColor)((int)PieceType / 6);
+    public static TeamColor GetPieceColor(PieceId PieceID) {
+        return (TeamColor)((int)PieceID / 6);
     }
-    public static bool IsPiece(PieceType PieceType) {
-        if ((int)PieceType == -1) {
+    public static bool IsPiece(PieceId PieceID) {
+        if ((int)PieceID == -1) {
             return false;
         }
         return true;
     }
-    public static bool IsEnemy(PieceType PieceType, PieceColor TurnColor) {
-        PieceColor PieceColor = GetPieceColor(PieceType);
+    public static bool IsEnemy(PieceId PieceID, TeamColor TurnColor) {
+        TeamColor PieceColor = GetPieceColor(PieceID);
 
         if (PieceColor == TurnColor) {
             return false;
@@ -88,21 +87,21 @@ public static partial class PieceManager {
 
     // --- Private Funcs ---
 
-    private static PieceType CalcPiece(ulong Bitmask, int Index) {
+    private static PieceId CalcPiece(ulong Bitmask, int Index) {
         // Gives The PieceType on given Tile on Startup
         if ((Bitmask & 65535) != 0) {
             if ((Bitmask & 255) != 0) {
                 return B_BACK_ROW[Index & 7]; // Black Pieces
             } else {
-                return PieceType.B_PAWN; // Black Pawns
+                return PieceId.B_PAWN; // Black Pawns
             }
         } else if ((Bitmask & 18446462598732840960) != 0) {
             if ((Bitmask & 18374686479671623680) != 0) {
                 return W_BACK_ROW[Index & 7]; // White Pieces
             } else {
-                return PieceType.W_PAWN; // White Pawns
+                return PieceId.W_PAWN; // White Pawns
             }
         }
-        return PieceType.None;
+        return PieceId.None;
     }
 }

@@ -33,7 +33,7 @@ public partial class Main : Node2D {
     // private ulong[] PieceMoveBitmasks = new ulong[64];
     ulong SelectedPieceMoves = 0;
     int SelectedTileInt = 0;
-    PieceType SelectedPieceType = 0;
+    PieceId SelectedPieceId = 0;
     ulong SelectedPieceBitmask = 0;
     // Piece Shader Vars
     private int[] PiecePositions = new int[64];
@@ -142,30 +142,31 @@ public partial class Main : Node2D {
     // --- Private Funcs ---
     // Input Funcs
     private void OnLMB(int TileInt) {
-        PieceType PieceType = PieceManager.GetPieceType(TileInt, GameData.Bitboard);
+        PieceId PieceID = PieceManager.GetPieceId(TileInt, GameData.Bitboard);
 
         ulong Bitmask = Bitmath.GetBitmask(TileInt);
 
         GD.Print("Tile Int: ", TileInt);
-        GD.Print("Piece Int: ", PieceType);
+        GD.Print("Piece Int: ", PieceID);
 
         if (CurrentGameState == GameState.NoSelection) {
-            SelectPiece(PieceType, TileInt, Bitmask);
+            if (!PieceManager.IsPiece(PieceID) || PieceManager.IsEnemy(PieceID, GameData.TurnColor)) {
+                // Not a valid Selection
+                return;
+            }
+
+            SelectPiece(PieceID, TileInt, Bitmask);
         } else {
-            TryMovePiece(PieceType, Bitmask);
+            TryMovePiece(PieceID, Bitmask);
         }
     }
 
     // Gameplay Funcs
-    private void SelectPiece(PieceType PieceType, int TileInt, ulong Bitmask) {
+    private void SelectPiece(PieceId PieceID, int TileInt, ulong Bitmask) {
         // Selects the Requested Piece
-        if (!PieceManager.IsPiece(PieceType) || PieceManager.IsEnemy(PieceType, GameData.TurnColor)) {
-            // Not a valid Selection
-            return;
-        }
 
         SelectedPieceMoves = GameData.PieceMoves[TileInt];
-        SelectedPieceType = PieceType;
+        SelectedPieceId = PieceID;
         SelectedPieceBitmask = Bitmask;
 
         TileStates[TileInt] = (int)TileHighlight.Selected;
@@ -173,7 +174,7 @@ public partial class Main : Node2D {
 
         UpdateShaderData();
     }
-    private void TryMovePiece(PieceType PieceType, ulong Bitmask) {
+    private void TryMovePiece(PieceId PieceID, ulong Bitmask) {
         // Quits out of Selection and if Move Valid Moves
         ulong MoveBitmask = Bitmask & SelectedPieceMoves;
 
@@ -181,17 +182,17 @@ public partial class Main : Node2D {
             // Valid Move
 
             // Clear Target Cell
-            if ((int)PieceType >= 0) {
-                GameData.Bitboard[(int)PieceType] ^= MoveBitmask;
+            if ((int)PieceID >= 0) {
+                GameData.Bitboard[(int)PieceID] ^= MoveBitmask;
             }
 
             // Move Piece
-            GameData.Bitboard[(int)SelectedPieceType] ^= SelectedPieceBitmask;
-            GameData.Bitboard[(int)SelectedPieceType] |= Bitmask;
+            GameData.Bitboard[(int)SelectedPieceId] ^= SelectedPieceBitmask;
+            GameData.Bitboard[(int)SelectedPieceId] |= Bitmask;
 
             // Update GameState
             TurnAmount += 1;
-            GameData.TurnColor = (PieceColor)(TurnAmount & 1);
+            GameData.TurnColor = (TeamColor)(TurnAmount & 1);
             UpdateGameData();
             (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
         }
@@ -230,9 +231,9 @@ public partial class Main : Node2D {
         if (CurrentGameState == GameState.NoSelection) {
             // Update Piece Array for Shader
             for (int i = 0; i < 64; i++) {
-                PieceType PieceType = PieceManager.GetPieceType(i, GameData.Bitboard);
+                PieceId PieceID = PieceManager.GetPieceId(i, GameData.Bitboard);
 
-                PiecePositions[i] = (int)PieceType;
+                PiecePositions[i] = (int)PieceID;
             }
 
             RendererObj.UpdatePiecePosistions(PiecePositions);

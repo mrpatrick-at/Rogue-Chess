@@ -1,8 +1,8 @@
-// PieceType.cs
+// PieceId.cs
 
 namespace Chess.systems.game.piece.enums;
 
-public enum PieceType {
+public enum PieceId {
     None = -1,
     W_PAWN = 0,
     W_KNIGHT = 1,

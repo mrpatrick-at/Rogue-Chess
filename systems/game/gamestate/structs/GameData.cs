@@ -14,7 +14,7 @@ public struct GameData {
     public ulong BlackOccupations = new(); // Tiles Occupied by Black Pieces
     public ulong ThreatenedTiles = new(); // Tiles Threatened by Enemy Pieces
     // --- GameState Vars ---
-    public PieceColor TurnColor = PieceColor.White; // Whos Turn it is currently
+    public TeamColor TurnColor = TeamColor.White; // Whos Turn it is currently
 
     public GameData() {
         (PieceMoves, ThreatenedTiles) = MoveManager.MakePieceMoves(Bitboard, TurnColor, AllOccupations, WhiteOccupations, BlackOccupations);
