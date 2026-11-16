@@ -9,7 +9,7 @@ public static partial class TileManager {
     // --- Public Vars ---
     // --- Private Vars ---
     // --- Public Funcs ---
-    public static int GetTileInt(Vector2I TileCoord) {
+    public static int GetTileId(Vector2I TileCoord) {
         return TileCoord.X + TileCoord.Y * Consts.BoardSize.X;
     }
 

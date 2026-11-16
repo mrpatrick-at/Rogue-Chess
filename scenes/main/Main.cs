@@ -25,25 +25,20 @@ public partial class Main : Node2D {
     // --- Exports ---
     // --- Public Vars ---
     // --- Private Vars ---
-    // Bitboard Vars
-    // private ulong OccupationBitboard = 0;
-    // private ulong WhiteBitboard = 0;
-    // private ulong BlackBitboard = 0;
-    private GameData GameData = new();
+
     // Selected Piece Vars
-    // private ulong[] PieceMoveBitmasks = new ulong[64];
-    ulong SelectedPieceMoves = 0;
-    int SelectedTileInt = 0;
-    PieceId SelectedPieceId = 0;
-    ulong SelectedPieceBitmask = 0;
-    // Piece Shader Vars
+    private ulong SelectedPieceMoves = 0;
+    private int SelectedTileInt = 0;
+    private PieceId SelectedPieceId = 0;
+    private ulong SelectedPieceBitmask = 0;
+    // * Piece Shader Vars
     private int[] PiecePositions = new int[64];
     private float[] PieceOffsets = new float[64];
-    // Tile Vars
+    // * Tile Vars
     private int[] TileStates = new int[64];
-    // Gamestate Vars
+    // * Gamestate Vars
     private GameState CurrentGameState = GameState.Loading;
-    private int TurnCount = 0;
+    private GameData GameData = new();
     // private PieceColor TurnColor = PieceColor.White;
     // Obj Vars
     private Player PlayerObj;
@@ -107,21 +102,20 @@ public partial class Main : Node2D {
             return;
         }
 
-        int TileInt = TileManager.GetTileInt(MouseBoardPos);
+        int TileId = TileManager.GetTileId(MouseBoardPos);
 
         switch (Clicktype) {
             case Clicktype.None:
                 if (CurrentGameState == GameState.NoSelection) {
-                    TileStates[TileInt] = (int)TileHighlight.Highlighted;
+                    TileStates[TileId] = (int)TileHighlight.Highlighted;
                 }
 
-                SelectedTileInt = TileInt;
+                SelectedTileInt = TileId;
                 break;
 
             case Clicktype.Left:
                 TileManager.RemoveTileHighlight(TileStates, (int)TileHighlight.Selected);
-                OnLMB(TileInt);
-                GD.Print("PLAYER- LMB Detected at: ", MouseBoardPos);
+                OnLMB(TileId);
                 break;
 
             case Clicktype.Right:
@@ -140,13 +134,10 @@ public partial class Main : Node2D {
 
     // --- Private Funcs ---
     // * Input Funcs
-    private void OnLMB(int TileInt) {
-        PieceId PieceID = PieceManager.GetPieceId(TileInt, GameData.Bitboard);
+    private void OnLMB(int TileId) {
+        PieceId PieceID = PieceManager.GetPieceId(TileId, GameData.Bitboard);
 
-        ulong Bitmask = Bitmath.GetBitmask(TileInt);
-
-        GD.Print("Tile Int: ", TileInt);
-        GD.Print("Piece Int: ", PieceID);
+        ulong Bitmask = Bitmath.GetBitmask(TileId);
 
         if (CurrentGameState == GameState.NoSelection) {
             // Try to select Piece
@@ -155,17 +146,21 @@ public partial class Main : Node2D {
                 return;
             }
 
-            SelectPiece(PieceID, TileInt, Bitmask);
+            SelectPiece(PieceID, TileId, Bitmask);
+
+            GD.Print("GAMESTATE- Selected Piece with Id: ", PieceID, " on Tile: ", TileId);
 
             // Highlight Possible Moves
-            TileStates[TileInt] = (int)TileHighlight.Selected;
+            TileStates[TileId] = (int)TileHighlight.Selected;
             CurrentGameState = GameState.PieceSelected;
         } else {
             // Try to Move Piece
             ulong MoveBitmask = Bitmask & SelectedPieceMoves;
 
             if (MoveBitmask != 0) {
-                MovePiece(PieceID, MoveBitmask, Bitmask);
+                MovePiece(PieceID, MoveBitmask);
+
+                GD.Print("GAMESTATE- Moved Piece with Id: ", PieceID, " to Tile: ", TileId);
 
                 FinishTurn();
             }
@@ -186,7 +181,7 @@ public partial class Main : Node2D {
         SelectedPieceId = PieceID;
         SelectedPieceBitmask = Bitmask;
     }
-    private void MovePiece(PieceId PieceID, ulong MoveBitmask, ulong Bitmask) {
+    private void MovePiece(PieceId PieceID, ulong MoveBitmask) {
         // Moves the given Piece to the given Tile
 
         // Clear Target Cell
@@ -196,7 +191,7 @@ public partial class Main : Node2D {
 
         // Move Piece
         GameData.Bitboard[(int)SelectedPieceId] ^= SelectedPieceBitmask;
-        GameData.Bitboard[(int)SelectedPieceId] |= Bitmask;
+        GameData.Bitboard[(int)SelectedPieceId] |= MoveBitmask;
     }
 
     // * Gamestate Funcs
@@ -204,11 +199,11 @@ public partial class Main : Node2D {
         // "Finishes" the current turn and prepares everything for the Next Turn
 
         // Update Turn Count and Color
-        TurnCount += 1;
-        GameData.TurnColor = (TeamColor)(TurnCount & 1);
+        GameData.TurnCount += 1;
 
-        // Make new Moves
-        (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
+        if (GameData.InCheck) {
+            GD.Print("GAMESTATE- ", GameData.TurnColor, "'s King is in Check");
+        }
     }
 
     private void UpdateShaderData() {

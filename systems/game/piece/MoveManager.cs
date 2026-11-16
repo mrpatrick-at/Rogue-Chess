@@ -6,10 +6,6 @@ using Chess.systems.math;
 using Chess.systems.game.consts;
 using Chess.systems.game.board;
 using Chess.systems.game.enums;
-using System.Security.Authentication.ExtendedProtection;
-using Chess.OldConsts;
-using System.Runtime.Serialization;
-using System.Reflection.Metadata;
 
 namespace Chess.systems.game.piece;
 public static partial class MoveManager {
@@ -17,29 +13,6 @@ public static partial class MoveManager {
     private static readonly ulong[] KingMoves = PreCalcKingMoves();
     private static readonly ulong[] KnightMoves = PreCalcKnightMoves();
     // --- Public Funcs ---
-
-    // public static ulong GetPieceMoves(int TileInt, PieceType PieceType, ulong Bitmask, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
-    //     MoveType MoveType = PieceManager.GetMoveType(PieceType);
-    //     PieceColor Color = PieceManager.GetPieceColor(PieceType);
-
-    //     ulong FriendlyBitboard = Color == 0 ? WhiteBitboard : BlackBitboard;
-    //     ulong EnemyBitboard = OccupationBitboard & ~FriendlyBitboard;
-
-    //     // ulong Bitmask = Bitmath.GetBitmask(TileInt);
-
-    //     ulong Moves = MoveType switch {
-    //         MoveType.Pawn => GetPawnMoves(Bitmask, Color, OccupationBitboard, EnemyBitboard),
-    //         MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
-    //         MoveType.Knight => KnightMoves[TileInt],
-    //         MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
-    //         MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
-    //         MoveType.King => KingMoves[TileInt],
-    //         _ => 0
-    //     };
-
-    //     return Moves &= ~FriendlyBitboard;
-    // }
-
     public static (ulong[], ulong) MakePieceMoves(ulong[] Bitboard, TeamColor TurnColor, ulong OccupationBitboard, ulong WhiteBitboard, ulong BlackBitboard) {
         // Calcs valid Moves and Tiles the Enemy is threatening
         ulong[] Moves = new ulong[64];
@@ -50,23 +23,27 @@ public static partial class MoveManager {
 
         TeamColor EnemyColor = TurnColor == TeamColor.White ? TeamColor.Black : TeamColor.White;
 
-        ulong[] EnemyMoves = MakeTeamPieceMoves(Bitboard, EnemyColor, OccupationBitboard, ~0UL, 0);
+        ulong[] EnemyMoves = MakeTeamMoves(Bitboard, EnemyColor, OccupationBitboard, ~0UL, 0);
         for (int i = 0; i < EnemyMoves.Length; i++) {
             ThreatenedTiles |= EnemyMoves[i];
         }
 
-        ulong[] FriendlyMoves = MakeTeamPieceMoves(Bitboard, TurnColor, OccupationBitboard, EnemyBitboard, ThreatenedTiles);
+        ulong[] FriendlyMoves = MakeTeamMoves(Bitboard, TurnColor, OccupationBitboard, EnemyBitboard, ThreatenedTiles);
         for (int i = 0; i < FriendlyMoves.Length; i++) {
             Moves[i] = FriendlyMoves[i] & ~FriendlyBitboard;
         }
 
         return (Moves, ThreatenedTiles);
     }
+
     // --- Private Funcs ---
-    private static ulong[] MakeTeamPieceMoves(ulong[] Bitboard, TeamColor PieceColor, ulong OccupationBitboard, ulong EnemyBitboard, ulong ThreatenedTiles) {
+    private static ulong[] MakeTeamMoves(ulong[] Bitboard, TeamColor PieceColor, ulong OccupationBitboard, ulong EnemyBitboard, ulong ThreatenedTiles) {
+        // Make Moves for all Pieces of the requested Team
         ulong[] ColorMoves = new ulong[64];
 
         for (int i = 0; i < 6; i++) {
+            // Loop thru every Type of Piece
+
             int PieceType = i + 6 * (int)PieceColor;
             ulong PieceUlong = Bitboard[PieceType];
 
@@ -80,7 +57,7 @@ public static partial class MoveManager {
             int[] PiecePositions = PieceManager.GetPiecePositionsOfType(PieceUlong);
 
             for (int k = 0; k < PiecePositions.Length; k++) {
-                // For every Piece of this Type
+                // Loop for every Piece of this Type
                 int PiecePos = PiecePositions[k];
 
                 ulong Bitmask = Bitmath.GetBitmask(PiecePos);
