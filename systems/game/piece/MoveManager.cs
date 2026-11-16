@@ -23,11 +23,13 @@ public static partial class MoveManager {
 
         TeamColor EnemyColor = TurnColor == TeamColor.White ? TeamColor.Black : TeamColor.White;
 
+        // Make Enemy Moves
         ulong[] EnemyMoves = MakeTeamMoves(Bitboard, EnemyColor, OccupationBitboard, ~0UL, 0);
         for (int i = 0; i < EnemyMoves.Length; i++) {
             ThreatenedTiles |= EnemyMoves[i];
         }
 
+        // Make Friendly Moves
         ulong[] FriendlyMoves = MakeTeamMoves(Bitboard, TurnColor, OccupationBitboard, EnemyBitboard, ThreatenedTiles);
         for (int i = 0; i < FriendlyMoves.Length; i++) {
             Moves[i] = FriendlyMoves[i] & ~FriendlyBitboard;
@@ -64,10 +66,10 @@ public static partial class MoveManager {
 
                 ulong PieceMoves = MoveType switch {
                     MoveType.Pawn => GetPawnMoves(Bitmask, PieceColor, OccupationBitboard, EnemyBitboard),
-                    MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook),
+                    MoveType.Rook => GetSlideMoves(Bitmask, OccupationBitboard, SlideType.Rook),
                     MoveType.Knight => KnightMoves[PiecePos],
-                    MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
-                    MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, (int)SlideType.Bishop),
+                    MoveType.Bishop => GetSlideMoves(Bitmask, OccupationBitboard, SlideType.Bishop),
+                    MoveType.Queen => GetSlideMoves(Bitmask, OccupationBitboard, SlideType.Rook) | GetSlideMoves(Bitmask, OccupationBitboard, SlideType.Bishop),
                     MoveType.King => KingMoves[PiecePos] & ~ThreatenedTiles,
                     _ => 0
                 };
@@ -126,80 +128,100 @@ public static partial class MoveManager {
         Moves |= CaptureMask & EnemyBitboard;
         return Moves;
     }
-    private static ulong GetSlideMoves(ulong Bitmask, ulong OccupationBitboard, ulong slide_type) {
+    private static ulong GetSlideMoves(ulong Bitmask, ulong OccupationBitboard, SlideType slideType) {
         ulong Moves = 0UL;
-        int TileInt = BoardManager.GetTileIntFromBitmask(Bitmask);
-        Vector2I Coord = BoardManager.GetVec2FromTileInt(TileInt);
 
-        int left_tiles = Coord.X;
-        int right_tiles = 7 - Coord.X;
+        int TileId = BoardManager.GetTileIdFromBitmask(Bitmask);
 
-        int up_tiles = Coord.Y;
-        int down_tiles = 7 - Coord.Y;
+        int leftTiles = TileId % 8; // The Amount of Tiles left of the Piece
+        int rightTiles = 7 - leftTiles; // The Amount of Tiles Right of the Piece
 
-        if (slide_type == (int)SlideType.Rook) {
-            for (int x = 0; x < left_tiles; x++) {
-                ulong step_bitmask = Bitmask >> (x + 1);
-                Moves |= step_bitmask;
-                if ((step_bitmask & OccupationBitboard) != 0) {
+        int aboveTiles = TileId / 8; // The Amount of Tiles above the Piece
+        int belowTiles = 7 - aboveTiles; // The Amount of Tiles below the Piece
+
+        if (slideType == SlideType.Rook) {
+            // Get Moves for Rook
+            for (int x = 1; x <= leftTiles; x++) {
+                ulong stepBitmask = Bitmask >> x;
+                Moves |= stepBitmask;
+                if ((stepBitmask & OccupationBitboard) != 0) {
                     break;
                 }
             }
-            for (int x = 0; x < right_tiles; x++) {
-                ulong step_bitmask = Bitmask << (x + 1);
-                Moves |= step_bitmask;
-                if ((step_bitmask & OccupationBitboard) != 0) {
+            for (int x = 1; x <= rightTiles; x++) {
+                ulong stepBitmask = Bitmask << x;
+                Moves |= stepBitmask;
+                if ((stepBitmask & OccupationBitboard) != 0) {
                     break;
                 }
             }
-            for (int y = 0; y < up_tiles; y++) {
-                ulong step_bitmask = Bitmask >> ((y + 1) << 3);
-                Moves |= step_bitmask;
-                if ((step_bitmask & OccupationBitboard) != 0) {
+            for (int y = 1; y <= aboveTiles; y++) {
+                ulong stepBitmask = Bitmask >> (y << 3);
+                Moves |= stepBitmask;
+                if ((stepBitmask & OccupationBitboard) != 0) {
                     break;
                 }
             }
-            for (int y = 0; y < down_tiles; y++) {
-                ulong step_bitmask = Bitmask << ((y + 1) << 3);
-                Moves |= step_bitmask;
-                if ((step_bitmask & OccupationBitboard) != 0) {
+            for (int y = 1; y <= belowTiles; y++) {
+                ulong stepBitmask = Bitmask << (y << 3);
+                Moves |= stepBitmask;
+                if ((stepBitmask & OccupationBitboard) != 0) {
                     break;
                 }
             }
         } else {
-            for (int xy = 0; xy < left_tiles; xy++) {
-                if (xy < up_tiles) {
-                    ulong step_bitmask = Bitmask >> ((xy + 1) * 9);
-                    Moves |= step_bitmask;
-                    if ((step_bitmask & OccupationBitboard) != 0) {
-                        break;
+            // Get Moves for Bishop
+            bool aboveFinished = false;
+            bool belowFinished = false;
+
+            for (int x = 1; x <= leftTiles; x++) {
+                // Left Diagonals
+                if (!aboveFinished && x <= aboveTiles) {
+                    // Up-Left
+                    ulong stepBitmask = Bitmask >> ((x << 3) + x);
+                    Moves |= stepBitmask;
+                    if ((stepBitmask & OccupationBitboard) != 0) {
+                        // Reached End Above
+                        aboveFinished = true;
                     }
                 }
-                if (xy < down_tiles) {
-                    ulong step_bitmask = Bitmask << ((xy + 1) * 7);
-                    Moves |= step_bitmask;
-                    if ((step_bitmask & OccupationBitboard) != 0) {
-                        break;
+                if (!belowFinished && x <= belowTiles) {
+                    // Down-Left
+                    ulong stepBitmask = Bitmask << ((x << 3) - x);
+                    Moves |= stepBitmask;
+                    if ((stepBitmask & OccupationBitboard) != 0) {
+                        // Reached End Below
+                        belowFinished = true;
                     }
                 }
             }
-            for (int yx = 0; yx < right_tiles; yx++) {
-                if (yx < up_tiles) {
-                    ulong step_bitmask = Bitmask >> ((yx + 1) * 7);
-                    Moves |= step_bitmask;
-                    if ((step_bitmask & OccupationBitboard) != 0) {
-                        break;
+
+            aboveFinished = false;
+            belowFinished = false;
+
+            for (int x = 1; x <= rightTiles; x++) {
+                // Right Diagonals
+                if (!aboveFinished && x <= aboveTiles) {
+                    // Up-Right
+                    ulong stepBitmask = Bitmask >> ((x << 3) - x);
+                    Moves |= stepBitmask;
+                    if ((stepBitmask & OccupationBitboard) != 0) {
+                        // Reached End Above
+                        aboveFinished = true;
                     }
                 }
-                if (yx < down_tiles) {
-                    ulong step_bitmask = Bitmask << ((yx + 1) * 9);
-                    Moves |= step_bitmask;
-                    if ((step_bitmask & OccupationBitboard) != 0) {
-                        break;
+                if (!belowFinished && x <= belowTiles) {
+                    // Down-Right
+                    ulong stepBitmask = Bitmask << ((x << 3) + x);
+                    Moves |= stepBitmask;
+                    if ((stepBitmask & OccupationBitboard) != 0) {
+                        // Reached End Below
+                        belowFinished = true;
                     }
                 }
             }
         }
+
         return Moves;
     }
     // Piece Move Precalc

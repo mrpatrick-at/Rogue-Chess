@@ -11,9 +11,9 @@ namespace Chess.systems.game.piece;
 public static partial class PieceManager {
     // --- Private Vars ---
     // --- Public Funcs ---
-    public static PieceId GetPieceId(int TileInt, ulong[] Bitboard) {
+    public static PieceId GetPieceId(int TileId, ulong[] Bitboard) {
         // Returns the Type of Piece on the requested Tile. (Returns -1 if no Piece)
-        ulong Bitmask = Bitmath.GetBitmask(TileInt);
+        ulong Bitmask = Bitmath.GetBitmask(TileId);
         for (int i = 0; i < 12; i++) {
             if ((Bitboard[i] & Bitmask) != 0) {
                 return (PieceId)i;

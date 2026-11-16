@@ -118,12 +118,12 @@ public partial class Main : Node2D {
                 OnLMB(TileId);
                 break;
 
-            case Clicktype.Right:
-                GD.Print("PLAYER- RMB Detected at: ", MouseBoardPos);
+            case Clicktype.Middle:
+                OnMMB(TileId);
                 break;
 
-            case Clicktype.Middle:
-                GD.Print("PLAYER- MMB Detected at: ", MouseBoardPos);
+            case Clicktype.Right:
+                GD.Print("PLAYER- RMB Detected at: ", MouseBoardPos);
                 break;
         }
 
@@ -148,7 +148,7 @@ public partial class Main : Node2D {
 
             SelectPiece(PieceID, TileId, Bitmask);
 
-            GD.Print("GAMESTATE- Selected Piece with Id: ", PieceID, " on Tile: ", TileId);
+            // GD.Print("GAMESTATE- Selected Piece with Id: ", PieceID, " on Tile: ", TileId);
 
             // Highlight Possible Moves
             TileStates[TileId] = (int)TileHighlight.Selected;
@@ -160,7 +160,7 @@ public partial class Main : Node2D {
             if (MoveBitmask != 0) {
                 MovePiece(PieceID, MoveBitmask);
 
-                GD.Print("GAMESTATE- Moved Piece with Id: ", PieceID, " to Tile: ", TileId);
+                // GD.Print("GAMESTATE- Moved Piece with Id: ", PieceID, " to Tile: ", TileId);
 
                 FinishTurn();
             }
@@ -171,6 +171,12 @@ public partial class Main : Node2D {
         }
 
         UpdateShaderData();
+    }
+
+    private void OnMMB(int TileId) {
+        PieceId PieceID = PieceManager.GetPieceId(TileId, GameData.Bitboard);
+
+        GD.Print("DEBUG- Requested Tile: ", TileId, " Piece on Tile: ", PieceID);
     }
 
     // * Gameplay Funcs
@@ -199,7 +205,13 @@ public partial class Main : Node2D {
         // "Finishes" the current turn and prepares everything for the Next Turn
 
         // Update Turn Count and Color
+
         GameData.TurnCount += 1;
+
+        // GameData.WhiteOccupations = DataManager.MakeOccupationBoard(TeamColor.White, GameData.Bitboard);
+        // GameData.BlackOccupations = DataManager.MakeOccupationBoard(TeamColor.Black, GameData.Bitboard);
+
+        // (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
 
         if (GameData.InCheck) {
             GD.Print("GAMESTATE- ", GameData.TurnColor, "'s King is in Check");
