@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 using Chess.systems.game.consts;
-using Chess.systems.game.tile.enums;
+using Chess.systems.game.enums;
 
 namespace Chess.systems.game.tile;
 public static partial class TileManager {

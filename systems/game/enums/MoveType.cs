@@ -1,6 +1,6 @@
 // MoveType.cs
 
-namespace Chess.systems.game.piece.enums;
+namespace Chess.systems.game.enums;
 
 public enum MoveType {
     Pawn = 0,

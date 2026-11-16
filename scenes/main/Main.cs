@@ -9,11 +9,11 @@ using Chess.systems.player;
 using Chess.systems.player.enums;
 using Chess.systems.game.consts;
 using Chess.systems.game.piece;
-using Chess.systems.game.piece.enums;
+using Chess.systems.game.enums;
 using Chess.systems.game.tile;
-using Chess.systems.game.tile.enums;
-using Chess.systems.game.gamestate.enums;
-using Chess.systems.game.gamestate.structs;
+using Chess.systems.game.enums;
+using Chess.systems.game.enums;
+using Chess.systems.game.data.structs;
 using Vector2 = Godot.Vector2;
 
 
@@ -207,6 +207,7 @@ public partial class Main : Node2D {
         // Update Turn Count and Color
         TurnCount += 1;
         GameData.TurnColor = (TeamColor)(TurnCount & 1);
+
         // Update Game Data
         UpdateGameData();
         (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
@@ -218,7 +219,7 @@ public partial class Main : Node2D {
         GameData.WhiteOccupations = MakeOccupationBoard(TeamColor.White, GameData.Bitboard);
         GameData.BlackOccupations = MakeOccupationBoard(TeamColor.Black, GameData.Bitboard);
     }
-    private ulong MakeOccupationBoard(TeamColor Color, ulong[] Bitboard) {
+    private static ulong MakeOccupationBoard(TeamColor Color, ulong[] Bitboard) { // ! Note: Move to Manager Later
         ulong NewOccupationBoard = 0;
 
         int ColorOffset = 6 * (int)Color;

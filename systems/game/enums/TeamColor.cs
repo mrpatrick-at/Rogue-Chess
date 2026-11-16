@@ -1,6 +1,6 @@
 // TeamColor.cs
 
-namespace Chess.systems.game.piece.enums;
+namespace Chess.systems.game.enums;
 
 public enum TeamColor {
     White = 0,

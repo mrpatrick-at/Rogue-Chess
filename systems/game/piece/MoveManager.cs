@@ -5,7 +5,7 @@ using System;
 using Chess.systems.math;
 using Chess.systems.game.consts;
 using Chess.systems.game.board;
-using Chess.systems.game.piece.enums;
+using Chess.systems.game.enums;
 using System.Security.Authentication.ExtendedProtection;
 using Chess.OldConsts;
 using System.Runtime.Serialization;

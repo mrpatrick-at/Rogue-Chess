@@ -3,9 +3,7 @@ using Godot.Collections;
 using System;
 
 using Chess.systems.math;
-using Chess.systems.game.consts;
-using Chess.systems.game.piece.enums;
-using Chess.OldConsts;
+using Chess.systems.game.enums;
 using System.Numerics;
 using System.Collections.Generic;
 

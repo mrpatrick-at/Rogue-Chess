@@ -1,6 +1,6 @@
 // TileHighlight.cs
 
-namespace Chess.systems.game.tile.enums;
+namespace Chess.systems.game.enums;
 public enum TileHighlight {
     None,
     Highlighted,

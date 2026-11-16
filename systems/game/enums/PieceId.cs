@@ -1,6 +1,6 @@
 // PieceId.cs
 
-namespace Chess.systems.game.piece.enums;
+namespace Chess.systems.game.enums;
 
 public enum PieceId {
     None = -1,

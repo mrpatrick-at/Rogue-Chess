@@ -1,9 +1,9 @@
 // GameData.cs
 
 using Chess.systems.game.piece;
-using Chess.systems.game.piece.enums;
+using Chess.systems.game.enums;
 
-namespace Chess.systems.game.gamestate.structs;
+namespace Chess.systems.game.data.structs;
 public struct GameData {
     // --- Bitboards ---
     public ulong[] Bitboard = PieceManager.ResetPieces(); // Current Positions of all Pieces

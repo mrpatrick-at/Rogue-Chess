@@ -1,6 +1,6 @@
 // SlideType.cs
 
-namespace Chess.systems.game.piece.enums;
+namespace Chess.systems.game.enums;
 
 public enum SlideType {
     Rook = 0,
