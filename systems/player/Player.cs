@@ -47,34 +47,6 @@ public partial class Player : Node2D {
         }
 
         MouseBoardPos = NewMouseBoardPos;
-
-        // IndexBelowMouse = board.GetTileIndex();
-        // if (IsPieceSelected) {
-        //     return;
-        // }
-
-        // int Index = IndexBelowMouse;
-        // if (!IsMenuOpen && board.IsValidIndex(Index) && !HighlightedTiles.Contains(Index)) {
-        //     board.HighlightTile(Index, 1);
-        //     HighlightedTiles.Add(Index);
-
-        //     if (!board.IsEmpty(Index)) {
-        //         PieceObj piece = (PieceObj)board.PieceObjs[Index];
-        //         piece.highlight();
-        //         // highlighted_pieces.Add(Index);
-        //     }
-        // }
-
-        // foreach (int tile in HighlightedTiles) {
-        //     if (tile != Index) {
-        //         board.UnhighlightTile(tile);
-        //         if (board.PieceObjs.ContainsKey(tile)) {
-        //             PieceObj piece = (PieceObj)board.PieceObjs[tile];
-        //             piece.unhighlight();
-        //         }
-        //     }
-        // }
-        // HighlightedTiles.RemoveAll(id => id != Index);
     }
 
     public override void _Input(InputEvent @event) {
@@ -94,64 +66,18 @@ public partial class Player : Node2D {
 
     // private methods
     private void HandleMouseInput(InputEventMouseButton MouseInput) {
-        // if (!board.IsValidIndex(IndexBelowMouse)) {
-        //     GD.Print($"PLAYER- Tile not in Board");
-        //     return;
-        // }
-        // int Index = IndexBelowMouse;
-
-        GD.Print("PLAYER- Mouse Clicked at: ", MousePos);
-
-        if (MouseInput.IsActionPressed("_input_mouse_left")) {
-            EmitSignal(SignalName.MouseStateChanged, MouseBoardPos, (int)Clicktype.Left);
-            // if (!IsPieceSelected) {
-            //     if (board.IsEmpty(Index) || board.IsEnemy(Index)) {
-            //         return;
-            //     }
-            //     SelectedPieceIndex = Index;
-            //     SelectedPieceMoves = board.GetPieceMoves(Index);
-            //     IsPieceSelected = true;
-
-            //     // Highlight Tiles
-            //     int EnemyColor = 1 & ~board.TurnColor;
-            //     ulong EnemyPieces = board.GetOccupiedBitBoard(EnemyColor);
-            //     int[] HighlightTiles = new int[64];
-            //     HighlightTiles[Index] = (int)Tile.Highlight.Hover;
-            //     for (int i = 0; i < 64; i++) {
-            //         ulong Bitmask = 1UL << i;
-            //         if ((SelectedPieceMoves & Bitmask) != 0) {
-            //             HighlightedTiles.Add(i);
-            //             if ((EnemyPieces & Bitmask) != 0) {
-            //                 HighlightTiles[i] = (int)Tile.Highlight.Capture;
-            //                 continue;
-            //             }
-            //             HighlightTiles[i] = (int)Tile.Highlight.Move;
-            //         }
-            //     }
-            //     board.SetHighlightTiles(HighlightTiles);
-
-            // } else {
-            //     if ((SelectedPieceMoves & board.GetBitmask(Index)) != 0) {
-            //         board.MovePiece(SelectedPieceIndex, Index);
-            //     }
-            //     IsPieceSelected = false;
-            // }
-        }
-        if (MouseInput.IsActionPressed("_input_mouse_right")) {
-            EmitSignal(SignalName.MouseStateChanged, MouseBoardPos, (int)Clicktype.Right);
-
-            // Vector2I coord = board.GetVec2FromIndex(Index);
-            // GD.Print($"PLAYER- Index: {Index}, Coord: {coord}");
-            // int piece_int = board.GetPieceInt(Index);
-            // if (piece_int != -1) {
-            //     String piece_string = board.GetPieceString(piece_int);
-            //     GD.Print($"PLAYER- Piece Type: {piece_string}");
-            // }
-        }
-        if (MouseInput.IsActionPressed("_input_mouse_middle")) {
-            EmitSignal(SignalName.MouseStateChanged, MouseBoardPos, (int)Clicktype.Middle);
+        if (!MouseInput.Pressed) {
+            return;
         }
 
+        int Click = MouseInput.ButtonIndex switch {
+            MouseButton.Left => (int)Clicktype.Left,
+            MouseButton.Right => (int)Clicktype.Right,
+            MouseButton.Middle => (int)Clicktype.Middle,
+            _ => (int)Clicktype.None
+        };
+
+        EmitSignal(SignalName.MouseStateChanged, MouseBoardPos, Click);
     }
     private void HandleKeyInput(InputEventKey KeyInput) {
         if (KeyInput.IsActionReleased("_input_esc")) {

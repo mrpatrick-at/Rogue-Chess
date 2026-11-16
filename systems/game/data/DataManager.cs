@@ -8,7 +8,7 @@ using Chess.systems.game.enums;
 namespace Chess.systems.game.data;
 
 // enums
-public static class BoardDataManager {
+public static class DataManager {
     // --- Consts ---
     // --- Public vars ---
     // --- Private vars ---
@@ -36,9 +36,21 @@ public static class BoardDataManager {
 
         return Bitboard;
     }
+
+    public static ulong MakeOccupationBoard(TeamColor Color, ulong[] Bitboard) {
+        ulong NewOccupationBoard = 0;
+
+        int ColorOffset = 6 * (int)Color;
+
+        for (int i = ColorOffset; i < ColorOffset + 6; i++) {
+            NewOccupationBoard |= Bitboard[i];
+        }
+
+        return NewOccupationBoard;
+    }
     // --- Private Funcs ---
     private static PieceId CalcPiece(ulong Bitmask, int Index) {
-        // Gives The PieceType on given Tile on Startup
+        // Gives The PieceId for the requested Tile
         if ((Bitmask & 65535) != 0) {
             if ((Bitmask & 255) != 0) {
                 return B_BACK_ROW[Index & 7]; // Black Pieces

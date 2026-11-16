@@ -8,12 +8,13 @@ using Chess.systems.renderer;
 using Chess.systems.player;
 using Chess.systems.player.enums;
 using Chess.systems.game.consts;
+
+using Chess.systems.game.data;
+using Chess.systems.game.data.structs;
+
 using Chess.systems.game.piece;
 using Chess.systems.game.enums;
 using Chess.systems.game.tile;
-using Chess.systems.game.enums;
-using Chess.systems.game.enums;
-using Chess.systems.game.data.structs;
 using Vector2 = Godot.Vector2;
 
 
@@ -75,8 +76,6 @@ public partial class Main : Node2D {
         // ResetGame();
 
         CurrentGameState = GameState.NoSelection;
-
-        UpdateGameData();
 
         UpdateShaderData();
 
@@ -208,27 +207,8 @@ public partial class Main : Node2D {
         TurnCount += 1;
         GameData.TurnColor = (TeamColor)(TurnCount & 1);
 
-        // Update Game Data
-        UpdateGameData();
+        // Make new Moves
         (GameData.PieceMoves, GameData.ThreatenedTiles) = MoveManager.MakePieceMoves(GameData.Bitboard, GameData.TurnColor, GameData.AllOccupations, GameData.WhiteOccupations, GameData.BlackOccupations);
-    }
-    private void UpdateGameData() {
-        // Updates Data Related to GameState and Pieces
-
-        // Update Occupation Boards
-        GameData.WhiteOccupations = MakeOccupationBoard(TeamColor.White, GameData.Bitboard);
-        GameData.BlackOccupations = MakeOccupationBoard(TeamColor.Black, GameData.Bitboard);
-    }
-    private static ulong MakeOccupationBoard(TeamColor Color, ulong[] Bitboard) { // ! Note: Move to Manager Later
-        ulong NewOccupationBoard = 0;
-
-        int ColorOffset = 6 * (int)Color;
-
-        for (int i = ColorOffset; i < ColorOffset + 6; i++) {
-            NewOccupationBoard |= Bitboard[i];
-        }
-
-        return NewOccupationBoard;
     }
 
     private void UpdateShaderData() {
